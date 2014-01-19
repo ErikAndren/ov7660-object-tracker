@@ -28,6 +28,7 @@ architecture rtl of SccbAddrReader is
 	signal Addr_N, Addr_D : word(AddrW-1 downto 0);
 	signal LastInc_N, LastInc_D : bit1;
 	signal LastDec_N, LastDec_D : bit1;
+	signal ThresHld_N, ThresHld_D : word(10-1 downto 0);
 begin
 	SyncProc : process (RstN, Clk)
 	begin
@@ -35,19 +36,22 @@ begin
 			Addr_D <= (others => '0');
 			LastInc_D <= '1';
 			LastDec_D <= '1';
+			ThresHld_D <= (others => '0');
 		elsif rising_edge(Clk) then
 			Addr_D <= Addr_N;
 			LastInc_D <= LastInc_N;
 			LastDec_D <= LastDec_N;
+			ThresHld_D <= ThresHld_N;
 		end if;
 	end process;
 	
-	AsyncProc : process (IncAddr, DecAddr, Addr_D, LastInc_D, LastDec_D)
+	AsyncProc : process (IncAddr, DecAddr, Addr_D, LastInc_D, LastDec_D, ThresHld_D)
 	begin
 		Addr_N <= Addr_D;
 		LastInc_N <= IncAddr;
 		LastDec_N <= DecAddr;
 		Re <= '0';
+		ThresHld_N <= ThresHld_D;
 
 		if IncAddr = '0' and LastInc_D = '1' then
 			Addr_N <= Addr_D + 1;
@@ -56,6 +60,15 @@ begin
 			Addr_N <= Addr_D - 1;
 			Re <= '1';
 		end if;
+		
+		if (RedAnd(ThresHld_D) = '0') then
+			-- Do not trigger an operation in the beginning.
+			Re <= '0';
+			Addr_N <= Addr_D;
+
+			ThresHld_N <= ThresHld_D + 1;
+		end if;
+
 	end process;
 	Addr <= Addr_N;
 end architecture rtl;
