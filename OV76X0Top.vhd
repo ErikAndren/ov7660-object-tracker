@@ -37,6 +37,8 @@ architecture rtl of OV76X0 is
 	signal SccbRe   : bit1;
 	signal SccbAddr : word(SccbAddrW-1 downto 0);
 	signal PllClk_i : bit1;
+
+
 begin
 	AsyncRst <= not AsyncRstN;
 
@@ -97,7 +99,7 @@ begin
 		SIO_C        => SIO_C,
 		SIO_D        => SIO_D
 	);
-	
+
 	SccbReader : entity work.SccbAddrReader
 	port map (
 		Clk => PllClk_i,
