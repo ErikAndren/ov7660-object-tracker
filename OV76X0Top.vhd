@@ -27,14 +27,14 @@ entity OV76X0 is
 end entity;
 
 architecture rtl of OV76X0 is
-	constant SccbAddrW : positive := 7;
+	constant SccbAddrW : positive := 8;
 	constant SccbDataW : positive := 8;
 
 	signal AsyncRst : bit1;
 	signal LcdDisp : word(bits(10**Displays)-1 downto 0);
 	signal Btn1Stab, Btn2Stab : bit1;
 	signal SccbData : word(SccbDataW-1 downto 0);
-	signal SccbRe : bit1;
+	signal SccbRe   : bit1;
 	signal SccbAddr : word(SccbAddrW-1 downto 0);
 	signal PllClk_i : bit1;
 begin
@@ -77,6 +77,8 @@ begin
 	);
 	
 	LcdDisp <= xt0(SccbData, LcdDisp'length);
+	--LcdDisp <= xt0(SccbAddr, LcdDisp'length);
+	
 	SccbM : entity work.SccbMaster
 	generic map (
 		ClkFreq => Freq
@@ -102,7 +104,7 @@ begin
 		RstN => ASyncRstN,
 		--
 		Addr => SccbAddr,
-		Re => SccbRe,
+		Re   => SccbRe,
 		--
 		IncAddr => Btn2Stab,
 		DecAddr => Btn1Stab
