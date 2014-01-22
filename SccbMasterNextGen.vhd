@@ -48,6 +48,7 @@ architecture fpga of SccbMaster is
 	signal Re_N, Re_D : bit1;
 	signal Ack_N, Ack_D : bit1;
 	signal ClkGate_N, ClkGate_D : bit1;
+	signal Addr_N, Addr_D : word(8-1 downto 0);
 	
 	type SccbStates is (IDLE,
                        WRITE_PHASE_1, WRITE_PHASE_2, WRITE_PHASE_3, 
@@ -64,7 +65,8 @@ begin
 			Re_D <= '0';
 			LocStateCnt_D <= (others => '0');
 			ClkGate_D <= '1';
-			Ack_D <= '0';
+			Ack_D <= '1';
+			Addr_D <= (others => '0');
 		elsif rising_edge(Clk) then
 			ClkCnt_D  <= ClkCnt_N;
 			ClkFlop_D <= ClkFlop_N;
@@ -73,6 +75,7 @@ begin
 			LocStateCnt_D <= LocStateCnt_N;
 			ClkGate_D <= ClkGate_N;
 			Ack_D <= Ack_N;
+			Addr_D <= Addr_N;
 		end if;
 	end process;
 	
@@ -80,7 +83,7 @@ begin
 	Valid <= Ack_D;
 	DataFromSccb <= (others => '0');
 
-	FSMAsync : process (ClkCnt_D, ClkFlop_D, We, Re, Re_D, LocStateCnt_D, ClkGate_D, Ack_D, SccbState_D, SIO_D)
+	FSMAsync : process (ClkCnt_D, ClkFlop_D, We, Re, Re_D, LocStateCnt_D, ClkGate_D, Ack_D, SccbState_D, SIO_D, Addr_D)
 		variable SccbEvent : boolean;
 	begin		
 		ClkFlop_N <= ClkFlop_D;
@@ -91,7 +94,8 @@ begin
 		LocStateCnt_N <= LocStateCnt_D;
 		SIO_D <= 'Z';
 		ClkGate_N <= ClkGate_D;
-		Ack_N <= Ack_D;
+		Ack_N  <= Ack_D;
+		Addr_N <= Addr_D;
 
 		if (ClkCnt_D = ClkWrap) then
 			ClkCnt_N  <= (others => '0');
@@ -118,51 +122,52 @@ begin
 			case LocStateCnt_D is
 			when "0000" =>
 				SIO_D <= '1';
-				
+
 			when "0001" =>
 				SIO_D <= '1';
-				
+
 			when "0010" =>
 				SIO_D <= '0';
-			
+
 			when "0011" =>
 				SIO_D <= DeviceAddr(7);
 				ClkGate_N <= '0';
-				
+
 			when "0100" =>
 				SIO_D <= DeviceAddr(6);
-				
+
 			when "0101" =>
 				SIO_D <= DeviceAddr(5);
-				
+
 			when "0110" =>
 				SIO_D <= DeviceAddr(4);
 			
 			when "0111" =>
 				SIO_D <= DeviceAddr(3);
-				
+
 			when "1000" =>
 				SIO_D <= DeviceAddr(2);
-				
+
 			when "1001" =>
 				SIO_D <= DeviceAddr(1);
-			
+
 			when "1010" =>
 				SIO_D <= WriteBit;
-				
+
 			when "1011" =>
 				SIO_D <= '0'; -- N/A
-			
+
 			when "1100" =>
 				Ack_N <= SIO_D;
 			
 			when others =>
 				SIO_D <= '0';
+
 			end case;
 	
 			if SccbEvent then
 				LocStateCnt_N <= LocStateCnt_D + 1;
-				if (LocStateCnt_D >= 12) then
+				if (LocStateCnt_D >= 13) then
 					SccbState_N <= IDLE;
 					LocStateCnt_N <= (others => '0');
 				end if;
