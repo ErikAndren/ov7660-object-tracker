@@ -46,13 +46,14 @@ architecture fpga of SccbMaster is
 	signal LocStateCnt_N, LocStateCnt_D : word(4-1 downto 0);
 	
 	signal Re_N, Re_D : bit1;
-	signal Ack_N, Ack_D : bit1;
+	signal Ack_N, Ack_D : word3;
 	signal ClkGate_N, ClkGate_D : bit1;
 	signal Addr_N, Addr_D : word(8-1 downto 0);
+	signal OpenClkGate_N, OpenClkGate_D : bit1;
 	
 	type SccbStates is (IDLE,
                        WRITE_PHASE_1, WRITE_PHASE_2, WRITE_PHASE_3, 
-                       READ_PHASE_0, READ_PHASE_2);
+                       READ_PHASE_1, READ_PHASE_2);
 	signal SccbState_N, SccbState_D : SccbStates; 
 	
 begin		
@@ -65,8 +66,9 @@ begin
 			Re_D <= '0';
 			LocStateCnt_D <= (others => '0');
 			ClkGate_D <= '1';
-			Ack_D <= '1';
+			Ack_D <= (others => '1');
 			Addr_D <= (others => '0');
+			OpenClkGate_D <= '0';
 		elsif rising_edge(Clk) then
 			ClkCnt_D  <= ClkCnt_N;
 			ClkFlop_D <= ClkFlop_N;
@@ -76,14 +78,15 @@ begin
 			ClkGate_D <= ClkGate_N;
 			Ack_D <= Ack_N;
 			Addr_D <= Addr_N;
+			OpenClkGate_D <= OpenClkGate_N;
 		end if;
 	end process;
 	
 	SIO_C <= ClkFlop_D when ClkGate_D = '0' else '1';
-	Valid <= Ack_D;
+	Valid <= Ack_D(0);
 	DataFromSccb <= (others => '0');
 
-	FSMAsync : process (ClkCnt_D, ClkFlop_D, We, Re, Re_D, LocStateCnt_D, ClkGate_D, Ack_D, SccbState_D, SIO_D, Addr_D)
+	FSMAsync : process (ClkCnt_D, ClkFlop_D, We, Re, Re_D, LocStateCnt_D, ClkGate_D, Ack_D, SccbState_D, SIO_D, Addr_D, Addr, OpenClkGate_D)
 		variable SccbEvent : boolean;
 	begin		
 		ClkFlop_N <= ClkFlop_D;
@@ -96,13 +99,18 @@ begin
 		ClkGate_N <= ClkGate_D;
 		Ack_N  <= Ack_D;
 		Addr_N <= Addr_D;
+		OpenClkGate_N <= OpenClkGate_D;
 
 		if (ClkCnt_D = ClkWrap) then
 			ClkCnt_N  <= (others => '0');
 			ClkFlop_N <= not ClkFlop_D;
+			if OpenClkGate_D = '1' then
+				OpenClkGate_N <= '0';
+				ClkGate_N <= '0';
+			end if;
 		end if;
 		
-		if (ClkCnt_D = DataWrap) then
+		if (ClkFlop_D = '0' and ClkCnt_D = DataWrap) then
 			SccbEvent := true;
 		end if;
 
@@ -113,7 +121,8 @@ begin
 			ClkGate_N <= '1';
 
 			if (Re = '1') then
-				Ack_N <= '0';
+				ClkCnt_N <= (others => '0');
+				Addr_N <= Addr;
 				SccbState_N <= WRITE_PHASE_1;
 				Re_N <= '1';
 			end if;
@@ -128,11 +137,11 @@ begin
 
 			when "0010" =>
 				SIO_D <= '0';
+				OpenClkGate_N <= '1';
 
 			when "0011" =>
 				SIO_D <= DeviceAddr(7);
-				ClkGate_N <= '0';
-
+				
 			when "0100" =>
 				SIO_D <= DeviceAddr(6);
 
@@ -155,11 +164,9 @@ begin
 				SIO_D <= WriteBit;
 
 			when "1011" =>
-				SIO_D <= '0'; -- N/A
-
-			when "1100" =>
-				Ack_N <= SIO_D;
-			
+				-- SIO_D <= '0'; -- N/A
+				Ack_N(0) <= SIO_D;
+	
 			when others =>
 				SIO_D <= '0';
 
@@ -167,12 +174,56 @@ begin
 	
 			if SccbEvent then
 				LocStateCnt_N <= LocStateCnt_D + 1;
-				if (LocStateCnt_D >= 13) then
+				if (LocStateCnt_D > "1011") then
 					SccbState_N <= IDLE;
 					LocStateCnt_N <= (others => '0');
 				end if;
 			end if;
 			
+		when WRITE_PHASE_2 =>
+			case LocStateCnt_D is
+			when "0000" =>
+				SIO_D <= Addr_D(7);
+			
+			when "0001" =>
+				SIO_D <= Addr_D(6);
+				
+			when "0010" =>
+				SIO_D <= Addr_D(5);
+				
+			when "0011" =>
+				SIO_D <= Addr_D(4);
+				
+			when "0100" =>
+				SIO_D <= Addr_D(3);
+				
+			when "0101" =>
+				SIO_D <= Addr_D(2);
+				
+			when "0110" =>
+				SIO_D <= Addr_D(1);
+				
+			when "0111" =>
+				SIO_D <= Addr_D(0);
+				
+			when "1000" =>
+				Ack_N(1) <= SIO_D;
+	
+			when others =>
+				SIO_D <= '0';
+
+			end case;
+			
+			if SccbEvent then 
+				if LocStateCnt_D > "1000" then
+					if Re_D = '1' then
+						SccbState_N <= READ_PHASE_1;
+					else
+						SccbState_N <= WRITE_PHASE_2;
+					end if;
+				end if;
+			end if;
+				
 		when others =>
 			null;
 			
