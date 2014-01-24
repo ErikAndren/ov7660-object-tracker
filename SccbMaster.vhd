@@ -19,7 +19,7 @@ entity SccbMaster is
 		Addr         : in word(AddrW-1 downto 0);
 		We           : in bit1;
 		Re           : in bit1;
-		DataToSccb   : in word(DataW-1 downto 0);
+		Data         : in word(DataW-1 downto 0);
 		DataFromSccb : out word(DataW-1 downto 0);
 		Valid        : out bit1;
 		--
@@ -30,10 +30,10 @@ end entity;
 
 architecture fpga of SccbMaster is
 	-- 7 bit, OV7670 W:0x42, R:0x43
-	constant DeviceAddr : word(7-1 downto 0) := "0100001";
+	constant DeviceAddr : word(8-1 downto 0) := "01000010";
 	
-	-- FIXME: This is hard coded to 25 Mhz freq.
-	constant ClkWrap    : positive := 250;
+	constant SccbClkFreq : positive := 100000;
+	constant ClkWrap    : positive := ((ClkFreq / SccbClkFreq) / 2) -1;
 	-- Data is to be output 90 degrees before 
 	constant DataWrap   : positive := ClkWrap / 2;
 	
@@ -69,7 +69,7 @@ architecture fpga of SccbMaster is
 	end component;
 	
 begin	
-	data_i <= Addr & DataToSccb;
+	data_i <= Addr & Data;
 	
 	SccbM : SCCBCtrl
 	port map (
@@ -78,11 +78,11 @@ begin
 		--
 		sccb_clk_i => ClkFlop_D,
 		data_pulse_i => DataPulse,
-		addr_i => "01000010", -- 0x42, OV7660
-		data_i => data_i,
+		addr_i => DeviceAddr,
+		data_i => x"0911",
 		data_o => DataFromSccb,
-		rw_i => rw_i_d,
-		start_i => Busy_D,
+		rw_i => '1',
+		start_i => Busy_N,
 		ack_error_o => ack_err,
 		done_o => trans_done,
 		sioc_o => SIO_C,
@@ -96,15 +96,15 @@ begin
 		if Rst_N = '0' then
 			ClkCnt_D  <= (others => '0');
 			ClkFlop_D <= '0';
-			Busy_D <= '0';
-			rw_i_d <= '0';
-			re_d <= '0';
+			Busy_D    <= '0';
+			rw_i_d    <= '0';
+			re_d      <= '0';
 		elsif rising_edge(Clk) then
 			ClkCnt_D  <= ClkCnt_N;
 			ClkFlop_D <= ClkFlop_N;
-			Busy_D <= Busy_N;
-			rw_i_d <= rw_i_n;
-			re_d <= re_n;
+			Busy_D    <= Busy_N;
+			rw_i_d    <= rw_i_n;
+			re_d      <= re_n;
 		end if;
 	end process;
 
@@ -114,19 +114,19 @@ begin
 	begin		
 		ClkFlop_N <= ClkFlop_D;
 		ClkCnt_N  <= ClkCnt_D + 1;
-		Busy_N <= Busy_D;
-		rw_i_n <= rw_i_d;
-		re_n <= re_d;
+		Busy_N    <= Busy_D;
+		rw_i_n    <= rw_i_d;
+		re_n      <= re_d;
 		
 		if re = '1' then
 			re_n <= '1';
-		end if;	
+		end if;
 
 		if (ClkCnt_D = ClkWrap) then
 			ClkCnt_N  <= (others => '0');
 			ClkFlop_N <= not ClkFlop_D;
 		end if;
-		
+
 		if DataPulse = '1' then
 			if ((re_d = '1') and Busy_D = '0') then
 				Busy_N <= '1';
