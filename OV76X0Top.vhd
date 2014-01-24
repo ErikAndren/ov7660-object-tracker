@@ -33,11 +33,11 @@ architecture rtl of OV76X0 is
 	signal AsyncRst : bit1;
 	signal LcdDisp : word(bits(10**Displays)-1 downto 0);
 	signal Btn1Stab, Btn2Stab : bit1;
-	signal SccbData : word(SccbDataW-1 downto 0);
+	signal SccbData, DispData : word(SccbDataW-1 downto 0);
 	signal SccbRe   : bit1;
+	signal SccbWe   : bit1;
 	signal SccbAddr : word(SccbAddrW-1 downto 0);
 	signal PllClk_i : bit1;
-
 
 begin
 	AsyncRst <= not AsyncRstN;
@@ -74,12 +74,12 @@ begin
 	--
 	Data => LcdDisp,
 	--
-	Segments => Segments,
+	Segments(7-1 downto 0) => Segments(7-1 downto 0),
 	Display  => Display
 	);
 	
-	LcdDisp <= xt0(SccbData, LcdDisp'length);
-	--LcdDisp <= xt0(SccbAddr, LcdDisp'length);
+	--LcdDisp <= xt0(SccbData, LcdDisp'length);
+	LcdDisp <= xt0(SccbAddr, LcdDisp'length);
 	
 	SccbM : entity work.SccbMaster
 	generic map (
@@ -90,11 +90,11 @@ begin
 		Rst_N        => AsyncRstN,
 		--
 		Addr         => SccbAddr,
-		We           => '0',
+		We           => SccbWe,
 		Re           => SccbRe,
-		DataToSccb   => (others => '0'),
-		DataFromSccb => SccbData,
-		Valid        => open,
+		Data         => SccbData,
+		DataFromSccb => DispData,
+		Valid        => Segments(7),
 		--
 		SIO_C        => SIO_C,
 		SIO_D        => SIO_D
@@ -107,6 +107,8 @@ begin
 		--
 		Addr => SccbAddr,
 		Re   => SccbRe,
+		We   => SccbWe,
+		Data => SccbData,
 		--
 		IncAddr => Btn2Stab,
 		DecAddr => Btn1Stab
