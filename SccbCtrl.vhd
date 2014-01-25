@@ -5,7 +5,7 @@ use ieee.std_logic_unsigned.all;
 
 use work.Types.all;
 
-entity SccbCtrlVhd is
+entity SccbCtrl is
 	port (
 		clk_i        : in bit1;
 		rst_i        : in bit1;
@@ -23,7 +23,7 @@ entity SccbCtrlVhd is
 	);
 end entity;	
 
-architecture fpga of SccbCtrlVhd is
+architecture fpga of SccbCtrl is
 	signal sccb_stm_clk : bit1;
 	signal stm : word(7-1 downto 0);
 	signal bit_out : bit1;

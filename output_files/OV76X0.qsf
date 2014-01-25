@@ -77,12 +77,10 @@ set_location_assignment PIN_110 -to Segments[0]
 
 set_global_assignment -name USE_CONFIGURATION_DEVICE ON
 set_global_assignment -name RESERVE_ALL_UNUSED_PINS "AS INPUT TRI-STATED"
-set_global_assignment -name RESERVE_ALL_UNUSED_PINS_NO_OUTPUT_GND "AS INPUT TRI-STATED"
 set_location_assignment PIN_80 -to SIO_C
 set_location_assignment PIN_76 -to SIO_D
 set_location_assignment PIN_145 -to Button1
 set_location_assignment PIN_146 -to Button2
-set_global_assignment -name VERILOG_FILE "../../xula-lib-verilog/camera/SCCBCtrl.v"
 set_global_assignment -name VHDL_FILE ../../Lib/ResetSync.vhd
 set_global_assignment -name VHDL_FILE ../tb.vhd
 set_global_assignment -name VHDL_FILE ../SccbCtrl.vhd
@@ -97,4 +95,10 @@ set_global_assignment -name VHDL_FILE ../../Lib/BcdPack.vhd
 set_global_assignment -name VHDL_FILE ../../Lib/BcdDisp.vhd
 set_global_assignment -name QIP_FILE Pll.qip
 set_global_assignment -name SDC_FILE OV76X0.sdc
+set_global_assignment -name TIMEQUEST_MULTICORNER_ANALYSIS OFF
+set_global_assignment -name SYNTH_TIMING_DRIVEN_SYNTHESIS OFF
+set_global_assignment -name OPTIMIZE_HOLD_TIMING "IO PATHS AND MINIMUM TPD PATHS"
+set_global_assignment -name OPTIMIZE_MULTI_CORNER_TIMING ON
+set_global_assignment -name OPTIMIZE_POWER_DURING_FITTING OFF
+set_global_assignment -name FITTER_EFFORT "FAST FIT"
 set_instance_assignment -name PARTITION_HIERARCHY root_partition -to | -section_id Top

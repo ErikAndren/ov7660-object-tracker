@@ -46,26 +46,9 @@ architecture fpga of SccbMaster is
 	signal AddrData : word(16-1 downto 0);
 	signal StartTrans : bit1;
 	
-	component SCCBCtrl
-	port (
-		clk_i : in bit1;
-		rst_i : in bit1;
-		sccb_clk_i : in bit1;
-		data_pulse_i : in bit1;
-		addr_i : in word(8-1 downto 0);
-		data_i : in word(16-1 downto 0);
-		data_o : out word(8-1 downto 0);
-		rw_i : in bit1;
-		start_i : in bit1;
-		ack_error_o : out bit1;
-		done_o : out bit1;
-		sioc_o : out bit1;
-		siod_io : inout bit1
-	);
-	end component;
 	
 begin	
-	SccbM : SCCBCtrl
+	SccbM : entity work.SCCBCtrl
 	port map (
 		clk_i        => Clk,
 		rst_i        => Rst_N,
