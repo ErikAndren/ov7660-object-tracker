@@ -39,16 +39,17 @@ architecture fpga of SccbMaster is
 	
 	signal ClkCnt_N, ClkCnt_D         : word(bits(ClkWrap)-1 downto 0);
 	signal ClkFlop_N, ClkFlop_D       : bit1;
-	
-	signal re_n, re_d : bit1;
-	
+	--
+	signal ReWe : bit1;
 	signal DataPulse : bit1;
-	signal rw_i_n, rw_i_d : bit1;
-	signal Busy_N, Busy_D : bit1;
+	--
 	signal data_i : word(16-1 downto 0);
 	signal valid_i : bit1;
-	signal trans_done : bit1;
+	signal TransDone : bit1;
 	signal ack_err : bit1;
+	--
+	signal AddrData : word(16-1 downto 0);
+	signal StartTrans : bit1;
 	
 	component SCCBCtrl
 	port (
@@ -69,74 +70,59 @@ architecture fpga of SccbMaster is
 	end component;
 	
 begin	
-	data_i <= Addr & Data;
-	
 	SccbM : SCCBCtrl
 	port map (
-		clk_i => Clk,
-		rst_i => Rst_N,
+		clk_i        => Clk,
+		rst_i        => Rst_N,
 		--
-		sccb_clk_i => ClkFlop_D,
+		sccb_clk_i   => ClkFlop_D,
 		data_pulse_i => DataPulse,
-		addr_i => DeviceAddr,
-		data_i => x"0911",
-		data_o => DataFromSccb,
-		rw_i => '1',
-		start_i => Busy_N,
-		ack_error_o => ack_err,
-		done_o => trans_done,
-		sioc_o => SIO_C,
-		siod_io => SIO_D
+		addr_i       => DeviceAddr,
+		data_i       => AddrData,
+		data_o       => DataFromSccb,
+		rw_i         => ReWe,
+		start_i      => StartTrans,
+		ack_error_o  => ack_err,
+		done_o       => TransDone,
+		sioc_o       => SIO_C,
+		siod_io      => SIO_D
+	);
+	
+	OV7660I : entity work.OV7660Init
+	port map (
+		Clk       => Clk,
+		Rst_N     => Rst_N,
+		--
+		NextInst  => TransDone,
+		--
+		We        => ReWe,
+		Start     => StartTrans,
+		AddrData  => AddrData
 	);
 	
 	valid <= not ack_err;
 	
-	ClkDivSync : process (Clk, Rst_N)
+	FSMSync : process (Clk, Rst_N)
 	begin
 		if Rst_N = '0' then
 			ClkCnt_D  <= (others => '0');
 			ClkFlop_D <= '0';
-			Busy_D    <= '0';
-			rw_i_d    <= '0';
-			re_d      <= '0';
 		elsif rising_edge(Clk) then
 			ClkCnt_D  <= ClkCnt_N;
 			ClkFlop_D <= ClkFlop_N;
-			Busy_D    <= Busy_N;
-			rw_i_d    <= rw_i_n;
-			re_d      <= re_n;
 		end if;
 	end process;
 
 	DataPulse <= '1' when ClkFlop_D = '0' and ClkCnt_D = DataWrap else '0';
 	
-	FSMAsync : process (ClkCnt_D, ClkFlop_D, trans_done, Busy_D, We, Re, rw_i_d, DataPulse, re_d)
+	FSMAsync : process (ClkCnt_D, ClkFlop_D)
 	begin		
 		ClkFlop_N <= ClkFlop_D;
 		ClkCnt_N  <= ClkCnt_D + 1;
-		Busy_N    <= Busy_D;
-		rw_i_n    <= rw_i_d;
-		re_n      <= re_d;
-		
-		if re = '1' then
-			re_n <= '1';
-		end if;
 
 		if (ClkCnt_D = ClkWrap) then
 			ClkCnt_N  <= (others => '0');
 			ClkFlop_N <= not ClkFlop_D;
-		end if;
-
-		if DataPulse = '1' then
-			if ((re_d = '1') and Busy_D = '0') then
-				Busy_N <= '1';
-				rw_i_n <= We;
-			end if;
-
-			if (Busy_D = '1' and trans_done = '1') then
-				Busy_N <= '0';
-			end if;
-			re_n <= '0';
 		end if;
 	end process;
 end architecture;

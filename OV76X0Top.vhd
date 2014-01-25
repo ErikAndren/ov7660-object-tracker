@@ -74,7 +74,7 @@ begin
 	--
 	Data => LcdDisp,
 	--
-	Segments(7-1 downto 0) => Segments(7-1 downto 0),
+	Segments => Segments,
 	Display  => Display
 	);
 	
@@ -94,12 +94,12 @@ begin
 		Re           => SccbRe,
 		Data         => SccbData,
 		DataFromSccb => DispData,
-		Valid        => Segments(7),
+		Valid        => open,
 		--
 		SIO_C        => SIO_C,
 		SIO_D        => SIO_D
 	);
-
+	
 	SccbReader : entity work.SccbAddrReader
 	port map (
 		Clk => PllClk_i,
