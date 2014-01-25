@@ -70,12 +70,12 @@ begin
 	   Freq => Freq
 	)
 	port map (
-	Clk => PllClk_i,
-	--
-	Data => LcdDisp,
-	--
-	Segments => Segments,
-	Display  => Display
+		Clk => PllClk_i,
+		--
+		Data => LcdDisp,
+		--
+		Segments => Segments,
+		Display  => Display
 	);
 	
 	--LcdDisp <= xt0(SccbData, LcdDisp'length);
