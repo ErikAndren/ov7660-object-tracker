@@ -57,7 +57,6 @@ set_global_assignment -name PARTITION_COLOR 16764057 -section_id Top
 set_global_assignment -name STRATIX_DEVICE_IO_STANDARD "3.3-V LVTTL"
 set_location_assignment PIN_23 -to Clk
 set_location_assignment PIN_147 -to AsyncRstN
-set_location_assignment PIN_43 -to PllClk
 set_location_assignment PIN_135 -to Display[7]
 set_location_assignment PIN_134 -to Display[6]
 set_location_assignment PIN_133 -to Display[5]
@@ -82,7 +81,6 @@ set_location_assignment PIN_60 -to SIO_D
 set_location_assignment PIN_145 -to Button1
 set_location_assignment PIN_146 -to Button2
 set_global_assignment -name VHDL_FILE ../../Lib/ResetSync.vhd
-set_global_assignment -name VHDL_FILE ../tb.vhd
 set_global_assignment -name VHDL_FILE ../SccbCtrl.vhd
 set_global_assignment -name VHDL_FILE ../OV7660Init.vhd
 set_global_assignment -name VHDL_FILE ../SccbMaster.vhd
@@ -101,4 +99,8 @@ set_global_assignment -name OPTIMIZE_HOLD_TIMING "IO PATHS AND MINIMUM TPD PATHS
 set_global_assignment -name OPTIMIZE_MULTI_CORNER_TIMING ON
 set_global_assignment -name OPTIMIZE_POWER_DURING_FITTING OFF
 set_global_assignment -name FITTER_EFFORT "FAST FIT"
+set_location_assignment PIN_59 -to VSYNC
+set_location_assignment PIN_58 -to HREF
+set_location_assignment PIN_57 -to PCLK
+set_location_assignment PIN_43 -to XCLK
 set_instance_assignment -name PARTITION_HIERARCHY root_partition -to | -section_id Top
