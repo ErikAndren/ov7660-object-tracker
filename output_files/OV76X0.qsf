@@ -57,7 +57,7 @@ set_global_assignment -name PARTITION_COLOR 16764057 -section_id Top
 set_global_assignment -name STRATIX_DEVICE_IO_STANDARD "3.3-V LVTTL"
 set_location_assignment PIN_23 -to Clk
 set_location_assignment PIN_147 -to AsyncRstN
-set_location_assignment PIN_47 -to PllClk
+set_location_assignment PIN_43 -to PllClk
 set_location_assignment PIN_135 -to Display[7]
 set_location_assignment PIN_134 -to Display[6]
 set_location_assignment PIN_133 -to Display[5]
@@ -77,8 +77,8 @@ set_location_assignment PIN_110 -to Segments[0]
 
 set_global_assignment -name USE_CONFIGURATION_DEVICE ON
 set_global_assignment -name RESERVE_ALL_UNUSED_PINS "AS INPUT TRI-STATED"
-set_location_assignment PIN_80 -to SIO_C
-set_location_assignment PIN_76 -to SIO_D
+set_location_assignment PIN_61 -to SIO_C
+set_location_assignment PIN_60 -to SIO_D
 set_location_assignment PIN_145 -to Button1
 set_location_assignment PIN_146 -to Button2
 set_global_assignment -name VHDL_FILE ../../Lib/ResetSync.vhd
