@@ -19,6 +19,9 @@ entity OV7660Init is
 end entity;	
 
 architecture fpga of OV7660Init is
+	constant COM2 : word(8-1 downto 0) := x"09";
+
+
 	constant NbrOfInst : positive := 1;
 	signal InstPtr_N, InstPtr_D : word(bits(NbrOfInst)-1 downto 0);
 	signal Delay_N, Delay_D : word(16-1 downto 0);
@@ -50,7 +53,7 @@ begin
 		
 			case InstPtr_D is
 			when "0" =>
-				AddrData <= x"0911";
+				AddrData <= COM2 & x"11"; -- enable soft sleep
 				We       <= '1';
 				Start    <= '1';
 
