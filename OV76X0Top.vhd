@@ -30,7 +30,6 @@ architecture rtl of OV76X0 is
 	constant SccbAddrW : positive := 8;
 	constant SccbDataW : positive := 8;
 
-	signal AsyncRst : bit1;
 	signal LcdDisp : word(bits(10**Displays)-1 downto 0);
 	signal Btn1Stab, Btn2Stab : bit1;
 	signal SccbData, DispData : word(SccbDataW-1 downto 0);
@@ -38,17 +37,24 @@ architecture rtl of OV76X0 is
 	signal SccbWe   : bit1;
 	signal SccbAddr : word(SccbAddrW-1 downto 0);
 	signal PllClk_i : bit1;
+	signal RstN : bit1;
 
 begin
-	AsyncRst <= not AsyncRstN;
 
 	Pll : entity work.Pll
 	port map (
-		areset => AsyncRst,
 		inclk0 => Clk,
-		c0 => PllClk_i
+		c0     => PllClk_i
 	);
 	PllClk <= PllClk_i;
+	
+	RstSync : entity work.ResetSync
+	port map (
+		AsyncRst => AsyncRstN,
+		Clk      => PllClk_i,
+		--
+		Rst_N    => RstN
+	);
 	
 	DebBtn1 : entity work.Debounce
 	port map (
@@ -71,6 +77,7 @@ begin
 	)
 	port map (
 		Clk => PllClk_i,
+		RstN => AsyncRstN,
 		--
 		Data => LcdDisp,
 		--
@@ -79,7 +86,7 @@ begin
 	);
 	
 	--LcdDisp <= xt0(SccbData, LcdDisp'length);
-	LcdDisp <= xt0(SccbAddr, LcdDisp'length);
+	LcdDisp <= xt0(x"ADBEEF", LcdDisp'length);
 	
 	SccbM : entity work.SccbMaster
 	generic map (
@@ -87,31 +94,12 @@ begin
 	)
 	port map (
 		Clk          => PllClk_i,
-		Rst_N        => AsyncRstN,
+		Rst_N        => RstN,
 		--
-		Addr         => SccbAddr,
-		We           => SccbWe,
-		Re           => SccbRe,
-		Data         => SccbData,
-		DataFromSccb => DispData,
-		Valid        => open,
+		DataFromSccb => SccbData,
 		--
 		SIO_C        => SIO_C,
 		SIO_D        => SIO_D
-	);
-	
-	SccbReader : entity work.SccbAddrReader
-	port map (
-		Clk => PllClk_i,
-		RstN => ASyncRstN,
-		--
-		Addr => SccbAddr,
-		Re   => SccbRe,
-		We   => SccbWe,
-		Data => SccbData,
-		--
-		IncAddr => Btn2Stab,
-		DecAddr => Btn1Stab
 	);
 	
 end architecture rtl;

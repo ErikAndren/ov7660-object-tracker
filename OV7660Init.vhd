@@ -10,7 +10,7 @@ entity OV7660Init is
 		Clk          : in bit1;
 		Rst_N        : in bit1;
 		--
-		NextInst         : in bit1;
+		NextInst     : in bit1;
 		--
 		We           : out bit1;
 		Start        : out bit1;
@@ -20,17 +20,23 @@ end entity;
 
 architecture fpga of OV7660Init is
 	constant COM2 : word(8-1 downto 0) := x"09";
-
-
 	constant NbrOfInst : positive := 1;
-	signal InstPtr_N, InstPtr_D : word(bits(NbrOfInst)-1 downto 0);
+	
+	signal InstPtr_N, InstPtr_D : word(4-1 downto 0);
 	signal Delay_N, Delay_D : word(16-1 downto 0);
 begin	
 	SyncProc : process (Clk, Rst_N)
 	begin
 		if Rst_N = '0' then
 			InstPtr_D <= (others => '0');
-			Delay_D   <= (others => '0');
+			
+			if Simulation then
+				Delay_D   <= "1111111111111100";
+			end if;
+				
+			if Synthesis then
+				Delay_D <= (others => '0');
+			end if;
 		elsif rising_edge(Clk) then
 			InstPtr_D <= InstPtr_N;
 			Delay_D <= Delay_N;
@@ -52,7 +58,7 @@ begin
 			end if;
 		
 			case InstPtr_D is
-			when "0" =>
+			when "0000" =>
 				AddrData <= COM2 & x"11"; -- enable soft sleep
 				We       <= '1';
 				Start    <= '1';

@@ -16,12 +16,7 @@ entity SccbMaster is
 		Clk          : in bit1;
 		Rst_N        : in bit1;
 		--
-		Addr         : in word(AddrW-1 downto 0);
-		We           : in bit1;
-		Re           : in bit1;
-		Data         : in word(DataW-1 downto 0);
-		DataFromSccb : out word(DataW-1 downto 0);
-		Valid        : out bit1;
+		DataFromSccb : out word(8-1 downto 0);
 		--
 		SIO_C        : out bit1;
 		SIO_D        : inout bit1
@@ -99,9 +94,7 @@ begin
 		Start     => StartTrans,
 		AddrData  => AddrData
 	);
-	
-	valid <= not ack_err;
-	
+		
 	FSMSync : process (Clk, Rst_N)
 	begin
 		if Rst_N = '0' then

@@ -82,9 +82,12 @@ set_location_assignment PIN_80 -to SIO_C
 set_location_assignment PIN_76 -to SIO_D
 set_location_assignment PIN_145 -to Button1
 set_location_assignment PIN_146 -to Button2
+set_global_assignment -name VERILOG_FILE "../../xula-lib-verilog/camera/SCCBCtrl.v"
+set_global_assignment -name VHDL_FILE ../../Lib/ResetSync.vhd
+set_global_assignment -name VHDL_FILE ../tb.vhd
+set_global_assignment -name VHDL_FILE ../SccbCtrl.vhd
 set_global_assignment -name VHDL_FILE ../OV7660Init.vhd
 set_global_assignment -name VHDL_FILE ../SccbMaster.vhd
-set_global_assignment -name VERILOG_FILE "../../xula-lib-verilog/camera/SCCBCtrl.v"
 set_global_assignment -name VHDL_FILE ../SccbAddrReader.vhd
 set_global_assignment -name VHDL_FILE Pll.vhd
 set_global_assignment -name VHDL_FILE ../OV76X0Top.vhd
