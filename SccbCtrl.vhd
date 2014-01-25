@@ -236,12 +236,12 @@ begin
 					  when others =>
 						  sccb_stm_clk <= '1';
 					  end case;
+					else
+						sccb_stm_clk <= '1';
+						bit_out <= '1'; 
+						done    <= '0';
+						ack_err <= '1'; 
 					end if;
-				else
-					sccb_stm_clk <= '1';
-					bit_out <= '1'; 
-					done    <= '0';
-					ack_err <= '1'; 
 			end if;
 		end if;
 	end process;
