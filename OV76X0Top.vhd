@@ -43,6 +43,7 @@ architecture rtl of OV76X0 is
 	signal SccbAddr : word(SccbAddrW-1 downto 0);
 	signal XCLK_i : bit1;
 	signal RstN : bit1;
+	signal RstNPClk : bit1;
 
 begin
 
@@ -105,6 +106,22 @@ begin
 		--
 		SIO_C        => SIO_C,
 		SIO_D        => SIO_D
+	);
+	
+	CaptPixel : entity work.VideoCapturer
+	generic map (
+		DataW => 4
+	)
+	port map (
+		RstN  => RstN,
+		Clk   => Clk,
+		--
+		PRstN => AsyncRstN,
+		PClk => PCLK,
+		Vsync => VSYNC,
+		HREF => HREF,
+		-- Only use the upper YUV bits for now
+		PixelData => D(8-1 downto 4)
 	);
 	
 end architecture rtl;
