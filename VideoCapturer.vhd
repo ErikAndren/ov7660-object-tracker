@@ -6,7 +6,7 @@ use work.Types.all;
 
 entity VideoCapturer is
 	generic (
-		DataW : positive := 4
+		DataW : positive := 8
 	);
 	port (
 		PRstN : in bit1;
@@ -17,7 +17,10 @@ entity VideoCapturer is
 		--
 		Vsync : in bit1;
 		Href : in bit1;
-		PixelData : in word(DataW-1 downto 0)
+		PixelData : in word(DataW-1 downto 0);
+		--
+		PixelOut : out word(DataW-1 downto 0);
+		PixelVal : out bit1
 	);
 
 end entity;

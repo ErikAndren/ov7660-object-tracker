@@ -27,7 +27,13 @@ entity OV76X0 is
 	Segments : out word(8-1 downto 0);
 	-- SCCB interface
 	SIO_C : out bit1;
-	SIO_D : inout bit1
+	SIO_D : inout bit1;
+	-- VGA interface
+	VgaRed   : out bit1;
+	VgaGreen : out bit1;
+	VgaBlue  : out bit1;
+	VgaHsync : out bit1;
+	VgaVsync : out bit1
 	);
 end entity;
 
@@ -110,18 +116,66 @@ begin
 	
 	CaptPixel : entity work.VideoCapturer
 	generic map (
-		DataW => 4
+		DataW => D'length
 	)
 	port map (
 		RstN  => RstN,
-		Clk   => Clk,
+		Clk   => XCLK_i,
 		--
 		PRstN => AsyncRstN,
-		PClk => PCLK,
+		PClk  => PCLK,
 		Vsync => VSYNC,
-		HREF => HREF,
-		-- Only use the upper YUV bits for now
-		PixelData => D(8-1 downto 4)
+		HREF  => HREF,
+		PixelData => D
 	);
+	
+	VgaGen : entity work.VgaVhdl
+	generic map (
+		DivideClk => false
+	)
+	port map (
+		Clk   => XCLK_i,
+		--
+		Red   => VgaRed,
+		Green => VgaGreen,
+		Blue  => VgaBlue,
+		HSync => VgaHsync,
+		VSync => VgaVsync
+	);
+	
+
+	-- 262144 words
+	-- Each image is 640x480 = 307200 pixels
+	-- Currently we have 3 bits of display (R, G, B)
+	-- Each image then contains 307200 * 3 = 921600 bits
+	-- That is 57600 words
+	-- Up to 4 images may be stored with this encoding.
+	-- If 2 frames are needed, each image may consume 6 bits per pixel
+	-- This might 
+--	SramCon : entity work.SramController
+--	generic map (
+--		
+--	);
+--	generic map (
+--		AddrW : positive := 18;
+--		DataW : positive := 16
+--	);
+--	port (
+--		Clk    : in bit1;
+--		RstN   : in bit1;
+--		AddrIn : in word(AddrW-1 downto 0);
+--		WrData : in word(DataW-1 downto 0);
+--		RdData : out word(DataW-1 downto 0);
+--		We     : in bit1;
+--		Re     : in bit1;
+--		--
+--		D       : inout word(DataW-1 downto 0);
+--		AddrOut : out word(AddrW-1 downto 0);
+--		CeN     : out bit1;
+--		OeN     : out bit1;
+--		WeN     : out bit1;
+--		UbN     : out bit1;
+--		LbN     : out bit1
+--	);
 	
 end architecture rtl;
