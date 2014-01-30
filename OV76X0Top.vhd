@@ -51,6 +51,7 @@ architecture rtl of OV76X0 is
 	signal RstN : bit1;
 	signal RstNPClk : bit1;
 
+	signal PixelData : word(3-1 downto 0);
 begin
 
 	Pll : entity work.Pll
@@ -121,6 +122,7 @@ begin
 	port map (
 		RstN  => RstN,
 		Clk   => XCLK_i,
+		PixelOut(3-1 downto 0) => PixelData(3-1 downto 0),
 		--
 		PRstN => AsyncRstN,
 		PClk  => PCLK,
@@ -135,6 +137,8 @@ begin
 	)
 	port map (
 		Clk   => XCLK_i,
+		--
+		DataToDisplay => PixelData,
 		--
 		Red   => VgaRed,
 		Green => VgaGreen,

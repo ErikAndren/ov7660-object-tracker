@@ -29,9 +29,9 @@ architecture rtl of VideoCapturer is
 	signal RstNPClk : bit1;
 	
 	-- Constants retrieved from Fig. 6 OV7660 datasheet, ver 1.91
-	constant tPCLK        : positive := 25000000;
-	constant tP           : positive := tPCLK * 2;
-	constant tLINE        : positive := 784 * tP;
+	--constant tPCLK        : positive := 25000000;
+	--constant tP           : positive := tPCLK * 2;
+	--constant tLINE        : positive := 784 * tP;
 	--constant VSYNCLen     : positive := 4 * tLINE;
 	--constant VSYNC_T      : positive := 510 * tLINE;
 	--constant VSYNCtoHREF  : positive := (4 + 11) * tLINE;
