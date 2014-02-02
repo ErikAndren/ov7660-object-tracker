@@ -51,7 +51,7 @@ architecture rtl of OV76X0 is
 	signal RstN : bit1;
 	signal RstNPClk : bit1;
 
-	signal PixelData : word(3-1 downto 0);
+	signal PixelData : word(8-1 downto 0);
 begin
 
 	Pll : entity work.Pll
@@ -122,8 +122,7 @@ begin
 	port map (
 		RstN  => RstN,
 		Clk   => XCLK_i,
-		PixelOut(3-1 downto 0) => PixelData(3-1 downto 0),
-		--
+		PixelOut => PixelData,
 		PRstN => AsyncRstN,
 		PClk  => PCLK,
 		Vsync => VSYNC,
@@ -138,7 +137,8 @@ begin
 	port map (
 		Clk   => XCLK_i,
 		--
-		DataToDisplay => PixelData,
+		DataToDisplay => PixelData(3-1 downto 0),
+		--DataToDisplay(3-1 downto 0) => "101",
 		--
 		Red   => VgaRed,
 		Green => VgaGreen,
@@ -146,7 +146,6 @@ begin
 		HSync => VgaHsync,
 		VSync => VgaVsync
 	);
-	
 
 	-- 262144 words
 	-- Each image is 640x480 = 307200 pixels
