@@ -76,8 +76,8 @@ set_location_assignment PIN_110 -to Segments[0]
 
 set_global_assignment -name USE_CONFIGURATION_DEVICE ON
 set_global_assignment -name RESERVE_ALL_UNUSED_PINS "AS INPUT TRI-STATED"
-set_location_assignment PIN_61 -to SIO_C
-set_location_assignment PIN_60 -to SIO_D
+set_location_assignment PIN_169 -to SIO_C
+set_location_assignment PIN_165 -to SIO_D
 set_location_assignment PIN_145 -to Button1
 set_location_assignment PIN_146 -to Button2
 set_global_assignment -name TIMEQUEST_MULTICORNER_ANALYSIS OFF
@@ -86,8 +86,8 @@ set_global_assignment -name OPTIMIZE_HOLD_TIMING "IO PATHS AND MINIMUM TPD PATHS
 set_global_assignment -name OPTIMIZE_MULTI_CORNER_TIMING ON
 set_global_assignment -name OPTIMIZE_POWER_DURING_FITTING OFF
 set_global_assignment -name FITTER_EFFORT "FAST FIT"
-set_location_assignment PIN_59 -to VSYNC
-set_location_assignment PIN_43 -to XCLK
+set_location_assignment PIN_163 -to VSYNC
+set_location_assignment PIN_151 -to XCLK
 set_global_assignment -name RESERVE_ALL_UNUSED_PINS_NO_OUTPUT_GND "AS INPUT TRI-STATED"
 set_global_assignment -name VHDL_FILE ../../VgaVHDL/VGAVHDL.vhd
 set_global_assignment -name VHDL_FILE ../AsyncFifo.vhd
@@ -106,9 +106,19 @@ set_global_assignment -name VHDL_FILE ../../Lib/BcdDisp.vhd
 set_global_assignment -name QIP_FILE Pll.qip
 set_global_assignment -name SDC_FILE OV76X0.sdc
 set_global_assignment -name QIP_FILE ../AsyncFifo.qip
-set_location_assignment PIN_149 -to VgaBlue
-set_location_assignment PIN_150 -to VgaGreen
-set_location_assignment PIN_152 -to VgaHsync
-set_location_assignment PIN_151 -to VgaRed
-set_location_assignment PIN_161 -to VgaVsync
+set_location_assignment PIN_162 -to VgaBlue
+set_location_assignment PIN_160 -to VgaGreen
+set_location_assignment PIN_164 -to VgaHsync
+set_location_assignment PIN_152 -to VgaRed
+set_location_assignment PIN_168 -to VgaVsync
+set_location_assignment PIN_161 -to HREF
+set_location_assignment PIN_28 -to PCLK
+set_location_assignment PIN_142 -to D[7]
+set_location_assignment PIN_143 -to D[6]
+set_location_assignment PIN_139 -to D[5]
+set_location_assignment PIN_141 -to D[4]
+set_location_assignment PIN_137 -to D[3]
+set_location_assignment PIN_149 -to D[2]
+set_location_assignment PIN_58 -to D[1]
+set_location_assignment PIN_43 -to D[0]
 set_instance_assignment -name PARTITION_HIERARCHY root_partition -to | -section_id Top
