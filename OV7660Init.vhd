@@ -58,10 +58,10 @@ begin
 			end if;
 		
 			case InstPtr_D is
-			when "0000" =>
-				AddrData <= COM2 & x"11"; -- enable soft sleep
-				We       <= '1';
-				Start    <= '1';
+--			when "0000" =>
+--				AddrData <= COM2 & x"11"; -- enable soft sleep
+--				We       <= '1';
+--				Start    <= '1';
 
 			when others =>
 				InstPtr_N <= (others => '1');
