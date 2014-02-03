@@ -135,13 +135,13 @@ begin
 		DataW => D'length
 	)
 	port map (
-		RstN  => RstN,
-		Clk   => XCLK_i,
-		PixelOut => PixelData,
-		PRstN => AsyncRstN,
-		PClk  => PCLK,
-		Vsync => VSYNC,
-		HREF  => HREF,
+		RstN      => RstN,
+		Clk       => XCLK_i,
+		PixelOut  => PixelData,
+		PRstN     => AsyncRstN,
+		PClk      => PCLK,
+		Vsync     => VSYNC,
+		HREF      => HREF,
 		PixelData => D
 	);
 	
