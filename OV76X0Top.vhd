@@ -33,7 +33,15 @@ entity OV76X0 is
 	VgaGreen : out bit1;
 	VgaBlue  : out bit1;
 	VgaHsync : out bit1;
-	VgaVsync : out bit1
+	VgaVsync : out bit1;
+	-- Sram interface
+	SramD    : inout word(16-1 downto 0);
+	SramAddr : out word(18-1 downto 0);
+	SramCeN  : out bit1;
+	SramOeN  : out bit1;
+	SramWeN  : out bit1;
+	SramUbN  : out bit1;
+	SramLbN  : out bit1
 	);
 end entity;
 
@@ -52,6 +60,13 @@ architecture rtl of OV76X0 is
 	signal RstNPClk : bit1;
 
 	signal PixelData : word(8-1 downto 0);
+
+	signal VgaContAddr : word(18-1 downto 0);
+	signal PixelInData : word(16-1 downto 0);
+	signal PixelOutData : word(16-1 downto 0);
+	signal VgaContWe : bit1;
+	signal VgaContRe : bit1;
+	
 begin
 
 	Pll : entity work.Pll
@@ -138,7 +153,6 @@ begin
 		Clk   => XCLK_i,
 		--
 		DataToDisplay => PixelData(3-1 downto 0),
-		--DataToDisplay(3-1 downto 0) => "101",
 		--
 		Red   => VgaRed,
 		Green => VgaGreen,
@@ -155,30 +169,23 @@ begin
 	-- Up to 4 images may be stored with this encoding.
 	-- If 2 frames are needed, each image may consume 6 bits per pixel
 	-- This might 
---	SramCon : entity work.SramController
---	generic map (
---		
---	);
---	generic map (
---		AddrW : positive := 18;
---		DataW : positive := 16
---	);
---	port (
---		Clk    : in bit1;
---		RstN   : in bit1;
---		AddrIn : in word(AddrW-1 downto 0);
---		WrData : in word(DataW-1 downto 0);
---		RdData : out word(DataW-1 downto 0);
---		We     : in bit1;
---		Re     : in bit1;
---		--
---		D       : inout word(DataW-1 downto 0);
---		AddrOut : out word(AddrW-1 downto 0);
---		CeN     : out bit1;
---		OeN     : out bit1;
---		WeN     : out bit1;
---		UbN     : out bit1;
---		LbN     : out bit1
---	);
+	SramCon : entity work.SramController
+	port map (
+		Clk => XCLK_i, -- FIXME: Higher clock will improve performance
+		RstN => RstN,
+		AddrIn => VgaContAddr,
+		WrData => PixelInData,
+		RdData => PixelOutData,
+		We     => VgaContWe,
+		Re     => VgaContRe,
+		--
+		D       => SramD,
+		AddrOut => SramAddr,
+		CeN     => SramCeN,
+		OeN     => SramOeN,
+		WeN     => SramWeN,
+		UbN     => SramUbN,
+		LbN     => SramLbN
+	);
 	
 end architecture rtl;

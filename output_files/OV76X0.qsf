@@ -89,6 +89,42 @@ set_global_assignment -name FITTER_EFFORT "FAST FIT"
 set_location_assignment PIN_163 -to VSYNC
 set_location_assignment PIN_151 -to XCLK
 set_global_assignment -name RESERVE_ALL_UNUSED_PINS_NO_OUTPUT_GND "AS INPUT TRI-STATED"
+set_location_assignment PIN_162 -to VgaBlue
+set_location_assignment PIN_160 -to VgaGreen
+set_location_assignment PIN_164 -to VgaHsync
+set_location_assignment PIN_152 -to VgaRed
+set_location_assignment PIN_168 -to VgaVsync
+set_location_assignment PIN_161 -to HREF
+set_location_assignment PIN_28 -to PCLK
+set_location_assignment PIN_142 -to D[7]
+set_location_assignment PIN_143 -to D[6]
+set_location_assignment PIN_139 -to D[5]
+set_location_assignment PIN_141 -to D[4]
+set_location_assignment PIN_137 -to D[3]
+set_location_assignment PIN_149 -to D[2]
+set_location_assignment PIN_43 -to D[0]
+
+set_location_assignment PIN_41 -to SramAddr[17]
+set_location_assignment PIN_92 -to SramAddr[16]
+set_location_assignment PIN_56 -to SramAddr[15]
+set_location_assignment PIN_57 -to SramAddr[14]
+set_location_assignment PIN_58 -to SramAddr[13]
+set_location_assignment PIN_59 -to SramAddr[12]
+set_location_assignment PIN_60 -to SramAddr[11]
+set_location_assignment PIN_61 -to SramAddr[10]
+set_location_assignment PIN_48 -to SramAddr[9]
+set_location_assignment PIN_47 -to SramAddr[8]
+set_location_assignment PIN_40 -to SramAddr[7]
+set_location_assignment PIN_39 -to SramAddr[6]
+set_location_assignment PIN_37 -to SramAddr[5]
+set_location_assignment PIN_35 -to SramAddr[4]
+set_location_assignment PIN_34 -to SramAddr[3]
+set_location_assignment PIN_33 -to SramAddr[2]
+set_location_assignment PIN_31 -to SramAddr[1]
+set_location_assignment PIN_64 -to SramAddr[0]
+ 
+
+set_global_assignment -name VHDL_FILE "../../SramTest-IS61LV25616AL/SramController.vhd"
 set_global_assignment -name VHDL_FILE ../../VgaVHDL/VGAVHDL.vhd
 set_global_assignment -name VHDL_FILE ../AsyncFifo.vhd
 set_global_assignment -name VHDL_FILE ../VideoCapturer.vhd
@@ -106,19 +142,4 @@ set_global_assignment -name VHDL_FILE ../../Lib/BcdDisp.vhd
 set_global_assignment -name QIP_FILE Pll.qip
 set_global_assignment -name SDC_FILE OV76X0.sdc
 set_global_assignment -name QIP_FILE ../AsyncFifo.qip
-set_location_assignment PIN_162 -to VgaBlue
-set_location_assignment PIN_160 -to VgaGreen
-set_location_assignment PIN_164 -to VgaHsync
-set_location_assignment PIN_152 -to VgaRed
-set_location_assignment PIN_168 -to VgaVsync
-set_location_assignment PIN_161 -to HREF
-set_location_assignment PIN_28 -to PCLK
-set_location_assignment PIN_142 -to D[7]
-set_location_assignment PIN_143 -to D[6]
-set_location_assignment PIN_139 -to D[5]
-set_location_assignment PIN_141 -to D[4]
-set_location_assignment PIN_137 -to D[3]
-set_location_assignment PIN_149 -to D[2]
-set_location_assignment PIN_58 -to D[1]
-set_location_assignment PIN_43 -to D[0]
 set_instance_assignment -name PARTITION_HIERARCHY root_partition -to | -section_id Top
