@@ -122,7 +122,28 @@ set_location_assignment PIN_34 -to SramAddr[3]
 set_location_assignment PIN_33 -to SramAddr[2]
 set_location_assignment PIN_31 -to SramAddr[1]
 set_location_assignment PIN_64 -to SramAddr[0]
- 
+
+set_location_assignment PIN_99 -to SramCeN
+set_location_assignment PIN_90 -to SramD[15]
+set_location_assignment PIN_88 -to SramD[14]
+set_location_assignment PIN_86 -to SramD[13]
+set_location_assignment PIN_82 -to SramD[12]
+set_location_assignment PIN_80 -to SramD[11]
+set_location_assignment PIN_76 -to SramD[10]
+set_location_assignment PIN_74 -to SramD[9]
+set_location_assignment PIN_70 -to SramD[8]
+set_location_assignment PIN_89 -to SramD[7]
+set_location_assignment PIN_87 -to SramD[6]
+set_location_assignment PIN_84 -to SramD[5]
+set_location_assignment PIN_81 -to SramD[4]
+set_location_assignment PIN_77 -to SramD[3]
+set_location_assignment PIN_75 -to SramD[2]
+set_location_assignment PIN_72 -to SramD[1]
+set_location_assignment PIN_69 -to SramD[0]
+set_location_assignment PIN_94 -to SramLbN
+set_location_assignment PIN_96 -to SramOeN
+set_location_assignment PIN_95 -to SramUbN
+set_location_assignment PIN_97 -to SramWeN
 
 set_global_assignment -name VHDL_FILE "../../SramTest-IS61LV25616AL/SramController.vhd"
 set_global_assignment -name VHDL_FILE ../../VgaVHDL/VGAVHDL.vhd
