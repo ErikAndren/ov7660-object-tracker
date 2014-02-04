@@ -113,7 +113,7 @@ begin
 		elsif rising_edge(Clk) then
 			FifoRdVal_D <= FifoRdVal_N;
 		end if;
-	end process;
+	end process;	
 	
 	PixelOut <= RdData;
 end architecture;

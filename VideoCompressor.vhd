@@ -12,7 +12,7 @@ entity VideoCompressor is
 	);
 	port (
 	Clk      : in bit1;
-	Rst_N    : in bit1;
+	RstN    : in bit1;
 	--
 	PixelData : in word(PixelW-1 downto 0);
 	PixelVal  : in bit1;
@@ -27,9 +27,9 @@ architecture rtl of VideoCompressor is
 begin
 	-- Compress data according to usage and resolution
 	-- First stab will simply compress the 8 bit luminance
-	SyncProc : process (Clk, Rst_N)
+	SyncProc : process (Clk, RstN)
 	begin
-		if Rst_N = '0' then
+		if RstN = '0' then
 			DrpCnt_D <= (others => '0');
 		elsif rising_edge(Clk) then
 			DrpCnt_D <= DrpCnt_N;

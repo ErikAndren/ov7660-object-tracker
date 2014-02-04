@@ -60,12 +60,16 @@ architecture rtl of OV76X0 is
 	signal RstNPClk : bit1;
 
 	signal PixelData : word(8-1 downto 0);
-
+	signal PixelVal : bit1;
+	
 	signal VgaContAddr : word(18-1 downto 0);
 	signal PixelInData : word(16-1 downto 0);
 	signal PixelOutData : word(16-1 downto 0);
 	signal VgaContWe : bit1;
 	signal VgaContRe : bit1;
+	
+	signal PixelCompData : word(3-1 downto 0);
+	signal PixelCompVal : bit1;
 	
 begin
 
@@ -137,14 +141,29 @@ begin
 	port map (
 		RstN      => RstN,
 		Clk       => XCLK_i,
+		--
 		PixelOut  => PixelData,
+		PixelVal  => PixelVal,
+		--
 		PRstN     => AsyncRstN,
 		PClk      => PCLK,
 		Vsync     => VSYNC,
 		HREF      => HREF,
 		PixelData => D
 	);
-	
+
+	VideoComp : entity work.VideoCompressor
+	port map (
+		Clk       => XCLK_i,
+		RstN      => RstN,
+		--
+		PixelData => PixelData,
+		PixelVal  => PixelVal,
+		--
+		PixelCompData => PixelCompData,
+		PixelCompVal  => PixelCompVal
+	);
+
 	VgaGen : entity work.VgaVhdl
 	generic map (
 		DivideClk => false
