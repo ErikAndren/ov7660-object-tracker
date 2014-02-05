@@ -73,11 +73,11 @@ begin
 		
 		if PopPixelPack = '1' then
 			ReadBufPtr_N <= ReadBufPtr_D + 1;
-			PackCnt_D(conv_integer(ReadBufPtr_D)) <= (others => '0');
+			PackCnt_N(conv_integer(ReadBufPtr_D)) <= (others => '0');
 		end if;
 	end process;
 
 	PixelPackedVal <= '1' when PackCnt_D(conv_integer(ReadBufPtr_D)) = NbrSegs else '0'; 
-	PixelPacked <= PackCnt_D(conv_integer(ReadBufPtr_D));
+	PixelPacked <= PackedData_D(conv_integer(ReadBufPtr_D));
 
 end architecture rtl;
