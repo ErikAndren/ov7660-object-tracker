@@ -145,6 +145,7 @@ set_location_assignment PIN_96 -to SramOeN
 set_location_assignment PIN_95 -to SramUbN
 set_location_assignment PIN_97 -to SramWeN
 
+set_global_assignment -name VHDL_FILE ../VideoPacker.vhd
 set_global_assignment -name VHDL_FILE ../VideoCompressor.vhd
 set_global_assignment -name VHDL_FILE ../SramArbiter.vhd
 set_global_assignment -name VHDL_FILE "../../SramTest-IS61LV25616AL/SramController.vhd"

@@ -71,6 +71,10 @@ architecture rtl of OV76X0 is
 	signal PixelCompData : word(3-1 downto 0);
 	signal PixelCompVal : bit1;
 	
+	signal SramWriteReq : bit1;
+	
+	signal PixelPopWrite : bit1;
+	
 begin
 
 	Pll : entity work.Pll
@@ -163,22 +167,40 @@ begin
 		PixelCompData => PixelCompData,
 		PixelCompVal  => PixelCompVal
 	);
-
-	VgaGen : entity work.VgaVhdl
-	generic map (
-		DivideClk => false
-	)
+	
+	VideoPack : entity work.VideoPacker
 	port map (
-		Clk   => XCLK_i,
+		Clk            => XCLK_i,
+		RstN           => RstN,
 		--
-		DataToDisplay => PixelData(3-1 downto 0),
+		PixelComp      => PixelCompData,
+		PixelCompVal   => PixelCompVal,
 		--
-		Red   => VgaRed,
-		Green => VgaGreen,
-		Blue  => VgaBlue,
-		HSync => VgaHsync,
-		VSync => VgaVsync
-	);
+		PixelPacked    => PixelInData(15-1 downto 0),
+		PixelPackedVal => SramWriteReq,
+		--
+		PopPixelPack   => PixelPopWrite
+		);
+		
+--	SramArb : entity work.SramArbiter
+--	port map (
+--		RstN => RstN,
+--		Clk => XCLK_i,
+--		--
+--		WriteReq => PixelCompVal,
+--		PopRead => Pix
+--	);
+--	
+--	RstN : in bit1;
+--	Clk      : in bit1;
+--	--
+--	WriteReq : in bit1;
+--	PopWrite : out bit1;
+--	ReadReq : in bit1;
+--	PopRead : out bit1;
+--	--
+--	SramWe : out bit1;
+--	SramRe : out bit1
 
 	-- 262144 words
 	-- Each image is 640x480 = 307200 pixels
@@ -206,5 +228,22 @@ begin
 		UbN     => SramUbN,
 		LbN     => SramLbN
 	);
+	
+	VgaGen : entity work.VgaVhdl
+	generic map (
+		DivideClk => false
+	)
+	port map (
+		Clk   => XCLK_i,
+		--
+		DataToDisplay => PixelData(3-1 downto 0),
+		--
+		Red   => VgaRed,
+		Green => VgaGreen,
+		Blue  => VgaBlue,
+		HSync => VgaHsync,
+		VSync => VgaVsync
+	);
+
 	
 end architecture rtl;
