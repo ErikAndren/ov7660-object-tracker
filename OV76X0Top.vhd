@@ -72,9 +72,9 @@ architecture rtl of OV76X0 is
 	signal PixelCompVal : bit1;
 	
 	signal SramWriteReq : bit1;
-	
 	signal PixelPopWrite : bit1;
-	
+	signal PixelRead : bit1;
+	signal PixelReadPop : bit1;
 begin
 
 	Pll : entity work.Pll
@@ -181,26 +181,22 @@ begin
 		--
 		PopPixelPack   => PixelPopWrite
 		);
+		PixelInData(15) <= '0';
 		
---	SramArb : entity work.SramArbiter
---	port map (
---		RstN => RstN,
---		Clk => XCLK_i,
---		--
---		WriteReq => PixelCompVal,
---		PopRead => Pix
---	);
---	
---	RstN : in bit1;
---	Clk      : in bit1;
---	--
---	WriteReq : in bit1;
---	PopWrite : out bit1;
---	ReadReq : in bit1;
---	PopRead : out bit1;
---	--
---	SramWe : out bit1;
---	SramRe : out bit1
+	SramArb : entity work.SramArbiter
+	port map (
+		RstN => RstN,
+		Clk  => XCLK_i,
+		--
+		WriteReq => PixelCompVal,
+		PopWrite => PixelPopWrite,
+		--
+		ReadReq => PixelRead,
+		PopRead => PixelReadPop,
+		--
+		SramWe =>  VgaContWe,
+		SramRe =>  VgaContRe
+	);
 
 	-- 262144 words
 	-- Each image is 640x480 = 307200 pixels
@@ -244,6 +240,4 @@ begin
 		HSync => VgaHsync,
 		VSync => VgaVsync
 	);
-
-	
 end architecture rtl;
