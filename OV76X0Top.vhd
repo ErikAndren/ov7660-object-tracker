@@ -225,7 +225,7 @@ begin
 		LbN     => SramLbN
 	);
 	
-	VgaGen : entity work.VgaVhdl
+	VgaGen : entity work.VgaGenerator
 	generic map (
 		DivideClk => false
 	)
