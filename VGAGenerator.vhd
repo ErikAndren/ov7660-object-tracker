@@ -13,6 +13,7 @@ entity VGAGenerator is
 	Clk    : in bit1;
 	--
 	DataToDisplay : in word(3-1 downto 0);
+	InView : out bit1;
 	--
 	Red    : out bit1;
 	Green  : out bit1;
@@ -42,7 +43,7 @@ architecture rtl of VGAGenerator is
 	signal hCount_ov : bit1;
 	signal vCount_ov : bit1;
 	--
-	signal dat_act : bit1;
+	signal InView_i : bit1;
 begin
 
 	DivClkGen : if DivideClk = true generate
@@ -84,11 +85,12 @@ begin
 		end if;
 	end process;
 	
-	dat_act <= '1' when ((hcount >= hdat_begin) and (hcount < hdat_end)) and ((vcount >= vdat_begin) and (vcount < vdat_end)) else '0';
+	InView_i <= '1' when ((hcount >= hdat_begin) and (hcount < hdat_end)) and ((vcount >= vdat_begin) and (vcount < vdat_end)) else '0';
+	InView <= InView_i;
 	Hsync <= '1' when hcount > hsync_end else '0';
 	Vsync <= '1' when vcount > vsync_end else '0';
 	
-	Red   <= '0' when dat_act = '0' else DataToDisplay(0);
-	Green <= '0' when dat_act = '0' else DataToDisplay(1);
-	Blue  <= '0' when dat_act = '0' else DataToDisplay(2);
+	Red   <= '0' when InView_i = '0' else DataToDisplay(0);
+	Green <= '0' when InView_i = '0' else DataToDisplay(1);
+	Blue  <= '0' when InView_i = '0' else DataToDisplay(2);
 end architecture rtl;
