@@ -39,6 +39,8 @@ begin
 		SramWe    <= '0';
 		SramRe    <= '0';
 		WaitCnt_N <= WaitCnt_D;
+		PopRead   <= '0';
+		PopWrite  <= '0';
 		
 		if (WaitCnt_D > 0) then
 			WaitCnt_N <= WaitCnt_D - 1;
