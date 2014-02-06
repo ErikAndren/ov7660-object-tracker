@@ -17,6 +17,7 @@ entity SccbMaster is
 		Rst_N        : in bit1;
 		--
 		DataFromSccb : out word(8-1 downto 0);
+		AckErr       : out bit1;
 		--
 		SIO_C        : out bit1;
 		SIO_D        : inout bit1
@@ -47,7 +48,9 @@ architecture fpga of SccbMaster is
 	signal StartTrans : bit1;
 	
 	
-begin	
+begin
+	AckErr <= ack_err;
+	
 	SccbM : entity work.SCCBCtrl
 	port map (
 		clk_i        => Clk,
