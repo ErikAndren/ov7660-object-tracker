@@ -79,7 +79,7 @@ begin
 		
 		if PixelCompVal = '1' then
 			-- Shift up the data
-			PackedData_N(WriteBufPtr) <= PackedData_D(WriteBufPtr)(PackedData_D'high-CompPixelW downto 0) & PixelComp;
+			PackedData_N(WriteBufPtr) <= PackedData_D(WriteBufPtr)(PackedPixelW-CompPixelW downto 0) & PixelComp;
 			PackCnt_N(WriteBufPtr)    <= PackCnt_D(WriteBufPtr) + 1;
 			
 			if (PackCnt_D(WriteBufPtr + 1) = NbrSegs) then 
