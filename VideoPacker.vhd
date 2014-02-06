@@ -52,7 +52,7 @@ begin
 		end if;
 	end process;
 	
-	AsyncProc : process (PackedData_D, PackCnt_D, PixelCompVal, WriteBufPtr_D, ReadBufPtr_D, PopPixelPack)
+	AsyncProc : process (PackedData_D, PackCnt_D, PixelCompVal, WriteBufPtr_D, ReadBufPtr_D, PopPixelPack, PixelComp)
 		variable WriteBufPtr : integer;
 	begin
 		PackedData_N  <= PackedData_D;
