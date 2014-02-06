@@ -65,6 +65,8 @@ architecture rtl of OV76X0 is
 	signal PixelOutData : word(16-1 downto 0);
 	signal VgaContWe : bit1;
 	signal VgaContRe : bit1;
+	signal VgaInView : bit1;
+	signal VgaDispData : word(3-1 downto 0);
 	
 	signal PixelCompData : word(3-1 downto 0);
 	signal PixelCompVal : bit1;
@@ -73,6 +75,9 @@ architecture rtl of OV76X0 is
 	signal PixelPopWrite : bit1;
 	signal PixelRead : bit1;
 	signal PixelReadPop : bit1;
+	
+	signal SramWriteAddr, SramReadAddr : word(SramAddrW-1 downto 0);
+	
 begin
 
 	Pll : entity work.Pll
@@ -185,12 +190,15 @@ begin
 		RstN => RstN,
 		Clk  => XCLK_i,
 		--
+		WriteAddr => SramWriteAddr,
 		WriteReq => PixelCompVal,
 		PopWrite => PixelPopWrite,
 		--
+		ReadAddr => SramReadAddr,
 		ReadReq => PixelRead,
 		PopRead => PixelReadPop,
 		--
+		SramAddr => VgaContAddr,
 		SramWe =>  VgaContWe,
 		SramRe =>  VgaContRe
 	);
@@ -221,6 +229,20 @@ begin
 		LbN     => SramLbN
 	);
 	
+	VideoCont : entity work.VideoController
+	port map (
+		Clk => XCLK_i,
+		RstN => RstN,
+		--
+		ReadSram => PixelRead,
+		SramAddr => SramReadAddr,
+		SramReqPopped => PixelReadPop,
+		SramData => PixelOutData,
+		--
+		InView => VgaInView,
+		DataToDisp => VgaDispData
+	);
+	
 	VgaGen : entity work.VgaGenerator
 	generic map (
 		DivideClk => false
@@ -228,7 +250,8 @@ begin
 	port map (
 		Clk   => XCLK_i,
 		--
-		DataToDisplay => PixelData(3-1 downto 0),
+		DataToDisplay => VgaDispData,
+		InView => VgaInView,
 		--
 		Red   => VgaRed,
 		Green => VgaGreen,
