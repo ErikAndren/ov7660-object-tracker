@@ -71,11 +71,11 @@ architecture rtl of OV76X0 is
 	signal PixelCompData : word(3-1 downto 0);
 	signal PixelCompVal : bit1;
 	
-	signal SramWriteReq : bit1;
 	signal PixelPopWrite : bit1;
 	signal PixelRead : bit1;
 	signal PixelReadPop : bit1;
 	
+	signal SramWriteReq : bit1;
 	signal SramWriteAddr, SramReadAddr : word(SramAddrW-1 downto 0);
 	
 begin
@@ -181,6 +181,7 @@ begin
 		--
 		PixelPacked    => PixelInData(15-1 downto 0),
 		PixelPackedVal => SramWriteReq,
+		SramWriteAddr  => SramWriteAddr,
 		--
 		PopPixelPack   => PixelPopWrite);
 		PixelInData(15) <= '0';
@@ -191,7 +192,7 @@ begin
 		Clk  => XCLK_i,
 		--
 		WriteAddr => SramWriteAddr,
-		WriteReq => PixelCompVal,
+		WriteReq => SramWriteReq,
 		PopWrite => PixelPopWrite,
 		--
 		ReadAddr => SramReadAddr,
