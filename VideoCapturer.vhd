@@ -116,4 +116,5 @@ begin
 	end process;	
 	
 	PixelOut <= RdData;
+	PixelVal <= FifoRdVal_D;
 end architecture;
