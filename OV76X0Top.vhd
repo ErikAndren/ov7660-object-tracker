@@ -3,6 +3,7 @@ use ieee.std_logic_1164.all;
 use ieee.std_logic_arith.all;
 
 use work.Types.all;
+use work.OV76X0Pack.all;
 
 entity OV76X0 is 
 	generic (
@@ -46,9 +47,6 @@ entity OV76X0 is
 end entity;
 
 architecture rtl of OV76X0 is
-	constant SccbAddrW : positive := 8;
-	constant SccbDataW : positive := 8;
-
 	signal LcdDisp : word(bits(10**Displays)-1 downto 0);
 	signal Btn1Stab, Btn2Stab : bit1;
 	signal SccbData, DispData : word(SccbDataW-1 downto 0);
@@ -179,8 +177,7 @@ begin
 		PixelPacked    => PixelInData(15-1 downto 0),
 		PixelPackedVal => SramWriteReq,
 		--
-		PopPixelPack   => PixelPopWrite
-		);
+		PopPixelPack   => PixelPopWrite);
 		PixelInData(15) <= '0';
 		
 	SramArb : entity work.SramArbiter
@@ -205,11 +202,10 @@ begin
 	-- That is 57600 words
 	-- Up to 4 images may be stored with this encoding.
 	-- If 2 frames are needed, each image may consume 6 bits per pixel
-	-- This might 
 	SramCon : entity work.SramController
 	port map (
-		Clk => XCLK_i, -- FIXME: Higher clock will improve performance
-		RstN => RstN,
+		Clk    => XCLK_i, -- FIXME: Higher clock will improve performance
+		RstN   => RstN,
 		AddrIn => VgaContAddr,
 		WrData => PixelInData,
 		RdData => PixelOutData,
