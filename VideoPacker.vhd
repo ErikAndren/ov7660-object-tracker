@@ -8,7 +8,7 @@ use work.OV76X0Pack.all;
 
 entity VideoPacker is
 	generic (
-		CompPixelW : positive := 3;
+		CompPixelW   : positive := 3;
 		PackedPixelW : positive := 15
 	);
 	port (
@@ -27,14 +27,12 @@ entity VideoPacker is
 end entity;
 
 architecture rtl of VideoPacker is
-	constant NbrSegs : positive := PackedPixelW / CompPixelW;
-	constant NbrBufs : positive := 2;
-	type PackedPixels is array (NbrBufs-1 downto 0) of word(PackedPixelW-1 downto 0);
-	type PackCntPixels is array (NbrBufs-1 downto 0) of word(bits(NbrSegs)-1 downto 0);
+	type PackedPixels is array (NoBuffers-1 downto 0) of word(PackedPixelW-1 downto 0);
+	type PackCntPixels is array (NoBuffers-1 downto 0) of word(NoPixelsW-1 downto 0);
 
 	signal PackCnt_N, PackCnt_D : PackCntPixels;
-	signal WriteBufPtr_N, WriteBufPtr_D : word(bits(NbrBufs)-1 downto 0);
-	signal ReadBufPtr_N, ReadBufPtr_D : word(bits(NbrBufs)-1 downto 0);
+	signal WriteBufPtr_N, WriteBufPtr_D : word(NoBuffersW-1 downto 0);
+	signal ReadBufPtr_N, ReadBufPtr_D : word(NoBuffersW-1 downto 0);
 	
 	signal PackedData_N, PackedData_D : PackedPixels;
 	
@@ -81,7 +79,7 @@ begin
 			PackedData_N(WriteBufPtr) <= PackedData_D(WriteBufPtr)((PackedPixelW-CompPixelW)-1 downto 0) & PixelComp;
 			PackCnt_N(WriteBufPtr)    <= PackCnt_D(WriteBufPtr) + 1;
 			
-			if (PackCnt_D(WriteBufPtr) = NbrSegs-1) then 
+			if (PackCnt_D(WriteBufPtr) = NoPixels-1) then 
 				-- Advance to next buffer
 				WriteBufPtr_N <= WriteBufPtr_D + 1;
 				if (WriteBufPtr_D = NoBuffers-1) then
@@ -112,7 +110,7 @@ begin
 		end if;
 	end process;
 
-	PixelPackedVal <= '1' when PackCnt_D(conv_integer(ReadBufPtr_D)) = NbrSegs else '0'; 
+	PixelPackedVal <= '1' when PackCnt_D(conv_integer(ReadBufPtr_D)) = NoPixels else '0'; 
 	PixelPacked <= PackedData_D(conv_integer(ReadBufPtr_D));
 	SramWriteAddr <= xt0(BufPtr_D & LineCnt_D & WordCnt_D, SramWriteAddr'length);
 
