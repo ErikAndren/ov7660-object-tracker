@@ -38,9 +38,6 @@ architecture rtl of VGAGenerator is
 	
 	signal hCount : word(10-1 downto 0);
 	signal vCount : word(10-1 downto 0);
-	signal data : word(3-1 downto 0);
-	signal h_dat : word(3-1 downto 0);
-	signal v_dat : word(3-1 downto 0);
 	signal hCount_ov : bit1;
 	signal vCount_ov : bit1;
 	--
