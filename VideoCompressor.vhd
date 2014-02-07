@@ -11,8 +11,8 @@ entity VideoCompressor is
 		CompPixelW : positive := 3
 	);
 	port (
-	Clk      : in bit1;
-	RstN    : in bit1;
+	Clk       : in bit1;
+	RstN      : in bit1;
 	--
 	PixelData : in word(PixelW-1 downto 0);
 	PixelVal  : in bit1;
@@ -54,5 +54,5 @@ begin
 			end if;
 		end if;
 	end process;
-	
+
 end architecture rtl;
