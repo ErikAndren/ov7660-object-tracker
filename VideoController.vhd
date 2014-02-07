@@ -1,3 +1,5 @@
+-- This entity shall request frames from a memory and send it to VGA-generator.
+
 library ieee;
 use ieee.std_logic_1164.all;
 use ieee.std_logic_arith.all;
@@ -23,17 +25,15 @@ entity VideoController is
 end entity;
 
 architecture rtl of VideoController is
-	constant NoBufs : positive := 2;
-	type PixBufArray is array (NoBufs-1 downto 0) of word(SramDataW-1 downto 0);
-	type ValPixBufArray is array (NoBufs-1 downto 0) of word(NoPixelsW-1 downto 0);
+	type PixBufArray is array (NoBuffers-1 downto 0) of word(SramDataW-1 downto 0);
+	type ValPixBufArray is array (NoBuffers-1 downto 0) of word(NoPixelsW-1 downto 0);
 	
-	signal WriteBufPtr_N, WriteBufPtr_D           : word(NoBuffersW-1 downto 0);
-	signal ReadBufPtr_N, ReadBufPtr_D             : word(NoBuffersW-1 downto 0);
-	signal Buf_N, Buf_D                  : PixBufArray;
+	signal WriteBufPtr_N, WriteBufPtr_D : word(NoBuffersW-1 downto 0);
+	signal ReadBufPtr_N, ReadBufPtr_D   : word(NoBuffersW-1 downto 0);
+	signal Buf_N, Buf_D                 : PixBufArray;
 	signal ValPixelCnt_N, ValPixelCnt_D : ValPixBufArray;
-	signal WordCnt_N, WordCnt_D : word(MemWordsPerLineW-1 downto 0);
-	signal LineCnt_N, LineCnt_D : word(FrameHW-1 downto 0);
-
+	signal WordCnt_N, WordCnt_D         : word(MemWordsPerLineW-1 downto 0);
+	signal LineCnt_N, LineCnt_D         : word(FrameHW-1 downto 0);
 begin
 	SyncProc : process (Clk, RstN)
 	begin
