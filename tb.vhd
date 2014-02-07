@@ -37,6 +37,7 @@ begin
 	)
 	port map (
 		Clk => XCLK,
+		RstN => RstN,
 		DataToDisplay => "101",
 		InView => HREF,
 		Red => D(7),

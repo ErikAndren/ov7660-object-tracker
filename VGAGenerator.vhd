@@ -11,6 +11,7 @@ entity VGAGenerator is
 	);
 	port (
 	Clk    : in bit1;
+	RstN   : in bit1;
 	--
 	DataToDisplay : in word(3-1 downto 0);
 	InView : out bit1;
@@ -60,9 +61,11 @@ begin
 	end generate;
 	
 	hcount_ov <= '1' when hcount = hpixel_end else '0';
-	HCnt : process (PixelClk)
+	HCnt : process (RstN, PixelClk)
 	begin
-		if rising_edge(PixelClk) then
+		if RstN = '0' then
+			hcount <= (others => '0');
+		elsif rising_edge(PixelClk) then
 			if (hcount_ov = '1') then
 				hcount <= (others => '0');
 			else
@@ -72,9 +75,11 @@ begin
 	end process;
 	
 	vcount_ov <= '1' when vcount = vline_end else '0';
-	VCnt : process (PixelClk)
+	VCnt : process (RstN, PixelClk)
 	begin
-		if rising_edge(PixelClk) then
+		if RstN = '0' then
+			vcount <= (others => '0');
+		elsif rising_edge(PixelClk) then
 			if (hcount_ov = '1') then
 				if (vcount_ov = '1') then
 						vcount <= (others => '0');

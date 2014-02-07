@@ -249,6 +249,7 @@ begin
 	)
 	port map (
 		Clk           => XCLK_i,
+		RstN          => RstN,
 		--
 		DataToDisplay => VgaDispData,
 		InView        => VgaInView,
