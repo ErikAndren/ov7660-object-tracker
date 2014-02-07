@@ -80,7 +80,7 @@ begin
 		DataToDisp <= (others => '0');
 
 		if (InView = '1' and ValPixelCnt_D(WritePtr) > 0) then
-			DataToDisp <= ExtractSlice(Buf_D(WritePtr), PixelResW, conv_integer(ValPixelCnt_D(WritePtr)));
+			DataToDisp <= ExtractSlice(Buf_D(WritePtr), PixelResW, conv_integer(ValPixelCnt_D(WritePtr))-1);
 			ValPixelCnt_N(WritePtr) <= ValPixelCnt_D(WritePtr) - 1;
 			
 			if (ValPixelCnt_D(WritePtr) - 1 = 0) then 
