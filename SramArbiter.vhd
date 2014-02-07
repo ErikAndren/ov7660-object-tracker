@@ -8,7 +8,7 @@ use work.OV76X0Pack.all;
 
 entity SramArbiter is 
 	port (
-	RstN : in bit1;
+	RstN     : in bit1;
 	Clk      : in bit1;
 	--
 	WriteReq : in bit1;
