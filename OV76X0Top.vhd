@@ -79,7 +79,6 @@ architecture rtl of OV76X0 is
 	signal SramWriteAddr, SramReadAddr : word(SramAddrW-1 downto 0);
 	
 begin
-
 	Pll : entity work.Pll
 	port map (
 		inclk0 => Clk,
