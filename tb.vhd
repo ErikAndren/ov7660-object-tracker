@@ -1,50 +1,89 @@
+
 library ieee;
 use ieee.std_logic_1164.all;
 use ieee.std_logic_arith.all;
-use ieee.std_logic_unsigned.all;
 
 use work.Types.all;
 
-entity Tb is
+entity tb is
 end entity;
 
-architecture test of Tb is 
+architecture rtl of tb is
 	signal RstN : bit1;
-	signal Clk : bit1;
-
-	constant Clk50Period : time := 20 ns;
+	signal Clk50 : bit1;
+	
+	signal XCLK, PCLK : bit1;
+	signal D : word(8-1 downto 0);
+	signal VSYNC, HREF : bit1;
+	
+	signal SramD : word(16-1 downto 0);
+	
 begin
+	RstN <= '0', '1' after 100 ns;
+	
 	ClkGen : process 
 	begin
-		while true loop
-			Clk <= '0';
-			wait for Clk50Period / 2;
-			Clk <= '1';
-			wait for Clk50Period / 2;
+		while true loop 
+			Clk50 <= '0';
+			wait for 10 ns;
+			Clk50 <= '1';
+			wait for 10 ns;
 		end loop;
 	end process;
 	
-	RstN <= '0', '1' after 200 ns;
-
+	VgaCamGen : entity work.VgaGenerator
+	generic map (
+		DivideClk => false
+	)
+	port map (
+		Clk => XCLK,
+		DataToDisplay => "101",
+		InView => HREF,
+		Red => D(7),
+		Green => D(6),
+		Blue => D(5),
+		Hsync => open,
+		Vsync => VSYNC
+	);
+	D(4 downto 0) <= (others => '0');
+	
 	DUT : entity work.OV76X0
 	port map (
 		AsyncRstN => RstN,
-		Clk => Clk,
+		Clk => Clk50,
 		--
 		Button1 => '1',
 		Button2 => '1',
 		--
-		VSYNC => '0',
-		HREF  => '0',
+		VSYNC => VSYNC,
+		HREF  => HREF,
 		--
-		PllClk => open,
+		XCLK => XCLK,
+		PCLK => XCLK, 
+		D    => D,
 		--
 		Display => open,
 		Segments => open,
 		--
 		SIO_C => open,
-		SIO_D => open
+		SIO_D => open,
+		--
+		VgaRed => open,
+		VgaGreen => open,
+		VgaBlue => open,
+		VgaHsync => open,
+		VgaVsync => open,
+		--
+		SramD => SramD,
+		SramAddr => open,
+		SramCeN  => open,
+		SramOeN  => open,
+		SramWeN  => open,   
+		SramUbN  => open,
+		SramLbN => open
 	);
-
-
+	
+	SramD <= (others => 'Z');
+	SramD <= "1111000011110000";
+	
 end architecture;
