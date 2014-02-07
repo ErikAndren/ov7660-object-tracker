@@ -159,7 +159,6 @@ set_global_assignment -name VHDL_FILE ../SccbCtrl.vhd
 set_global_assignment -name VHDL_FILE ../OV7660Init.vhd
 set_global_assignment -name VHDL_FILE ../SccbMaster.vhd
 set_global_assignment -name VHDL_FILE ../SccbAddrReader.vhd
-set_global_assignment -name VHDL_FILE Pll.vhd
 set_global_assignment -name VHDL_FILE ../OV76X0Top.vhd
 set_global_assignment -name VHDL_FILE ../../Lib/Types.vhd
 set_global_assignment -name VHDL_FILE ../../Lib/Debounce.vhd
