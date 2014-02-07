@@ -36,7 +36,7 @@ architecture rtl of VideoPacker is
 	
 	signal PackedData_N, PackedData_D : PackedPixels;
 	
-	signal BufPtr_N, BufPtr_D : word(NoBuffersW-1 downto 0);
+	signal FrameCnt_N, FrameCnt_D : word(NoBuffersW-1 downto 0);
 	signal WordCnt_N, WordCnt_D : word(MemWordsPerLineW-1 downto 0);
 	signal LineCnt_N, LineCnt_D : word(FrameHW-1 downto 0);
 	
@@ -50,7 +50,7 @@ begin
 			ReadBufPtr_D  <= (others => '0');
 			WordCnt_D     <= (others => '0');
 			LineCnt_D     <= (others => '0');
-			BufPtr_D      <= (others => '0');
+			FrameCnt_D    <= (others => '0');
 		elsif rising_edge(Clk) then
 			PackCnt_D         <= PackCnt_N;
 			PackedData_D      <= PackedData_N;
@@ -58,11 +58,11 @@ begin
 			ReadBufPtr_D      <= ReadBufPtr_N;
 			WordCnt_D         <= WordCnt_N;
 			LineCnt_D         <= LineCnt_N;
-			BufPtr_D          <= BufPtr_N;
+			FrameCnt_D        <= FrameCnt_N;
 		end if;
 	end process;
 	
-	AsyncProc : process (PackedData_D, PackCnt_D, PixelCompVal, WriteBufPtr_D, ReadBufPtr_D, PopPixelPack, PixelComp, WordCnt_D, LineCnt_D, BufPtr_D)
+	AsyncProc : process (PackedData_D, PackCnt_D, PixelCompVal, WriteBufPtr_D, ReadBufPtr_D, PopPixelPack, PixelComp, WordCnt_D, LineCnt_D, FrameCnt_D)
 		variable WriteBufPtr : integer;
 	begin
 		PackedData_N  <= PackedData_D;
@@ -72,7 +72,7 @@ begin
 		WriteBufPtr   := conv_integer(WriteBufPtr_D);
 		WordCnt_N     <= WordCnt_D;
 		LineCnt_N     <= LineCnt_D;
-		BufPtr_N     <= BufPtr_D;
+		FrameCnt_N     <= FrameCnt_D;
 		
 		if PixelCompVal = '1' then
 			-- Shift up the data
@@ -101,9 +101,9 @@ begin
 				LineCnt_N <= LineCnt_D + 1;
 				if (LineCnt_D = FrameH-1) then
 					LineCnt_N <= (others => '0');
-					BufPtr_N <= BufPtr_D + 1;
-					if (BufPtr_D = NoBuffers-1) then
-						BufPtr_N <= (others => '0');
+					FrameCnt_N <= FrameCnt_D + 1;
+					if (FrameCnt_D = NoBuffers-1) then
+						FrameCnt_N <= (others => '0');
 					end if;
 				end if;
 			end if;
@@ -112,5 +112,5 @@ begin
 
 	PixelPackedVal <= '1' when PackCnt_D(conv_integer(ReadBufPtr_D)) = NoPixels else '0'; 
 	PixelPacked <= PackedData_D(conv_integer(ReadBufPtr_D));
-	SramWriteAddr <= xt0(BufPtr_D & LineCnt_D & WordCnt_D, SramWriteAddr'length);
+	SramWriteAddr <= xt0(FrameCnt_D & LineCnt_D & WordCnt_D, SramWriteAddr'length);
 end architecture rtl;
