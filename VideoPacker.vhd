@@ -113,5 +113,4 @@ begin
 	PixelPackedVal <= '1' when PackCnt_D(conv_integer(ReadBufPtr_D)) = NoPixels else '0'; 
 	PixelPacked <= PackedData_D(conv_integer(ReadBufPtr_D));
 	SramWriteAddr <= xt0(BufPtr_D & LineCnt_D & WordCnt_D, SramWriteAddr'length);
-
 end architecture rtl;
