@@ -32,7 +32,6 @@ architecture rtl of VideoController is
 	signal WriteBufPtr_N, WriteBufPtr_D : word(NoBuffersW-1 downto 0);
 	signal ReadBufPtr_N, ReadBufPtr_D   : word(NoBuffersW-1 downto 0);
 	
-	
 	signal Buf_N, Buf_D                 : PixBufArray;
 	signal ValPixelCnt_N, ValPixelCnt_D : ValPixBufArray;
 	signal WordCnt_N, WordCnt_D         : word(MemWordsPerLineW-1 downto 0);
@@ -98,12 +97,11 @@ begin
 
 		if (SramReqPopped = '1') then
 			ReadSram <= '0';
-
 			Buf_N(ReadPtr)         <= SramData;
 			ValPixelCnt_N(ReadPtr) <= conv_word(NoPixels, NoPixelsW);
 			-- Swap local buffer
 			ReadBufPtr_N <= ReadBufPtr_D + 1;
-			if (conv_integer(ReadBufPtr_D(ReadPtr)) - 1 = 0) then
+			if (ReadBufPtr_D + 1 = NoBuffers) then
 				ReadBufPtr_N <= (others => '0');
 			end if;			
 
