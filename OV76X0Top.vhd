@@ -187,20 +187,20 @@ begin
 		
 	SramArb : entity work.SramArbiter
 	port map (
-		RstN => RstN,
-		Clk  => XCLK_i,
+		RstN      => RstN,
+		Clk       => XCLK_i,
 		--
 		WriteAddr => SramWriteAddr,
-		WriteReq => SramWriteReq,
-		PopWrite => PixelPopWrite,
+		WriteReq  => SramWriteReq,
+		PopWrite  => PixelPopWrite,
 		--
-		ReadAddr => SramReadAddr,
-		ReadReq => PixelRead,
-		PopRead => PixelReadPop,
+		ReadAddr  => SramReadAddr,
+		ReadReq   => PixelRead,
+		PopRead   => PixelReadPop,
 		--
-		SramAddr => VgaContAddr,
-		SramWe =>  VgaContWe,
-		SramRe =>  VgaContRe
+		SramAddr  => VgaContAddr,
+		SramWe    => VgaContWe,
+		SramRe    => VgaContRe
 	);
 
 	-- 262144 words
@@ -231,16 +231,16 @@ begin
 	
 	VideoCont : entity work.VideoController
 	port map (
-		Clk => XCLK_i,
-		RstN => RstN,
+		Clk           => XCLK_i,
+		RstN          => RstN,
 		--
-		ReadSram => PixelRead,
-		SramAddr => SramReadAddr,
+		ReadSram      => PixelRead,
+		SramAddr      => SramReadAddr,
 		SramReqPopped => PixelReadPop,
-		SramData => PixelOutData,
+		SramData      => PixelOutData,
 		--
-		InView => VgaInView,
-		DataToDisp => VgaDispData
+		InView        => VgaInView,
+		DataToDisp    => VgaDispData
 	);
 	
 	VgaGen : entity work.VgaGenerator
@@ -248,15 +248,15 @@ begin
 		DivideClk => false
 	)
 	port map (
-		Clk   => XCLK_i,
+		Clk           => XCLK_i,
 		--
 		DataToDisplay => VgaDispData,
-		InView => VgaInView,
+		InView        => VgaInView,
 		--
-		Red   => VgaRed,
-		Green => VgaGreen,
-		Blue  => VgaBlue,
-		HSync => VgaHsync,
-		VSync => VgaVsync
+		Red           => VgaRed,
+		Green         => VgaGreen,
+		Blue          => VgaBlue,
+		HSync         => VgaHsync,
+		VSync         => VgaVsync
 	);
 end architecture rtl;
