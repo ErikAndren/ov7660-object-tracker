@@ -96,7 +96,7 @@ begin
 			PackCnt_N(conv_integer(ReadBufPtr_D)) <= (others => '0');
 
 			WordCnt_N <= WordCnt_D + 1;
-			if (WordCnt_D = MemWordsPerLineW-1) then
+			if (WordCnt_D = MemWordsPerLine-1) then
 				WordCnt_N <= (others => '0');
 				LineCnt_N <= LineCnt_D + 1;
 				if (LineCnt_D = FrameH-1) then
