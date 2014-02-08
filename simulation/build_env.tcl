@@ -48,4 +48,4 @@ vcom -93 {/home/erik/Development/FPGA/OV76X0/tb.vhd}
 
 vsim tb -novopt -t 1ps
 log -r /*
-# run 10 ms
+run 10 ms
