@@ -35,7 +35,7 @@ begin
 	ArbiterSync : process (Clk, RstN)
 	begin
 		if RstN = '0' then
-			WaitCnt_D  <= (others => '0');
+			WaitCnt_D  <= (others => '1');
 			PopWrite_D <= '0';
 			PopRead_D  <= '0';
 		elsif rising_edge(Clk) then
