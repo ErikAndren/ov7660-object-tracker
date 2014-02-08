@@ -46,6 +46,6 @@ vcom -93 -work work {/home/erik/Development/FPGA/OV76X0/OV76X0Top.vhd}
 
 vcom -93 {/home/erik/Development/FPGA/OV76X0/tb.vhd}
 
-vsim tb
+vsim tb -novopt
 log -r /*
-run 1 s
+run 10 ms
