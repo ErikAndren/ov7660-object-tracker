@@ -44,7 +44,7 @@ begin
 			Buf_D         <= (others => (others => '0'));
 			ValPixelCnt_D <= (others => (others => '0'));
 			WriteBufPtr_D <= (others => '0');
-			ReadBufPtr_D  <= (others => '1');
+			ReadBufPtr_D  <= (others => '0');
 			WordCnt_D     <= (others => '0');
 			LineCnt_D     <= (others => '0');
 			FrameCnt_D    <= (others => '0');
@@ -75,14 +75,14 @@ begin
 		WritePtr      := conv_integer(WriteBufPtr_D);
 		--
 		ReadSram <= '0';
-		SramAddr <= xt0(ReadBufPtr_D & LineCnt_D & WordCnt_D, SramAddr'length);
+		SramAddr <= xt0(FrameCnt_D & LineCnt_D & WordCnt_D, SramAddr'length);
 		-- Display black screen if nothing else
 		DataToDisp <= (others => '0');
 
 		if (InView = '1' and ValPixelCnt_D(WritePtr) > 0) then
 			DataToDisp <= ExtractSlice(Buf_D(WritePtr), PixelResW, conv_integer(ValPixelCnt_D(WritePtr))-1);
 			ValPixelCnt_N(WritePtr) <= ValPixelCnt_D(WritePtr) - 1;
-			
+
 			if (ValPixelCnt_D(WritePtr) - 1 = 0) then 
 				WriteBufPtr_N <= WriteBufPtr_D + 1;
 				if (WriteBufPtr_D + 1 = NoBuffers) then
