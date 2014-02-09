@@ -112,9 +112,9 @@ begin
 				LineCnt_N <= LineCnt_D + 1;
 
 				if LineCnt_D = FrameH-1 then
-					LineCnt_N    <= (others => '0');
+					LineCnt_N  <= (others => '0');
 					FrameCnt_N <= FrameCnt_D + 1;
-					if (conv_integer(FrameCnt_D(ReadPtr)) - 1 = 0) then
+					if (FrameCnt_D = NoBuffers-1) then
 						FrameCnt_N <= (others => '0');
 					end if;
 				end if;
