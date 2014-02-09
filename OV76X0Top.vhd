@@ -124,7 +124,7 @@ begin
 	);
 	
 	--LcdDisp <= xt0(SccbData, LcdDisp'length);
-	LcdDisp <= xt0(x"ADBEEF", LcdDisp'length);
+	LcdDisp <= xt0(PixelInData, LcdDisp'length);
 	
 	SccbM : entity work.SccbMaster
 	generic map (
@@ -184,7 +184,7 @@ begin
 		--
 		PopPixelPack   => PixelPopWrite);
 		PixelInData(15) <= '0';
-		
+
 	SramArb : entity work.SramArbiter
 	port map (
 		RstN      => RstN,
@@ -212,7 +212,7 @@ begin
 	-- If 2 frames are needed, each image may consume 6 bits per pixel
 	SramCon : entity work.SramController
 	port map (
-		Clk    => XCLK_i, -- FIXME: Higher clock will improve performance
+		Clk    => Clk, -- FIXME: Higher clock will improve performance
 		RstN   => RstN,
 		AddrIn => VgaContAddr,
 		WrData => PixelInData,
