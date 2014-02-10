@@ -20,6 +20,10 @@ end entity;
 
 architecture fpga of OV7660Init is
 	constant COM2 : word(8-1 downto 0) := x"09";
+	constant TSLB : word(8-1 downto 0) := x"3a";
+	constant MANU : word(8-1 downto 0) := x"67";
+	constant MANV : word(8-1 downto 0) := x"68";
+	
 	constant NbrOfInst : positive := 1;
 	
 	signal InstPtr_N, InstPtr_D : word(4-1 downto 0);
@@ -58,6 +62,11 @@ begin
 			end if;
 		
 			case InstPtr_D is
+			when "0000" =>
+				AddrData <= TSLB & x"1C"; -- enable line buffer test option
+				We       <= '1';
+				Start    <= '1';
+
 --			when "0000" =>
 --				AddrData <= COM2 & x"11"; -- enable soft sleep
 --				We       <= '1';
