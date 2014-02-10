@@ -81,6 +81,7 @@ begin
 
 		if (InView = '1' and ValPixelCnt_D(WritePtr) > 0) then
 			DataToDisp <= ExtractSlice(Buf_D(WritePtr), PixelResW, conv_integer(ValPixelCnt_D(WritePtr))-1);
+			DataToDisp <= Replicate(ExtractSlice(Buf_D(WritePtr), PixelResW, conv_integer(ValPixelCnt_D(WritePtr))-1)(2), PixelResW);
 			ValPixelCnt_N(WritePtr) <= ValPixelCnt_D(WritePtr) - 1;
 
 			if (ValPixelCnt_D(WritePtr) - 1 = 0) then 
@@ -113,7 +114,7 @@ begin
 
 				if LineCnt_D = FrameH-1 then
 					LineCnt_N  <= (others => '0');
-					FrameCnt_N <= FrameCnt_D + 1;
+					-- FrameCnt_N <= FrameCnt_D + 1;
 					if (FrameCnt_D = NoBuffers-1) then
 						FrameCnt_N <= (others => '0');
 					end if;

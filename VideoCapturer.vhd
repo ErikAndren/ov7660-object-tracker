@@ -72,7 +72,7 @@ begin
 		PixelData_N <= PixelData_D;
 		ValData_N <= '0';
 		SeenVsync_N <= SeenVsync_D;
-		
+
 		if (Vsync = '1' ) then
 			SeenVsync_N <= '1';
 		end if;

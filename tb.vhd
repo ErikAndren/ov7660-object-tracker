@@ -31,22 +31,62 @@ begin
 		end loop;
 	end process;
 	
-	VgaCamGen : entity work.VgaGenerator
-	generic map (
-		DivideClk => false
-	)
-	port map (
-		Clk => XCLK,
-		RstN => RstN,
-		DataToDisplay => "101",
-		InView => HREF,
-		Red => D(7),
-		Green => D(6),
-		Blue => D(5),
-		Hsync => open,
-		Vsync => VSYNC
-	);
-	D(4 downto 0) <= (others => '0');
+	
+	OV7660SignalGen : block 
+		constant tClk : positive := 1;
+		constant tP : positive := 2 * tClk;
+		constant tLine : positive := tP * 784;
+		
+		constant tVsyncPeriod : positive := tLine * 510;
+		constant tVsyncHigh : positive := 4;
+		
+		constant tHrefPreamble : positive := tVsyncHigh + 11;
+		constant tHrefPostamble : positive := 15;
+		constant noHrefs : positive := 480;
+		
+		constant tHrefHigh : positive := 640 * tP;
+		constant tHrefLow : positive := 144 * tP;
+		constant tHrefPeriod : positive := tHrefHigh + tHrefLow;
+
+		signal clkCnt : integer;
+		signal lineCnt : integer;
+		signal pixCnt : integer;
+
+	begin
+		Sync : process (XClk, RstN)
+		begin
+			if RstN = '0' then
+				clkCnt <= 0;
+			elsif rising_edge(Xclk) then
+				clkCnt <= clkCnt + 1;
+				if (clkCnt = tVsyncPeriod-1) then
+					clkCnt <= 0;
+				end if;
+			end if;
+		end process;
+		
+		lineCnt <= clkCnt / tLine;
+		pixCnt <= clkCnt mod tLine;
+		
+		Async : process (clkCnt, lineCnt, pixCnt)
+		begin
+			vsync <= '0';
+			href <= '0';
+			D <= (others => 'X');
+
+			if (lineCnt < tVsyncHigh) then
+				vsync <= '1';
+			end if;
+			
+			if (lineCnt >= tHrefPreamble and
+				(lineCnt < (tVsyncPeriod - tHrefPostamble))) then
+				if (pixCnt < tHrefHigh) then
+					href <= '1';
+					D <= conv_word(pixCnt, D'length);
+				end if;
+			end if;
+		end process;
+	end block;
 	
 	DUT : entity work.OV76X0
 	port map (
