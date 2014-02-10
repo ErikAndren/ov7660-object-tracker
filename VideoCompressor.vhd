@@ -45,6 +45,10 @@ begin
 		if PixelVal = '1' then
 			DrpCnt_N <= DrpCnt_D + 1;
 			
+			if (DrpCnt_D = 1) then
+				DrpCnt_N <= (others => '0');
+			end if;
+			
 			-- Luminance is sent on every other byte, offset by one
 			if (DrpCnt_D = 1) then
 				PixelCompVal <= '1';
