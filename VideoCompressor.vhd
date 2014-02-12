@@ -52,8 +52,7 @@ begin
 			-- Luminance is sent on every other byte, offset by one
 			if (DrpCnt_D = 1) then
 				PixelCompVal <= '1';
-				-- This can be much improved by dithering etc.
-				-- Should evaluate to shift, might need to be written
+				-- This can be much improved by dithering etc. Just slice out the MSBs for now
 				PixelCompData <= PixelData(PixelData'length-1 downto PixelData'length-CompPixelW);
 			end if;
 		end if;

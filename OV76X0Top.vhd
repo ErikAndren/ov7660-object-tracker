@@ -89,21 +89,21 @@ begin
 	RstSync : entity work.ResetSync
 	port map (
 		AsyncRst => AsyncRstN,
-		Clk      => XCLK_i,
+		Clk      => Clk,
 		--
 		Rst_N    => RstN
 	);
 	
 	DebBtn1 : entity work.Debounce
 	port map (
-		Clk => XCLK_i,
+		Clk => Clk,
 		x   => Button1,
 		DBx => Btn1Stab
 	);
 	
 	DebBtn12 : entity work.Debounce
 	port map (
-		Clk => XCLK_i,
+		Clk => Clk,
 		x   => Button2,
 		DBx => Btn2Stab
 	);
@@ -114,7 +114,7 @@ begin
 	   Freq => Freq
 	)
 	port map (
-		Clk => XCLK_i,
+		Clk => Clk,
 		RstN => AsyncRstN,
 		--
 		Data => LcdDisp,
@@ -146,7 +146,7 @@ begin
 	)
 	port map (
 		RstN      => RstN,
-		Clk       => XCLK_i,
+		Clk       => Clk,
 		--
 		PixelOut  => PixelData,
 		PixelVal  => PixelVal,
@@ -160,7 +160,7 @@ begin
 
 	VideoComp : entity work.VideoCompressor
 	port map (
-		Clk       => XCLK_i,
+		Clk       => Clk,
 		RstN      => RstN,
 		--
 		PixelData => PixelData,
@@ -172,7 +172,7 @@ begin
 	
 	VideoPack : entity work.VideoPacker
 	port map (
-		Clk            => XCLK_i,
+		Clk            => Clk,
 		RstN           => RstN,
 		--
 		PixelComp      => PixelCompData,
@@ -188,7 +188,7 @@ begin
 	SramArb : entity work.SramArbiter
 	port map (
 		RstN      => RstN,
-		Clk       => XCLK_i,
+		Clk       => Clk,
 		--
 		WriteAddr => SramWriteAddr,
 		WriteReq  => SramWriteReq,
@@ -212,7 +212,7 @@ begin
 	-- If 2 frames are needed, each image may consume 6 bits per pixel
 	SramCon : entity work.SramController
 	port map (
-		Clk    => Clk, -- FIXME: Higher clock will improve performance
+		Clk    => Clk, 
 		RstN   => RstN,
 		AddrIn => VgaContAddr,
 		WrData => PixelInData,
@@ -231,7 +231,7 @@ begin
 	
 	VideoCont : entity work.VideoController
 	port map (
-		Clk           => XCLK_i,
+		Clk           => Clk,
 		RstN          => RstN,
 		--
 		ReadSram      => PixelRead,
@@ -245,10 +245,10 @@ begin
 	
 	VgaGen : entity work.VgaGenerator
 	generic map (
-		DivideClk => false
+		DivideClk => true
 	)
 	port map (
-		Clk           => XCLK_i,
+		Clk           => Clk,
 		RstN          => RstN,
 		--
 		DataToDisplay => VgaDispData,

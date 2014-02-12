@@ -37,6 +37,8 @@ architecture rtl of VideoController is
 	signal WordCnt_N, WordCnt_D         : word(MemWordsPerLineW-1 downto 0);
 	signal LineCnt_N, LineCnt_D         : word(FrameHW-1 downto 0);
 	signal FrameCnt_N, FrameCnt_D       : word(NoBuffersW-1 downto 0);
+	
+	signal WaitCnt_N, WaitCnt_D : word(1-1 downto 0);
 begin
 	SyncProc : process (Clk, RstN)
 	begin
@@ -48,6 +50,7 @@ begin
 			WordCnt_D     <= (others => '0');
 			LineCnt_D     <= (others => '0');
 			FrameCnt_D    <= (others => '0');
+			WaitCnt_D     <= (others => '0');
 		elsif rising_edge(Clk) then
 			Buf_D         <= Buf_N;
 			ValPixelCnt_D <= ValPixelCnt_N;
@@ -56,10 +59,11 @@ begin
 			WordCnt_D     <= WordCnt_N;
 			LineCnt_D     <= LineCnt_N;
 			FrameCnt_D    <= FrameCnt_N;
+			WaitCnt_D     <= WaitCnt_N;
 		end if;
 	end process;
 	
-	AsyncProc : process (Buf_D, ValPixelCnt_D, WriteBufPtr_D, ReadBufPtr_D, WordCnt_D, LineCnt_D, InView, SramReqPopped, SramData, FrameCnt_D)
+	AsyncProc : process (Buf_D, ValPixelCnt_D, WriteBufPtr_D, ReadBufPtr_D, WordCnt_D, LineCnt_D, InView, SramReqPopped, SramData, FrameCnt_D, WaitCnt_D)
 	variable ReadPtr, WritePtr : integer;
 	begin
 		Buf_N         <= Buf_D;
@@ -78,10 +82,13 @@ begin
 		SramAddr <= xt0(FrameCnt_D & LineCnt_D & WordCnt_D, SramAddr'length);
 		-- Display black screen if nothing else
 		DataToDisp <= (others => '0');
+		WaitCnt_N <= WaitCnt_D;
+		if (WaitCnt_D > 0) then
+			WaitCnt_N <= WaitCnt_D - 1;
+		end if;
 
-		if (InView = '1' and ValPixelCnt_D(WritePtr) > 0) then
+		if (InView = '1' and ValPixelCnt_D(WritePtr) > 0 and WaitCnt_D = 0) then
 			DataToDisp <= ExtractSlice(Buf_D(WritePtr), PixelResW, conv_integer(ValPixelCnt_D(WritePtr))-1);
-			--DataToDisp <= Replicate(ExtractSlice(Buf_D(WritePtr), PixelResW, conv_integer(ValPixelCnt_D(WritePtr))-1)(2), PixelResW);
 			ValPixelCnt_N(WritePtr) <= ValPixelCnt_D(WritePtr) - 1;
 
 			if (ValPixelCnt_D(WritePtr) - 1 = 0) then 

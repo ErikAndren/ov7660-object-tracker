@@ -5,6 +5,5 @@ AsyncFifo_inst : AsyncFifo PORT MAP (
 		wrclk	 => wrclk_sig,
 		wrreq	 => wrreq_sig,
 		q	 => q_sig,
-		rdempty	 => rdempty_sig,
-		wrfull	 => wrfull_sig
+		rdempty	 => rdempty_sig
 	);

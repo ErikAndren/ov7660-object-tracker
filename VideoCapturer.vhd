@@ -80,7 +80,6 @@ begin
 		data    => PixelData_D,
 		wrclk   => PClk,
 		wrreq   => ValData_D,
-		wrfull  => open,
 		--
 		rdclk   => Clk,
 		rdempty => FifoEmpty,
