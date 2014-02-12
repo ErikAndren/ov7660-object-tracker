@@ -43,11 +43,12 @@ architecture rtl of VGAGenerator is
 	--
 	signal InView_i : bit1;
 begin
-
 	DivClkGen : if DivideClk = true generate
-		ClkDiv : process (Clk)
+		ClkDiv : process (RstN, Clk)
 		begin
-			if rising_edge(Clk) then
+			if RstN = '0' then
+				PixelClk <= '0';
+			elsif rising_edge(Clk) then
 				PixelClk <= not PixelClk;
 			end if;
 		end process;
