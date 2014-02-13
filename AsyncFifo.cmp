@@ -22,6 +22,8 @@ component AsyncFifo
 		wrclk		: IN STD_LOGIC ;
 		wrreq		: IN STD_LOGIC ;
 		q		: OUT STD_LOGIC_VECTOR (7 DOWNTO 0);
-		rdempty		: OUT STD_LOGIC 
+		rdempty		: OUT STD_LOGIC ;
+		rdusedw		: OUT STD_LOGIC_VECTOR (2 DOWNTO 0);
+		wrfull		: OUT STD_LOGIC 
 	);
 end component;

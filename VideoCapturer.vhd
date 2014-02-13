@@ -20,7 +20,8 @@ entity VideoCapturer is
 		PixelData : in word(DataW-1 downto 0);
 		--
 		PixelOut : out word(DataW-1 downto 0);
-		PixelVal : out bit1
+		PixelVal : out bit1;
+		FillLevel : out word(3-1 downto 0)
 	);
 
 end entity;
@@ -65,6 +66,7 @@ begin
 		ValData_N <= '0';
 		SeenVsync_N <= SeenVsync_D;
 
+		-- Initial gating to ensure that we start to capture at the start of a frame
 		if (Vsync = '1' ) then
 			SeenVsync_N <= '1';
 		end if;
@@ -84,7 +86,10 @@ begin
 		rdclk   => Clk,
 		rdempty => FifoEmpty,
 		rdreq   => RdFifo,
-		q       => RdData
+		q       => RdData,
+		--
+		rdusedw => FillLevel,
+		wrfull  => open
 	);
 	RdFifo <= not FifoEmpty;
 
