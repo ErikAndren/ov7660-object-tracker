@@ -60,10 +60,10 @@ begin
 		end if;
 	end process;
 	
-	PClkAsync : process (PixelData, PixelData_D, Href, Vsync, SeenVsync_D)
+	PClkAsync : process (PixelData, Href, Vsync, SeenVsync_D)
 	begin
-		PixelData_N <= PixelData_D;
-		ValData_N <= '0';
+		PixelData_N <= PixelData;
+		ValData_N   <= '0';
 		SeenVsync_N <= SeenVsync_D;
 
 		-- Initial gating to ensure that we start to capture at the start of a frame
@@ -71,9 +71,9 @@ begin
 			SeenVsync_N <= '1';
 		end if;
 
+		-- FIXME: Check HREF toggling
 		if Href = '1' and SeenVsync_D = '1' then
 			ValData_N <= '1';
-			PixelData_N <= PixelData;
 		end if;
 	end process;
 	
@@ -93,7 +93,7 @@ begin
 	);
 	RdFifo <= not FifoEmpty;
 
-	ClkAsync : process (FifoRdVal_D, RdFifo)
+	ClkAsync : process (RdFifo)
 	begin
 		FifoRdVal_N <= '0';
 	
@@ -101,7 +101,7 @@ begin
 			FifoRdVal_N <= '1';
 		end if;
 	end process;
-	
+
 	ClkSync : process (RstN, Clk)
 	begin
 		if RstN = '0' then
