@@ -38,7 +38,12 @@ architecture rtl of VideoController is
 	signal LineCnt_N, LineCnt_D         : word(FrameHW-1 downto 0);
 	signal FrameCnt_N, FrameCnt_D       : word(NoBuffersW-1 downto 0);
 	
-	signal WaitCnt_N, WaitCnt_D : word(1-1 downto 0);
+	constant Penalty : natural := 1;
+	constant PenaltyW : positive := bits(Penalty);
+	signal WaitCnt_N, WaitCnt_D : word(PenaltyW-1 downto 0);
+	
+	signal SramReqPopped_N, SramReqPopped_D : bit1;
+	
 begin
 	SyncProc : process (Clk, RstN)
 	begin
@@ -51,6 +56,7 @@ begin
 			LineCnt_D     <= (others => '0');
 			FrameCnt_D    <= (others => '0');
 			WaitCnt_D     <= (others => '0');
+			SramReqPopped_D <= '0';
 		elsif rising_edge(Clk) then
 			Buf_D         <= Buf_N;
 			ValPixelCnt_D <= ValPixelCnt_N;
@@ -60,12 +66,14 @@ begin
 			LineCnt_D     <= LineCnt_N;
 			FrameCnt_D    <= FrameCnt_N;
 			WaitCnt_D     <= WaitCnt_N;
+			SramReqPopped_D <= SramReqPopped_N;
 		end if;
 	end process;
 	
-	AsyncProc : process (Buf_D, ValPixelCnt_D, WriteBufPtr_D, ReadBufPtr_D, WordCnt_D, LineCnt_D, InView, SramReqPopped, SramData, FrameCnt_D, WaitCnt_D)
+	AsyncProc : process (Buf_D, ValPixelCnt_D, WriteBufPtr_D, ReadBufPtr_D, WordCnt_D, LineCnt_D, InView, SramReqPopped, SramData, FrameCnt_D, WaitCnt_D, SramReqPopped_D)
 	variable ReadPtr, WritePtr : integer;
 	begin
+		SramReqPopped_N <= SramReqPopped;
 		Buf_N         <= Buf_D;
 		ValPixelCnt_N <= ValPixelCnt_D;
 		ReadBufPtr_N  <= ReadBufPtr_D;
@@ -83,17 +91,19 @@ begin
 		-- Display black screen if nothing else
 		DataToDisp <= (others => '0');
 		WaitCnt_N <= WaitCnt_D;
-		if (WaitCnt_D > 0) then
-			WaitCnt_N <= WaitCnt_D - 1;
-		end if;
 
-		if (InView = '1' and ValPixelCnt_D(WritePtr) > 0 and WaitCnt_D = 0) then
+		if (InView = '1' and ValPixelCnt_D(WritePtr) > 0) then
 			DataToDisp <= ExtractSlice(Buf_D(WritePtr), PixelResW, conv_integer(ValPixelCnt_D(WritePtr))-1);
-			ValPixelCnt_N(WritePtr) <= ValPixelCnt_D(WritePtr) - 1;
+			if (WaitCnt_D = 0) then
+				WaitCnt_N <= conv_word(Penalty, PenaltyW);
+			else
+				ValPixelCnt_N(WritePtr) <= ValPixelCnt_D(WritePtr) - 1;
+				WaitCnt_N <= WaitCnt_D - 1;
+			end if;
 
 			if (ValPixelCnt_D(WritePtr) - 1 = 0) then 
 				WriteBufPtr_N <= WriteBufPtr_D + 1;
-				if (WriteBufPtr_D + 1 = NoBuffers) then
+				if (WriteBufPtr_D = NoBuffers-1) then
 					WriteBufPtr_N <= (others => '0');
 				end if;
 			end if;
@@ -103,13 +113,13 @@ begin
 			ReadSram <= '1';
 		end if;
 
-		if (SramReqPopped = '1') then
+		if (SramReqPopped_D = '1') then
 			ReadSram <= '0';
 			Buf_N(ReadPtr)         <= SramData;
 			ValPixelCnt_N(ReadPtr) <= conv_word(NoPixels, NoPixelsW);
 			-- Swap local buffer
 			ReadBufPtr_N <= ReadBufPtr_D + 1;
-			if (ReadBufPtr_D + 1 = NoBuffers) then
+			if (ReadBufPtr_D = NoBuffers-1) then
 				ReadBufPtr_N <= (others => '0');
 			end if;			
 
