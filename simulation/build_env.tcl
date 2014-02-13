@@ -48,4 +48,8 @@ vcom -93 {/home/erik/Development/FPGA/OV76X0/tb.vhd}
 
 vsim tb -novopt -t 1ps
 log -r /*
+
+# Load waveforms
+do wave.do
+
 run 10 ms
