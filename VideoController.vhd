@@ -55,7 +55,7 @@ begin
 			WordCnt_D     <= (others => '0');
 			LineCnt_D     <= (others => '0');
 			FrameCnt_D    <= (others => '0');
-			WaitCnt_D     <= (others => '0');
+			WaitCnt_D     <= (others => '1');
 			SramReqPopped_D <= '0';
 		elsif rising_edge(Clk) then
 			Buf_D         <= Buf_N;
@@ -96,16 +96,16 @@ begin
 			DataToDisp <= ExtractSlice(Buf_D(WritePtr), PixelResW, conv_integer(ValPixelCnt_D(WritePtr))-1);
 			if (WaitCnt_D = 0) then
 				WaitCnt_N <= conv_word(Penalty, PenaltyW);
-			else
 				ValPixelCnt_N(WritePtr) <= ValPixelCnt_D(WritePtr) - 1;
-				WaitCnt_N <= WaitCnt_D - 1;
-			end if;
-
-			if (ValPixelCnt_D(WritePtr) - 1 = 0) then 
-				WriteBufPtr_N <= WriteBufPtr_D + 1;
-				if (WriteBufPtr_D = NoBuffers-1) then
-					WriteBufPtr_N <= (others => '0');
+				
+				if (ValPixelCnt_D(WritePtr) - 1 = 0) then 
+					WriteBufPtr_N <= WriteBufPtr_D + 1;
+					if (WriteBufPtr_D = NoBuffers-1) then
+						WriteBufPtr_N <= (others => '0');
+					end if;
 				end if;
+			else
+				WaitCnt_N <= WaitCnt_D - 1;
 			end if;
 		end if;
 
