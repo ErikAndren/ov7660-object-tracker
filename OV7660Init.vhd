@@ -62,10 +62,10 @@ begin
 			end if;
 		
 			case InstPtr_D is
-			when "0000" =>
-				AddrData <= TSLB & x"1C"; -- enable line buffer test option
-				We       <= '1';
-				Start    <= '1';
+--			when "0000" =>
+--				AddrData <= TSLB & x"1C"; -- enable line buffer test option
+--				We       <= '1';
+--				Start    <= '1';
 
 --			when "0000" =>
 --				AddrData <= COM2 & x"11"; -- enable soft sleep

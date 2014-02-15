@@ -38,6 +38,10 @@ architecture rtl of VideoCapturer is
 	signal FifoRdVal_N, FifoRdVal_D : bit1;
 	signal RdData : word(DataW-1 downto 0);
 	
+	signal PixelOut_D : word(DataW-1 downto 0);
+	signal PixelVal_D : bit1;
+	
+	signal Href_D, Vsync_D : bit1;
 begin
 	PClkRstSync : entity work.ResetSync
 	port map (
@@ -53,26 +57,31 @@ begin
 			PixelData_D <= (others => '0');
 			ValData_D <= '0';
 			SeenVsync_D <= '0';
+			Href_D <= '0';
+			Vsync_D <= '0';
 		elsif rising_edge(PCLK) then
 			PixelData_D <= PixelData_N;
 			ValData_D   <= ValData_N;
 			SeenVsync_D <= SeenVsync_N;
+			Href_D <= Href;
+			Vsync_D <= vsync;
 		end if;
 	end process;
 	
-	PClkAsync : process (PixelData, Href, Vsync, SeenVsync_D)
+	-- Only capture two first frames
+	PClkAsync : process (PixelData, Href_D, Vsync_D, SeenVsync_D)
 	begin
 		PixelData_N <= PixelData;
 		ValData_N   <= '0';
 		SeenVsync_N <= SeenVsync_D;
 
 		-- Initial gating to ensure that we start to capture at the start of a frame
-		if (Vsync = '1' ) then
+		if (Vsync_D = '1' ) then
 			SeenVsync_N <= '1';
 		end if;
 
 		-- FIXME: Check HREF toggling
-		if Href = '1' and SeenVsync_D = '1' then
+		if Href_D = '1' and SeenVsync_D = '1' then
 			ValData_N <= '1';
 		end if;
 	end process;
@@ -81,7 +90,7 @@ begin
 	port map (
 		data    => PixelData_D,
 		wrclk   => PClk,
-		wrreq   => ValData_D,
+		wrreq   => ValData_N,
 		--
 		rdclk   => Clk,
 		rdempty => FifoEmpty,
@@ -106,11 +115,15 @@ begin
 	begin
 		if RstN = '0' then
 			FifoRdVal_D <= '0';
+			PixelOut_D <= (others => '0');
+			PixelVal_D <= '0';
 		elsif rising_edge(Clk) then
 			FifoRdVal_D <= FifoRdVal_N;
+			PixelOut_D <= RdData;
+			PixelVal_D <= FifoRdVal_D;
 		end if;
 	end process;	
 	
-	PixelOut <= RdData;
-	PixelVal <= FifoRdVal_D;
+	PixelOut <= PixelOut_D;
+	PixelVal <= PixelVal_D;
 end architecture;
