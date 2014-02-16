@@ -63,8 +63,8 @@ begin
 			PixelData_D <= PixelData_N;
 			ValData_D   <= ValData_N;
 			SeenVsync_D <= SeenVsync_N;
-			Href_D <= Href;
-			Vsync_D <= vsync;
+			Href_D      <= Href;
+			Vsync_D     <= vsync;
 		end if;
 	end process;
 	
