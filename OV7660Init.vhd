@@ -27,7 +27,7 @@ architecture fpga of OV7660Init is
 	constant NbrOfInst : positive := 1;
 	
 	signal InstPtr_N, InstPtr_D : word(4-1 downto 0);
-	signal Delay_N, Delay_D : word(16-1 downto 0);
+	signal Delay_N, Delay_D : word(17-1 downto 0);
 begin	
 	SyncProc : process (Clk, Rst_N)
 	begin
@@ -35,7 +35,7 @@ begin
 			InstPtr_D <= (others => '0');
 			
 			if Simulation then
-				Delay_D   <= "1111111111111100";
+				Delay_D   <= "11111111111111100";
 			end if;
 				
 			if Synthesis then
@@ -62,6 +62,11 @@ begin
 			end if;
 		
 			case InstPtr_D is
+			when "0000" =>
+				AddrData <= COM2 & x"03"; -- enable 2x drive
+				We       <= '1';
+				Start    <= '1';
+			
 --			when "0000" =>
 --				AddrData <= TSLB & x"1C"; -- enable line buffer test option
 --				We       <= '1';
