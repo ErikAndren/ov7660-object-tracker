@@ -4,6 +4,7 @@ use ieee.std_logic_arith.all;
 use ieee.std_logic_unsigned.all;
 
 use work.Types.all;
+use work.OV76X0Pack.all;
 
 entity SccbMaster is
 	generic (
@@ -20,7 +21,9 @@ entity SccbMaster is
 		AckErr       : out bit1;
 		--
 		SIO_C        : out bit1;
-		SIO_D        : inout bit1
+		SIO_D        : inout bit1;
+		--
+		InstPtr      : out word(InstPtrW-1 downto 0)
 	);
 end entity;	
 
@@ -40,7 +43,6 @@ architecture fpga of SccbMaster is
 	signal DataPulse : bit1;
 	--
 	signal data_i : word(16-1 downto 0);
-	signal valid_i : bit1;
 	signal TransDone : bit1;
 	signal ack_err : bit1;
 	--
@@ -78,7 +80,9 @@ begin
 		--
 		We        => ReWe,
 		Start     => StartTrans,
-		AddrData  => AddrData
+		AddrData  => AddrData,
+		--
+		InstPtr   => InstPtr
 	);
 		
 	FSMSync : process (Clk, Rst_N)

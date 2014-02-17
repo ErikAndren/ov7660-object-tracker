@@ -4,6 +4,7 @@ use ieee.std_logic_arith.all;
 use ieee.std_logic_unsigned.all;
 
 use work.Types.all;
+use work.OV76X0Pack.all;
 
 entity OV7660Init is
 	port (
@@ -14,20 +15,23 @@ entity OV7660Init is
 		--
 		We           : out bit1;
 		Start        : out bit1;
-		AddrData     : out word(16-1 downto 0)
+		AddrData     : out word(16-1 downto 0);
+		--
+		InstPtr      : out word(InstPtrW-1 downto 0)
 	);
 end entity;	
 
 architecture fpga of OV7660Init is
-	constant COM2 : word(8-1 downto 0) := x"09";
-	constant TSLB : word(8-1 downto 0) := x"3a";
-	constant MANU : word(8-1 downto 0) := x"67";
-	constant MANV : word(8-1 downto 0) := x"68";
+	constant COM2 : word(8-1 downto 0)  := x"09";
+	constant CLKRC : word(8-1 downto 0) := x"11";
+	constant TSLB : word(8-1 downto 0)  := x"3a";
+	constant MANU : word(8-1 downto 0)  := x"67";
+	constant MANV : word(8-1 downto 0)  := x"68";
 	
 	constant NbrOfInst : positive := 1;
 	
-	signal InstPtr_N, InstPtr_D : word(4-1 downto 0);
-	signal Delay_N, Delay_D : word(17-1 downto 0);
+	signal InstPtr_N, InstPtr_D : word(InstPtrW-1 downto 0);
+	signal Delay_N, Delay_D : word(16-1 downto 0);
 begin	
 	SyncProc : process (Clk, Rst_N)
 	begin
@@ -35,7 +39,7 @@ begin
 			InstPtr_D <= (others => '0');
 			
 			if Simulation then
-				Delay_D   <= "11111111111111100";
+				Delay_D   <= "1111111111111100";
 			end if;
 				
 			if Synthesis then
@@ -48,8 +52,9 @@ begin
 	end process;
 	
 	ASyncProc : process  (InstPtr_D, NextInst, Delay_D)
+		variable InstPtr_T : word(InstPtrW-1 downto 0);
 	begin
-		InstPtr_N <= InstPtr_D;
+		InstPtr_T := InstPtr_D;
 		AddrData <= (others => '0');
 		We <= '0';
 		Start <= '0';
@@ -58,31 +63,44 @@ begin
 			Delay_N <= Delay_D;
 		
 			if (NextInst = '1') then
-				InstPtr_N <= InstPtr_D + 1;
+				InstPtr_T := InstPtr_D + 1;
 			end if;
-		
-			case InstPtr_D is
-			when "0000" =>
-				AddrData <= COM2 & x"03"; -- enable 2x drive
-				We       <= '1';
-				Start    <= '1';
-			
---			when "0000" =>
---				AddrData <= TSLB & x"1C"; -- enable line buffer test option
---				We       <= '1';
---				Start    <= '1';
 
---			when "0000" =>
---				AddrData <= COM2 & x"11"; -- enable soft sleep
---				We       <= '1';
---				Start    <= '1';
-
-			when others =>
-				InstPtr_N <= (others => '1');
-				Start     <= '0';
-			
-			end case;
+				case InstPtr_D is
+				when "0000" =>
+					AddrData <= COM2 & x"03"; -- enable 2x drive
+					We       <= '1';
+					Start    <= '1';
+				
+				when "0001" =>
+					AddrData <= CLKRC & x"00"; -- enable digital pll
+					We       <= '1';
+					Start    <= '1';
+					
+				when "0010" =>
+					AddrData <= COM2 & x"11"; -- enable soft sleep
+					We       <= '1';
+					Start    <= '1';
+				
+	--			when "0000" =>
+	--				AddrData <= TSLB & x"1C"; -- enable line buffer test option
+	--				We       <= '1';
+	--				Start    <= '1';
+	
+	--			when "0000" =>
+	--				AddrData <= COM2 & x"11"; -- enable soft sleep
+	--				We       <= '1';
+	--				Start    <= '1';
+	
+				when others =>
+					InstPtr_T := (others => '1');
+					Start     <= '0';
+				
+				end case;
 		end if;
+
+		InstPtr_N <= InstPtr_T;
 	end process;
 	
+	InstPtr <= InstPtr_D;
 end architecture;

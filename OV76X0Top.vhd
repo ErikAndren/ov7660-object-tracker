@@ -79,6 +79,8 @@ architecture rtl of OV76X0 is
 	signal SramWriteAddr, SramReadAddr : word(SramAddrW-1 downto 0);
 	
 	signal AsyncFifoFillLvl : word(3-1 downto 0);
+	signal SccbInstPtr : word(InstPtrW-1 downto 0);
+	
 begin
 	Pll : entity work.Pll
 	port map (
@@ -126,7 +128,7 @@ begin
 	
 	--LcdDisp <= xt0(SccbData, LcdDisp'length);
 	--LcdDisp <= xt0(PixelInData, LcdDisp'length);
-	LcdDisp <= xt0(AsyncFifoFillLvl, LcdDisp'length);
+	LcdDisp <= xt0(SccbInstPtr, LcdDisp'length);
 
 	SccbM : entity work.SccbMaster
 	generic map (
@@ -139,7 +141,9 @@ begin
 		DataFromSccb => SccbData,
 		--
 		SIO_C        => SIO_C,
-		SIO_D        => SIO_D
+		SIO_D        => SIO_D,
+		--
+		InstPtr      => SccbInstPtr
 	);
 	
 	CaptPixel : entity work.VideoCapturer

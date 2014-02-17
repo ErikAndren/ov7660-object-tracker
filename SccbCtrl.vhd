@@ -28,6 +28,7 @@ architecture fpga of SccbCtrl is
 	signal stm : word(7-1 downto 0);
 	signal bit_out : bit1;
 	signal ack_err : bit1;
+	
 	signal done : bit1;
 	
 begin	
@@ -65,8 +66,9 @@ begin
          ack_err <= '1'; 
  
 		elsif rising_edge(Clk_i) then
+			done <= '0';
 			if Data_pulse_i = '1' then
-				if (start_i = '0' or done = '1') then
+				if (start_i = '0') then
 					stm <= (others => '0');
 				elsif (rw_i = '0' and stm = 25) then
 					stm <= conv_word(37, stm'length);
@@ -232,6 +234,7 @@ begin
 						when conv_word(67, stm'length) =>
 							bit_out <= '1';
 							done    <= '1';
+							stm     <= (others => '0');
 	
 					  when others =>
 						  sccb_stm_clk <= '1';

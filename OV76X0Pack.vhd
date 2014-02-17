@@ -29,6 +29,8 @@ package OV76X0Pack is
 	
 	constant MemWordsPerLine : positive := FrameW / NoPixels;
 	constant MemWordsPerLineW : positive := bits(MemWordsPerLine);
+	
+	constant InstPtrW : positive := 4;
 
 end package;
 
