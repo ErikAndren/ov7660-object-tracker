@@ -32,6 +32,23 @@ package OV76X0Pack is
 	
 	constant InstPtrW : positive := 4;
 
+
+        constant tClk  : positive := 1;
+        constant tP    : positive := 2 * tClk;
+        constant tLine : positive := tP * 784;
+
+        constant tVsyncPeriod : positive := tLine * 510;
+        constant tVsyncHigh   : positive := 4;
+
+        constant tHrefPreamble  : positive := tVsyncHigh + 11;
+        constant tHrefPostamble : positive := 15;
+        constant noHrefs        : positive := 480;
+
+        constant tHrefHigh   : positive := 640 * tP;
+        constant tHrefLow    : positive := 144 * tP;
+        constant tHrefPeriod : positive := tHrefHigh + tHrefLow;
+
+
 end package;
 
 package body OV76X0Pack is
