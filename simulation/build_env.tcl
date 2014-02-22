@@ -44,6 +44,7 @@ vcom -93 -work work {/home/erik/Development/FPGA/OV76X0/SccbMaster.vhd}
 vcom -93 -work work {/home/erik/Development/FPGA/Lib/BcdDisp.vhd}
 vcom -93 -work work {/home/erik/Development/FPGA/OV76X0/OV76X0Top.vhd}
 
+vcom -93 {/home/erik/Development/FPGA/OV76X0/OV76X0Filter.vhd}
 vcom -93 {/home/erik/Development/FPGA/OV76X0/tb.vhd}
 
 vsim tb -novopt -t 1ps
