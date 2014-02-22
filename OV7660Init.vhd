@@ -80,10 +80,11 @@ begin
 					We       <= '1';
 					Start    <= '1';
 					
-				when "0010" =>
-					AddrData <= CLKRC & x"80"; -- Reverse PCLK
-					We       <= '1';
-					Start    <= '1';
+--				when "0010" =>
+--					AddrData <= CLKRC & x"80"; -- Reverse PCLK
+--					We       <= '1';
+--					Start    <= '1';
+
 --				when "0010" =>
 --					AddrData <= COM2 & x"11"; -- enable soft sleep
 --					We       <= '1';
