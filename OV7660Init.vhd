@@ -24,6 +24,8 @@ end entity;
 architecture fpga of OV7660Init is
 	constant COM2 : word(8-1 downto 0)  := x"09";
 	constant CLKRC : word(8-1 downto 0) := x"11";
+	constant COM7 : word(8-1 downto 0)  := x"12";
+	constant COM10 : word(8-1 downto 0) := x"15";
 	constant TSLB : word(8-1 downto 0)  := x"3a";
 	constant MANU : word(8-1 downto 0)  := x"67";
 	constant MANV : word(8-1 downto 0)  := x"68";
@@ -68,19 +70,24 @@ begin
 
 				case InstPtr_D is
 				when "0000" =>
-					AddrData <= COM2 & x"03"; -- enable 2x drive
+					AddrData <= COM7 & x"80"; -- SCCB Register reset
 					We       <= '1';
 					Start    <= '1';
+
 				
 				when "0001" =>
-					AddrData <= CLKRC & x"00"; -- enable digital pll
+					AddrData <= COM7 & x"00"; -- SCCB Register reset release
 					We       <= '1';
 					Start    <= '1';
 					
 				when "0010" =>
-					AddrData <= COM2 & x"11"; -- enable soft sleep
+					AddrData <= CLKRC & x"80"; -- Reverse PCLK
 					We       <= '1';
 					Start    <= '1';
+--				when "0010" =>
+--					AddrData <= COM2 & x"11"; -- enable soft sleep
+--					We       <= '1';
+--					Start    <= '1';
 				
 	--			when "0000" =>
 	--				AddrData <= TSLB & x"1C"; -- enable line buffer test option
