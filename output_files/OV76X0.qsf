@@ -74,9 +74,9 @@ set_location_assignment PIN_163 -to VSYNC
 set_location_assignment PIN_151 -to XCLK
 set_global_assignment -name RESERVE_ALL_UNUSED_PINS_NO_OUTPUT_GND "AS INPUT TRI-STATED"
 set_location_assignment PIN_113 -to VgaBlue
-set_location_assignment PIN_112 -to VgaGreen
+set_location_assignment PIN_106 -to VgaGreen
 set_location_assignment PIN_110 -to VgaHsync
-set_location_assignment PIN_152 -to VgaRed
+set_location_assignment PIN_114 -to VgaRed
 set_location_assignment PIN_105 -to VgaVsync
 set_location_assignment PIN_161 -to HREF
 set_location_assignment PIN_28 -to PCLK
