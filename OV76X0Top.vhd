@@ -27,9 +27,9 @@ entity OV76X0 is
 	SIO_C : out bit1;
 	SIO_D : inout bit1;
 	-- VGA interface
-	VgaRed   : out bit1;
-	VgaGreen : out bit1;
-	VgaBlue  : out bit1;
+	VgaRed   : out word(3-1 downto 0);
+	VgaGreen : out word(3-1 downto 0);
+	VgaBlue  : out word(3-1 downto 0);
 	VgaHsync : out bit1;
 	VgaVsync : out bit1;
 	-- Sram interface

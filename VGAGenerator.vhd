@@ -16,9 +16,9 @@ entity VGAGenerator is
 	DataToDisplay : in word(3-1 downto 0);
 	InView : out bit1;
 	--
-	Red    : out bit1;
-	Green  : out bit1;
-	Blue   : out bit1;
+	Red    : out word(3-1 downto 0);
+	Green  : out word(3-1 downto 0);
+	Blue   : out word(3-1 downto 0);
 	HSync  : out bit1;
 	VSync  : out bit1
 	);
@@ -93,7 +93,7 @@ begin
 	Hsync <= '1' when hcount > hsync_end else '0';
 	Vsync <= '1' when vcount > vsync_end else '0';
 	
-	Red   <= '0' when InView_i = '0' else DataToDisplay(0);
-	Green <= '0' when InView_i = '0' else DataToDisplay(1);
-	Blue  <= '0' when InView_i = '0' else DataToDisplay(2);
+	Red   <= (others => '0') when InView_i = '0' else DataToDisplay(3-1 downto 0);
+	Green <= (others => '0') when InView_i = '0' else DataToDisplay(3-1 downto 0);
+	Blue  <= (others => '0') when InView_i = '0' else DataToDisplay(3-1 downto 0);
 end architecture rtl;

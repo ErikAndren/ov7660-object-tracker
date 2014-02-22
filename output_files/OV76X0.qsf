@@ -73,11 +73,20 @@ set_global_assignment -name FITTER_EFFORT "FAST FIT"
 set_location_assignment PIN_163 -to VSYNC
 set_location_assignment PIN_151 -to XCLK
 set_global_assignment -name RESERVE_ALL_UNUSED_PINS_NO_OUTPUT_GND "AS INPUT TRI-STATED"
-set_location_assignment PIN_113 -to VgaBlue
-set_location_assignment PIN_106 -to VgaGreen
+
 set_location_assignment PIN_110 -to VgaHsync
-set_location_assignment PIN_114 -to VgaRed
 set_location_assignment PIN_105 -to VgaVsync
+
+set_location_assignment PIN_118 -to VgaRed[0]
+set_location_assignment PIN_116 -to VgaRed[1]
+set_location_assignment PIN_114 -to VgaRed[2]
+set_location_assignment PIN_112 -to VgaGreen[0]
+set_location_assignment PIN_4 -to VgaGreen[1]
+set_location_assignment PIN_106 -to VgaGreen[2]
+set_location_assignment PIN_117 -to VgaBlue[0]
+set_location_assignment PIN_115 -to VgaBlue[1]
+set_location_assignment PIN_113 -to VgaBlue[2]
+
 set_location_assignment PIN_161 -to HREF
 set_location_assignment PIN_28 -to PCLK
 set_location_assignment PIN_142 -to D[7]
