@@ -80,7 +80,6 @@ begin
 			SeenVsync_N <= '1';
 		end if;
 
-		-- FIXME: Check HREF toggling
 		if Href_D = '1' and SeenVsync_D = '1' then
 			ValData_N <= '1';
 		end if;
