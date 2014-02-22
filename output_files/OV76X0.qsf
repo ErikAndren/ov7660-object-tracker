@@ -138,29 +138,8 @@ set_location_assignment PIN_96 -to SramOeN
 set_location_assignment PIN_95 -to SramUbN
 set_location_assignment PIN_97 -to SramWeN
 
-set_global_assignment -name VHDL_FILE ../OV76X0Pack.vhd
-set_global_assignment -name VHDL_FILE ../VGAGenerator.vhd
-set_global_assignment -name VHDL_FILE ../VideoController.vhd
-set_global_assignment -name VHDL_FILE ../VideoPacker.vhd
-set_global_assignment -name VHDL_FILE ../VideoCompressor.vhd
-set_global_assignment -name VHDL_FILE ../SramArbiter.vhd
-set_global_assignment -name VHDL_FILE "../../SramTest-IS61LV25616AL/SramController.vhd"
-set_global_assignment -name VHDL_FILE ../AsyncFifo.vhd
-set_global_assignment -name VHDL_FILE ../VideoCapturer.vhd
-set_global_assignment -name VHDL_FILE ../../Lib/ResetSync.vhd
-set_global_assignment -name VHDL_FILE ../SccbCtrl.vhd
-set_global_assignment -name VHDL_FILE ../OV7660Init.vhd
-set_global_assignment -name VHDL_FILE ../SccbMaster.vhd
-set_global_assignment -name VHDL_FILE ../SccbAddrReader.vhd
-set_global_assignment -name VHDL_FILE ../OV76X0Top.vhd
-set_global_assignment -name VHDL_FILE ../../Lib/Types.vhd
-set_global_assignment -name VHDL_FILE ../../Lib/Debounce.vhd
-set_global_assignment -name QIP_FILE Pll.qip
-set_global_assignment -name SDC_FILE OV76X0.sdc
-set_global_assignment -name QIP_FILE ../AsyncFifo.qip
 set_global_assignment -name ENABLE_SIGNALTAP OFF
 set_global_assignment -name USE_SIGNALTAP_FILE output_files/PixelOut.stp
-set_global_assignment -name SIGNALTAP_FILE PIxelDataCapture.stp
 set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to HREF
 set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to D[0]
 set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to altera_reserved_tck
@@ -228,6 +207,26 @@ set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to VgaRed
 set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to VgaVsync
 set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to VSYNC
 set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to XCLK
-set_global_assignment -name SIGNALTAP_FILE output_files/PixelOut.stp
 set_global_assignment -name SLD_FILE /home/erik/Development/FPGA/OV76X0/output_files/output_files/PixelOut_auto_stripped.stp
+set_global_assignment -name VHDL_FILE ../FakeVgaCam.vhd
+set_global_assignment -name VHDL_FILE ../OV76X0Pack.vhd
+set_global_assignment -name VHDL_FILE ../VGAGenerator.vhd
+set_global_assignment -name VHDL_FILE ../VideoController.vhd
+set_global_assignment -name VHDL_FILE ../VideoPacker.vhd
+set_global_assignment -name VHDL_FILE ../VideoCompressor.vhd
+set_global_assignment -name VHDL_FILE ../SramArbiter.vhd
+set_global_assignment -name VHDL_FILE "../../SramTest-IS61LV25616AL/SramController.vhd"
+set_global_assignment -name VHDL_FILE ../AsyncFifo.vhd
+set_global_assignment -name VHDL_FILE ../VideoCapturer.vhd
+set_global_assignment -name VHDL_FILE ../../Lib/ResetSync.vhd
+set_global_assignment -name VHDL_FILE ../SccbCtrl.vhd
+set_global_assignment -name VHDL_FILE ../OV7660Init.vhd
+set_global_assignment -name VHDL_FILE ../SccbMaster.vhd
+set_global_assignment -name VHDL_FILE ../SccbAddrReader.vhd
+set_global_assignment -name VHDL_FILE ../OV76X0Top.vhd
+set_global_assignment -name VHDL_FILE ../../Lib/Types.vhd
+set_global_assignment -name VHDL_FILE ../../Lib/Debounce.vhd
+set_global_assignment -name QIP_FILE Pll.qip
+set_global_assignment -name SDC_FILE OV76X0.sdc
+set_global_assignment -name QIP_FILE ../AsyncFifo.qip
 set_instance_assignment -name PARTITION_HIERARCHY root_partition -to | -section_id Top

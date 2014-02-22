@@ -73,9 +73,9 @@ architecture rtl of OV76X0 is
 	
 	signal SramWriteReq : bit1;
 	signal SramWriteAddr, SramReadAddr : word(SramAddrW-1 downto 0);
-	
-	signal AsyncFifoFillLvl : word(3-1 downto 0);
-	signal SccbInstPtr : word(InstPtrW-1 downto 0);
+		
+	signal FakeHref, FakeVSync : bit1;
+	signal FakeD : word(8-1 downto 0);
 	
 begin
 	Pll : entity work.Pll
@@ -118,9 +118,17 @@ begin
 		DataFromSccb => SccbData,
 		--
 		SIO_C        => SIO_C,
-		SIO_D        => SIO_D,
+		SIO_D        => SIO_D
+	);
+	
+	FakeVgaCam : entity work.FakeVgaCam
+	port map (
+		RstN  => RstN,
+		Clk   => XCLK_i,
 		--
-		InstPtr      => SccbInstPtr
+		VSync => FakeVSync,
+		HRef  => FakeHRef,
+		D     => FakeD
 	);
 	
 	CaptPixel : entity work.VideoCapturer
@@ -133,10 +141,9 @@ begin
 		--
 		PixelOut  => PixelData,
 		PixelVal  => PixelVal,
-		FillLevel => AsyncFifoFillLvl,
 		--
 		PRstN     => AsyncRstN,
-		PClk      => PCLK,
+		PClk      => XCLK_i,
 		Vsync     => VSYNC,
 		HREF      => HREF,
 		PixelData => D
