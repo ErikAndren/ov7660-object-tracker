@@ -37,7 +37,7 @@ begin
     lineCnt <= conv_word(conv_integer(clkCnt) / tLine, lineCnt'length);
     pixCnt  <= conv_word(conv_integer(clkCnt) mod tLine, pixCnt'length);
 
-    Async : process (clkCnt, lineCnt, pixCnt)
+    Async : process (lineCnt, pixCnt)
     begin
       vsync <= '0';
       href  <= '0';
@@ -47,8 +47,8 @@ begin
         vsync <= '1';
       end if;
       
-      if (lineCnt >= tHrefPreamble and
-          (lineCnt < (tVsyncPeriod - tHrefPostamble))) then
+      if (conv_integer(lineCnt) >= tHrefPreamble and
+          (conv_integer(lineCnt) < (tVsyncPeriod - tHrefPostamble))) then
         if (pixCnt < tHrefHigh) then
           href <= '1';
           D    <= pixCnt(D'range);
