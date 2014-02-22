@@ -135,9 +135,6 @@ begin
       PCLK      => XCLK,
       D         => D,
       --
-      Display   => open,
-      Segments  => open,
-      --
       SIO_C     => open,
       SIO_D     => open,
       --
