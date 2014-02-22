@@ -83,7 +83,8 @@ begin
        LineCnt_N  <= (others => '0');
     end if;
   end process;
-  StartLocVSync <= '1' when VsyncDetect_D = VSyncThreshold and StartLocVSync_D = '0' else '0';
+--  StartLocVSync <= '1' when VsyncDetect_D = VSyncThreshold and StartLocVSync_D = '0' else '0';
+  StartLocVSync <= '0';
 
   VSyncFiltered <= '1' when LineCnt_D < VSyncLineLen else '0';
   HRefFiltered <= '1'  when

@@ -32,7 +32,6 @@ package OV76X0Pack is
 	
 	constant InstPtrW : positive := 4;
 
-
         constant tClk  : positive := 1;
         constant tP    : positive := 2 * tClk;
         constant tLine : positive := tP * 784;

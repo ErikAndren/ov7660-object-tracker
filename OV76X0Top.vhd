@@ -23,9 +23,6 @@ entity OV76X0 is
 	XCLK : out bit1;
 	PCLK : in  bit1;
 	D    : in  word(8-1 downto 0);
-	-- Lcd Interface
-	Display : out word(Displays-1 downto 0);
-	Segments : out word(8-1 downto 0);
 	-- SCCB interface
 	SIO_C : out bit1;
 	SIO_D : inout bit1;
@@ -47,7 +44,6 @@ entity OV76X0 is
 end entity;
 
 architecture rtl of OV76X0 is
-	signal LcdDisp : word(bits(10**Displays)-1 downto 0);
 	signal Btn1Stab, Btn2Stab : bit1;
 	signal SccbData, DispData : word(SccbDataW-1 downto 0);
 	signal SccbRe   : bit1;
@@ -110,25 +106,6 @@ begin
 		x   => Button2,
 		DBx => Btn2Stab
 	);
-
-	BcdDisp : entity work.BcdDisp
-	generic map (
-		Displays => 8,
-	   Freq => Freq
-	)
-	port map (
-		Clk => Clk,
-		RstN => AsyncRstN,
-		--
-		Data => LcdDisp,
-		--
-		Segments => Segments,
-		Display  => Display
-	);
-	
-	--LcdDisp <= xt0(SccbData, LcdDisp'length);
-	--LcdDisp <= xt0(PixelInData, LcdDisp'length);
-	LcdDisp <= xt0(SccbInstPtr, LcdDisp'length);
 
 	SccbM : entity work.SccbMaster
 	generic map (

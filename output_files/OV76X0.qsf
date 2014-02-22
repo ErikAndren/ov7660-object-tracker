@@ -57,22 +57,6 @@ set_global_assignment -name PARTITION_COLOR 16764057 -section_id Top
 set_global_assignment -name STRATIX_DEVICE_IO_STANDARD "3.3-V LVTTL"
 set_location_assignment PIN_23 -to Clk
 set_location_assignment PIN_147 -to AsyncRstN
-set_location_assignment PIN_135 -to Display[7]
-set_location_assignment PIN_134 -to Display[6]
-set_location_assignment PIN_133 -to Display[5]
-set_location_assignment PIN_128 -to Display[4]
-set_location_assignment PIN_127 -to Display[3]
-set_location_assignment PIN_104 -to Display[2]
-set_location_assignment PIN_105 -to Display[1]
-set_location_assignment PIN_106 -to Display[0]
-set_location_assignment PIN_118 -to Segments[7]
-set_location_assignment PIN_117 -to Segments[6]
-set_location_assignment PIN_116 -to Segments[5]
-set_location_assignment PIN_115 -to Segments[4]
-set_location_assignment PIN_114 -to Segments[3]
-set_location_assignment PIN_113 -to Segments[2]
-set_location_assignment PIN_112 -to Segments[1]
-set_location_assignment PIN_110 -to Segments[0]
 
 set_global_assignment -name USE_CONFIGURATION_DEVICE ON
 set_global_assignment -name RESERVE_ALL_UNUSED_PINS "AS INPUT TRI-STATED"
@@ -89,11 +73,11 @@ set_global_assignment -name FITTER_EFFORT "FAST FIT"
 set_location_assignment PIN_163 -to VSYNC
 set_location_assignment PIN_151 -to XCLK
 set_global_assignment -name RESERVE_ALL_UNUSED_PINS_NO_OUTPUT_GND "AS INPUT TRI-STATED"
-set_location_assignment PIN_162 -to VgaBlue
-set_location_assignment PIN_160 -to VgaGreen
-set_location_assignment PIN_164 -to VgaHsync
+set_location_assignment PIN_113 -to VgaBlue
+set_location_assignment PIN_112 -to VgaGreen
+set_location_assignment PIN_110 -to VgaHsync
 set_location_assignment PIN_152 -to VgaRed
-set_location_assignment PIN_168 -to VgaVsync
+set_location_assignment PIN_105 -to VgaVsync
 set_location_assignment PIN_161 -to HREF
 set_location_assignment PIN_28 -to PCLK
 set_location_assignment PIN_142 -to D[7]
@@ -162,128 +146,79 @@ set_global_assignment -name VHDL_FILE ../SccbAddrReader.vhd
 set_global_assignment -name VHDL_FILE ../OV76X0Top.vhd
 set_global_assignment -name VHDL_FILE ../../Lib/Types.vhd
 set_global_assignment -name VHDL_FILE ../../Lib/Debounce.vhd
-set_global_assignment -name VHDL_FILE ../../Lib/BcdPack.vhd
-set_global_assignment -name VHDL_FILE ../../Lib/BcdDisp.vhd
 set_global_assignment -name QIP_FILE Pll.qip
 set_global_assignment -name SDC_FILE OV76X0.sdc
 set_global_assignment -name QIP_FILE ../AsyncFifo.qip
-set_global_assignment -name VHDL_FILE ../tb.vhd
-set_global_assignment -name ENABLE_SIGNALTAP ON
+set_global_assignment -name ENABLE_SIGNALTAP OFF
 set_global_assignment -name USE_SIGNALTAP_FILE output_files/PixelOut.stp
 set_global_assignment -name SIGNALTAP_FILE PIxelDataCapture.stp
-set_global_assignment -name SLD_NODE_CREATOR_ID 110 -section_id auto_signaltap_0
-set_global_assignment -name SLD_NODE_ENTITY_NAME sld_signaltap -section_id auto_signaltap_0
-set_global_assignment -name SLD_NODE_PARAMETER_ASSIGNMENT "SLD_NODE_INFO=805334528" -section_id auto_signaltap_0
-set_global_assignment -name SLD_NODE_PARAMETER_ASSIGNMENT "SLD_POWER_UP_TRIGGER=0" -section_id auto_signaltap_0
-set_global_assignment -name SLD_NODE_PARAMETER_ASSIGNMENT "SLD_ATTRIBUTE_MEM_MODE=OFF" -section_id auto_signaltap_0
-set_global_assignment -name SLD_NODE_PARAMETER_ASSIGNMENT "SLD_TRIGGER_LEVEL=1" -section_id auto_signaltap_0
-set_global_assignment -name SLD_NODE_PARAMETER_ASSIGNMENT "SLD_TRIGGER_IN_ENABLED=0" -section_id auto_signaltap_0
-set_global_assignment -name SLD_NODE_PARAMETER_ASSIGNMENT "SLD_ADVANCED_TRIGGER_ENTITY=basic,1," -section_id auto_signaltap_0
-set_global_assignment -name SLD_NODE_PARAMETER_ASSIGNMENT "SLD_TRIGGER_LEVEL_PIPELINE=1" -section_id auto_signaltap_0
-set_global_assignment -name SLD_NODE_PARAMETER_ASSIGNMENT "SLD_ENABLE_ADVANCED_TRIGGER=0" -section_id auto_signaltap_0
-set_global_assignment -name CDF_FILE output_files/Chain3.cdf
-set_global_assignment -name SLD_NODE_PARAMETER_ASSIGNMENT "SLD_STATE_FLOW_USE_GENERATED=0" -section_id auto_signaltap_0
-set_global_assignment -name SLD_NODE_PARAMETER_ASSIGNMENT "SLD_STATE_BITS=11" -section_id auto_signaltap_0
-set_global_assignment -name SLD_NODE_PARAMETER_ASSIGNMENT "SLD_BUFFER_FULL_STOP=1" -section_id auto_signaltap_0
-set_global_assignment -name SLD_NODE_PARAMETER_ASSIGNMENT "SLD_CURRENT_RESOURCE_WIDTH=1" -section_id auto_signaltap_0
-set_instance_assignment -name CONNECT_TO_SLD_NODE_ENTITY_PORT acq_trigger_in[0] -to "VideoCapturer:CaptPixel|Href_D" -section_id auto_signaltap_0
-set_instance_assignment -name CONNECT_TO_SLD_NODE_ENTITY_PORT acq_trigger_in[1] -to "VideoCapturer:CaptPixel|Vsync_D" -section_id auto_signaltap_0
-set_instance_assignment -name CONNECT_TO_SLD_NODE_ENTITY_PORT acq_data_in[0] -to "VideoCapturer:CaptPixel|Href_D" -section_id auto_signaltap_0
-set_instance_assignment -name CONNECT_TO_SLD_NODE_ENTITY_PORT acq_data_in[1] -to "VideoCapturer:CaptPixel|Vsync_D" -section_id auto_signaltap_0
-set_global_assignment -name SLD_NODE_PARAMETER_ASSIGNMENT "SLD_DATA_BITS=2" -section_id auto_signaltap_0
-set_global_assignment -name SLD_NODE_PARAMETER_ASSIGNMENT "SLD_TRIGGER_BITS=2" -section_id auto_signaltap_0
-set_global_assignment -name SLD_NODE_PARAMETER_ASSIGNMENT "SLD_INVERSION_MASK=0000000000000000000000000000000000" -section_id auto_signaltap_0
-set_global_assignment -name SLD_NODE_PARAMETER_ASSIGNMENT "SLD_INVERSION_MASK_LENGTH=34" -section_id auto_signaltap_0
-set_instance_assignment -name IO_STANDARD "3.3-V LVCMOS" -to HREF
-set_instance_assignment -name IO_STANDARD "3.3-V LVCMOS" -to D[0]
+set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to HREF
+set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to D[0]
 set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to altera_reserved_tck
 set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to altera_reserved_tdi
 set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to altera_reserved_tdo
 set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to altera_reserved_tms
-set_instance_assignment -name IO_STANDARD "3.3-V LVCMOS" -to AsyncRstN
+set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to AsyncRstN
 set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to auto_stp_external_storage_qualifier
-set_instance_assignment -name IO_STANDARD "3.3-V LVCMOS" -to Button1
-set_instance_assignment -name IO_STANDARD "3.3-V LVCMOS" -to Button2
-set_instance_assignment -name IO_STANDARD "3.3-V LVCMOS" -to Clk
-set_instance_assignment -name IO_STANDARD "3.3-V LVCMOS" -to D[7]
-set_instance_assignment -name IO_STANDARD "3.3-V LVCMOS" -to D[6]
-set_instance_assignment -name IO_STANDARD "3.3-V LVCMOS" -to D[5]
-set_instance_assignment -name IO_STANDARD "3.3-V LVCMOS" -to D[4]
-set_instance_assignment -name IO_STANDARD "3.3-V LVCMOS" -to D[3]
-set_instance_assignment -name IO_STANDARD "3.3-V LVCMOS" -to D[2]
-set_instance_assignment -name IO_STANDARD "3.3-V LVCMOS" -to D[1]
-set_instance_assignment -name IO_STANDARD "3.3-V LVCMOS" -to Display[7]
-set_instance_assignment -name IO_STANDARD "3.3-V LVCMOS" -to Display[6]
-set_instance_assignment -name IO_STANDARD "3.3-V LVCMOS" -to Display[5]
-set_instance_assignment -name IO_STANDARD "3.3-V LVCMOS" -to Display[4]
-set_instance_assignment -name IO_STANDARD "3.3-V LVCMOS" -to Display[3]
-set_instance_assignment -name IO_STANDARD "3.3-V LVCMOS" -to Display[2]
-set_instance_assignment -name IO_STANDARD "3.3-V LVCMOS" -to Display[1]
-set_instance_assignment -name IO_STANDARD "3.3-V LVCMOS" -to Display[0]
-set_instance_assignment -name IO_STANDARD "3.3-V LVCMOS" -to PCLK
-set_instance_assignment -name IO_STANDARD "3.3-V LVCMOS" -to Segments[7]
-set_instance_assignment -name IO_STANDARD "3.3-V LVCMOS" -to Segments[6]
-set_instance_assignment -name IO_STANDARD "3.3-V LVCMOS" -to Segments[5]
-set_instance_assignment -name IO_STANDARD "3.3-V LVCMOS" -to Segments[4]
-set_instance_assignment -name IO_STANDARD "3.3-V LVCMOS" -to Segments[3]
-set_instance_assignment -name IO_STANDARD "3.3-V LVCMOS" -to Segments[2]
-set_instance_assignment -name IO_STANDARD "3.3-V LVCMOS" -to Segments[1]
-set_instance_assignment -name IO_STANDARD "3.3-V LVCMOS" -to Segments[0]
-set_instance_assignment -name IO_STANDARD "3.3-V LVCMOS" -to SIO_C
-set_instance_assignment -name IO_STANDARD "3.3-V LVCMOS" -to SIO_D
-set_instance_assignment -name IO_STANDARD "3.3-V LVCMOS" -to SramAddr[17]
-set_instance_assignment -name IO_STANDARD "3.3-V LVCMOS" -to SramAddr[16]
-set_instance_assignment -name IO_STANDARD "3.3-V LVCMOS" -to SramAddr[15]
-set_instance_assignment -name IO_STANDARD "3.3-V LVCMOS" -to SramAddr[14]
-set_instance_assignment -name IO_STANDARD "3.3-V LVCMOS" -to SramAddr[13]
-set_instance_assignment -name IO_STANDARD "3.3-V LVCMOS" -to SramAddr[12]
-set_instance_assignment -name IO_STANDARD "3.3-V LVCMOS" -to SramAddr[11]
-set_instance_assignment -name IO_STANDARD "3.3-V LVCMOS" -to SramAddr[10]
-set_instance_assignment -name IO_STANDARD "3.3-V LVCMOS" -to SramAddr[9]
-set_instance_assignment -name IO_STANDARD "3.3-V LVCMOS" -to SramAddr[8]
-set_instance_assignment -name IO_STANDARD "3.3-V LVCMOS" -to SramAddr[7]
-set_instance_assignment -name IO_STANDARD "3.3-V LVCMOS" -to SramAddr[6]
-set_instance_assignment -name IO_STANDARD "3.3-V LVCMOS" -to SramAddr[5]
-set_instance_assignment -name IO_STANDARD "3.3-V LVCMOS" -to SramAddr[4]
-set_instance_assignment -name IO_STANDARD "3.3-V LVCMOS" -to SramAddr[3]
-set_instance_assignment -name IO_STANDARD "3.3-V LVCMOS" -to SramAddr[2]
-set_instance_assignment -name IO_STANDARD "3.3-V LVCMOS" -to SramAddr[1]
-set_instance_assignment -name IO_STANDARD "3.3-V LVCMOS" -to SramAddr[0]
-set_instance_assignment -name IO_STANDARD "3.3-V LVCMOS" -to SramCeN
-set_instance_assignment -name IO_STANDARD "3.3-V LVCMOS" -to SramD[15]
-set_instance_assignment -name IO_STANDARD "3.3-V LVCMOS" -to SramD[14]
-set_instance_assignment -name IO_STANDARD "3.3-V LVCMOS" -to SramD[13]
-set_instance_assignment -name IO_STANDARD "3.3-V LVCMOS" -to SramD[12]
-set_instance_assignment -name IO_STANDARD "3.3-V LVCMOS" -to SramD[11]
-set_instance_assignment -name IO_STANDARD "3.3-V LVCMOS" -to SramD[10]
-set_instance_assignment -name IO_STANDARD "3.3-V LVCMOS" -to SramD[9]
-set_instance_assignment -name IO_STANDARD "3.3-V LVCMOS" -to SramD[8]
-set_instance_assignment -name IO_STANDARD "3.3-V LVCMOS" -to SramD[7]
-set_instance_assignment -name IO_STANDARD "3.3-V LVCMOS" -to SramD[6]
-set_instance_assignment -name IO_STANDARD "3.3-V LVCMOS" -to SramD[5]
-set_instance_assignment -name IO_STANDARD "3.3-V LVCMOS" -to SramD[4]
-set_instance_assignment -name IO_STANDARD "3.3-V LVCMOS" -to SramD[3]
-set_instance_assignment -name IO_STANDARD "3.3-V LVCMOS" -to SramD[2]
-set_instance_assignment -name IO_STANDARD "3.3-V LVCMOS" -to SramD[1]
-set_instance_assignment -name IO_STANDARD "3.3-V LVCMOS" -to SramD[0]
-set_instance_assignment -name IO_STANDARD "3.3-V LVCMOS" -to SramLbN
-set_instance_assignment -name IO_STANDARD "3.3-V LVCMOS" -to SramOeN
-set_instance_assignment -name IO_STANDARD "3.3-V LVCMOS" -to SramUbN
-set_instance_assignment -name IO_STANDARD "3.3-V LVCMOS" -to SramWeN
-set_instance_assignment -name IO_STANDARD "3.3-V LVCMOS" -to VgaBlue
-set_instance_assignment -name IO_STANDARD "3.3-V LVCMOS" -to VgaGreen
-set_instance_assignment -name IO_STANDARD "3.3-V LVCMOS" -to VgaHsync
-set_instance_assignment -name IO_STANDARD "3.3-V LVCMOS" -to VgaRed
-set_instance_assignment -name IO_STANDARD "3.3-V LVCMOS" -to VgaVsync
-set_instance_assignment -name IO_STANDARD "3.3-V LVCMOS" -to VSYNC
-set_instance_assignment -name IO_STANDARD "3.3-V LVCMOS" -to XCLK
+set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to Button1
+set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to Button2
+set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to Clk
+set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to D[7]
+set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to D[6]
+set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to D[5]
+set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to D[4]
+set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to D[3]
+set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to D[2]
+set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to D[1]
+set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to PCLK
+set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to SIO_C
+set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to SIO_D
+set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to SramAddr[17]
+set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to SramAddr[16]
+set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to SramAddr[15]
+set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to SramAddr[14]
+set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to SramAddr[13]
+set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to SramAddr[12]
+set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to SramAddr[11]
+set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to SramAddr[10]
+set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to SramAddr[9]
+set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to SramAddr[8]
+set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to SramAddr[7]
+set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to SramAddr[6]
+set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to SramAddr[5]
+set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to SramAddr[4]
+set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to SramAddr[3]
+set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to SramAddr[2]
+set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to SramAddr[1]
+set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to SramAddr[0]
+set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to SramCeN
+set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to SramD[15]
+set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to SramD[14]
+set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to SramD[13]
+set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to SramD[12]
+set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to SramD[11]
+set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to SramD[10]
+set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to SramD[9]
+set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to SramD[8]
+set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to SramD[7]
+set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to SramD[6]
+set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to SramD[5]
+set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to SramD[4]
+set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to SramD[3]
+set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to SramD[2]
+set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to SramD[1]
+set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to SramD[0]
+set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to SramLbN
+set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to SramOeN
+set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to SramUbN
+set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to SramWeN
+set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to VgaBlue
+set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to VgaGreen
+set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to VgaHsync
+set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to VgaRed
+set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to VgaVsync
+set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to VSYNC
+set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to XCLK
 set_global_assignment -name SIGNALTAP_FILE output_files/PixelOut.stp
-set_global_assignment -name CDF_FILE output_files/Chain4.cdf
-set_instance_assignment -name CONNECT_TO_SLD_NODE_ENTITY_PORT acq_clk -to "VideoCapturer:CaptPixel|PClk" -section_id auto_signaltap_0
-set_global_assignment -name SLD_NODE_PARAMETER_ASSIGNMENT "SLD_STORAGE_QUALIFIER_INVERSION_MASK_LENGTH=0" -section_id auto_signaltap_0
-set_global_assignment -name SLD_NODE_PARAMETER_ASSIGNMENT "SLD_SEGMENT_SIZE=16384" -section_id auto_signaltap_0
-set_global_assignment -name SLD_NODE_PARAMETER_ASSIGNMENT "SLD_NODE_CRC_LOWORD=12114" -section_id auto_signaltap_0
-set_global_assignment -name SLD_NODE_PARAMETER_ASSIGNMENT "SLD_NODE_CRC_HIWORD=59653" -section_id auto_signaltap_0
-set_global_assignment -name SLD_NODE_PARAMETER_ASSIGNMENT "SLD_SAMPLE_DEPTH=16384" -section_id auto_signaltap_0
 set_global_assignment -name SLD_FILE /home/erik/Development/FPGA/OV76X0/output_files/output_files/PixelOut_auto_stripped.stp
 set_instance_assignment -name PARTITION_HIERARCHY root_partition -to | -section_id Top

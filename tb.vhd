@@ -2,6 +2,8 @@
 library ieee;
 use ieee.std_logic_1164.all;
 use ieee.std_logic_arith.all;
+USE ieee.math_real.ALL;   -- for UNIFORM, TRUNC functions
+USE ieee.numeric_std.ALL; -- for TO_UNSIGNED function
 
 use work.Types.all;
 use work.OV76X0Pack.all;
@@ -13,7 +15,7 @@ architecture rtl of tb is
   signal RstN  : bit1;
   signal Clk50 : bit1;
 
-  signal XCLK, PCLK  : bit1;
+  signal XCLK  : bit1;
   signal D           : word(8-1 downto 0);
   signal VSYNC, HREF : bit1;
 
@@ -32,13 +34,17 @@ begin
     end loop;
   end process;
 
-
   OV7660SignalGen : block
     signal clkCnt  : integer;
     signal lineCnt : integer;
     signal pixCnt  : integer;
+    signal href_rand, vsync_rand : bit1;
+    signal s1 : positive := 1;
+    signal s2 : positive := 2;
 
+    signal HrefFilt, VSyncFilt : bit1;
   begin
+    
     Sync : process (XClk, RstN)
     begin
       if RstN = '0' then
@@ -54,24 +60,64 @@ begin
     lineCnt <= clkCnt / tLine;
     pixCnt  <= clkCnt mod tLine;
 
-    Async : process (clkCnt, lineCnt, pixCnt)
+    Async : process (clkCnt, lineCnt, pixCnt, href_rand, vsync_rand)
     begin
       vsync <= '0';
       href  <= '0';
       D     <= (others => 'X');
 
       if (lineCnt < tVsyncHigh) then
-        vsync <= '1';
+        vsync <= '1' xor vsync_rand;
       end if;
       
       if (lineCnt >= tHrefPreamble and
           (lineCnt < (tVsyncPeriod - tHrefPostamble))) then
         if (pixCnt < tHrefHigh) then
-          href <= '1';
+          href <= '1' xor href_rand;
           D    <= conv_word(pixCnt, D'length);
         end if;
       end if;
     end process;
+
+    RandProc : process (XClk)
+      variable rand : real;
+      variable int_rand : integer;
+      variable seed1, seed2 : positive;
+    begin
+      if rising_edge(XClk) then
+        seed1 := s1;
+        seed2 := s2;
+        
+        href_rand <= '0';
+        vsync_rand <= '0';
+        
+        UNIFORM(seed1, seed2, rand);                                   -- generate random number
+        int_rand := INTEGER(TRUNC(rand*100.0));                       -- rescale to 0..4096, find integer part
+        if (int_rand = 1) then
+          href_rand <= conv_word(int_rand, 7)(0);  -- convert to std_logic_vector
+        end if;
+
+        UNIFORM(seed1, seed2, rand);                                   -- generate random number
+        int_rand := INTEGER(TRUNC(rand*100.0));                       -- rescale to 0..4096, find integer part
+        if (int_rand = 1) then
+          vsync_rand <= conv_word(int_rand, 7)(0);  -- convert to std_logic_vector
+        end if;  
+        s1 <= seed1 + int_rand;
+      end if;
+    end process;
+
+    Filter : entity work.OV76X0Filter
+      port map (
+        Rst_N => RstN,
+        Clk => XClk,
+        --
+        Href => href,
+        VSync => vsync,
+        --
+        HrefFiltered => HRefFilt,
+        VsyncFiltered => VsyncFilt
+        );
+      
   end block;
 
   DUT : entity work.OV76X0
