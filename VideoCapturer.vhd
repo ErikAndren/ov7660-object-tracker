@@ -22,7 +22,8 @@ entity VideoCapturer is
 		--
 		PixelOut : out word(DataW-1 downto 0);
 		PixelVal : out bit1;
-		FillLevel : out word(3-1 downto 0)
+		FillLevel : out word(3-1 downto 0);
+		Vsync_Clk : out bit1
 	);
 
 end entity;
@@ -43,8 +44,9 @@ architecture rtl of VideoCapturer is
 	signal PixelVal_D : bit1;
 	
 	signal Delay_N, Delay_D : word(20-1 downto 0);
-	
 	signal Href_D, Vsync_D : bit1;
+	
+	signal VSync_META, VSync_D_Clk : bit1;
 begin
 	PClkRstSync : entity work.ResetSync
 	port map (
@@ -79,7 +81,7 @@ begin
 		PixelData_N <= PixelData;
 		ValData_N   <= '0';
 		SeenVsync_N <= SeenVsync_D;
-		Delay_N <= Delay_D;
+		Delay_N     <= Delay_D;
 
 		if (RedAnd(Delay_D) = '0') then
 			Delay_N <= Delay_D + 1;
@@ -130,13 +132,19 @@ begin
 			FifoRdVal_D <= '0';
 			PixelOut_D <= (others => '0');
 			PixelVal_D <= '0';
+			VSync_META <= '0';
+			VSync_D_Clk    <= '0';
+
 		elsif rising_edge(Clk) then
 			FifoRdVal_D <= FifoRdVal_N;
 			PixelOut_D <= RdData;
 			PixelVal_D <= FifoRdVal_D;
+			VSync_META <= VSync;
+			VSync_D_Clk    <= VSync_META;
 		end if;
 	end process;	
 	
 	PixelOut <= PixelOut_D;
 	PixelVal <= PixelVal_D;
+	Vsync_Clk <= Vsync_D_Clk;
 end architecture;

@@ -77,6 +77,8 @@ architecture rtl of OV76X0 is
 	signal FakeHref, FakeVSync : bit1;
 	signal FakeD : word(8-1 downto 0);
 	
+	signal Vsync_Clk : bit1;
+	
 begin
 	Pll : entity work.Pll
 	port map (
@@ -146,7 +148,9 @@ begin
 		PClk      => XCLK_i,
 		Vsync     => VSYNC,
 		HREF      => HREF,
-		PixelData => D
+		PixelData => D,
+		--
+		Vsync_Clk => Vsync_Clk
 	);
 
 	VideoComp : entity work.VideoCompressor
@@ -173,7 +177,10 @@ begin
 		PixelPackedVal => SramWriteReq,
 		SramWriteAddr  => SramWriteAddr,
 		--
-		PopPixelPack   => PixelPopWrite);
+		PopPixelPack   => PixelPopWrite,
+		Vsync          => Vsync_Clk
+		);
+
 		PixelInData(15) <= '0';
 
 	SramArb : entity work.SramArbiter

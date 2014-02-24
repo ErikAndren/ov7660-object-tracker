@@ -15,6 +15,7 @@ entity VideoPacker is
 	Clk      : in bit1;
 	RstN    : in bit1;
 	--
+	Vsync     : in bit1;
 	PixelComp : in word(CompPixelW-1 downto 0);
 	PixelCompVal : in bit1;
 	--
@@ -62,7 +63,9 @@ begin
 		end if;
 	end process;
 	
-	AsyncProc : process (PackedData_D, PackCnt_D, PixelCompVal, WriteBufPtr_D, ReadBufPtr_D, PopPixelPack, PixelComp, WordCnt_D, LineCnt_D, FrameCnt_D)
+	AsyncProc : process (PackedData_D, PackCnt_D, PixelCompVal, WriteBufPtr_D,
+								ReadBufPtr_D, PopPixelPack, PixelComp, WordCnt_D, 
+								LineCnt_D, FrameCnt_D, VSync)
 		variable WriteBufPtr : integer;
 	begin
 		PackedData_N  <= PackedData_D;
@@ -107,6 +110,11 @@ begin
 					end if;
 				end if;
 			end if;
+		end if;
+		
+		if (Vsync = '1') then
+			WordCnt_N <= (others => '0');
+			LineCnt_N <= (others => '0');
 		end if;
 	end process;
 
