@@ -23,8 +23,11 @@ end entity;
 
 architecture fpga of OV7660Init is
 	constant COM2 : word(8-1 downto 0)  := x"09";
+	constant AECH : word(8-1 downto 0)  := x"10";
 	constant CLKRC : word(8-1 downto 0) := x"11";
 	constant COM7 : word(8-1 downto 0)  := x"12";
+	constant COM8 : word(8-1 downto 0)  := x"13";
+	constant COM9 : word(8-1 downto 0)  := x"14";
 	constant COM10 : word(8-1 downto 0) := x"15";
 	constant TSLB : word(8-1 downto 0)  := x"3a";
 	constant MANU : word(8-1 downto 0)  := x"67";
@@ -79,7 +82,17 @@ begin
 					AddrData <= COM7 & x"00"; -- SCCB Register reset release
 					We       <= '1';
 					Start    <= '1';
-					
+
+--				when "0010" =>
+--					AddrData <= AECH & x"01"; -- 
+--					We       <= '1';
+--					Start    <= '1';
+
+--				when "0010" =>
+--					AddrData <= COM8 & x"A9"; -- Enable banding filter, disable AGC
+--					We       <= '1';
+--					Start    <= '1';
+				
 --				when "0010" =>
 --					AddrData <= CLKRC & x"80"; -- Reverse PCLK
 --					We       <= '1';
@@ -92,11 +105,6 @@ begin
 				
 	--			when "0000" =>
 	--				AddrData <= TSLB & x"1C"; -- enable line buffer test option
-	--				We       <= '1';
-	--				Start    <= '1';
-	
-	--			when "0000" =>
-	--				AddrData <= COM2 & x"11"; -- enable soft sleep
 	--				We       <= '1';
 	--				Start    <= '1';
 	
