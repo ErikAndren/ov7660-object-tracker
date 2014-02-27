@@ -153,16 +153,28 @@ begin
 		Vsync_Clk => Vsync_Clk
 	);
 
-	VideoComp : entity work.VideoCompressor
+--	VideoComp : entity work.VideoCompressor
+--	port map (
+--		Clk       => Clk,
+--		RstN      => RstN,
+--		--
+--		PixelData => PixelData,
+--		PixelVal  => PixelVal,
+--		--
+--		PixelCompData => PixelCompData,
+--		PixelCompVal  => PixelCompVal
+--	);
+
+	VideoComp : entity work.DitherFloydSteinberg
 	port map (
-		Clk       => Clk,
-		RstN      => RstN,
+		Clk         => Clk,
+		RstN        => RstN,
 		--
-		PixelData => PixelData,
-		PixelVal  => PixelVal,
+		PixelIn     => PixelData,
+		PixelInVal  => PixelVal,
 		--
-		PixelCompData => PixelCompData,
-		PixelCompVal  => PixelCompVal
+		PixelOut    => PixelCompData,
+		PixelOutVal => PixelCompVal
 	);
 	
 	VideoPack : entity work.VideoPacker
