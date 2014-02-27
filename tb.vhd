@@ -67,13 +67,16 @@ begin
       D     <= (others => 'X');
 
       if (lineCnt < tVsyncHigh) then
-        vsync <= '1' xor vsync_rand;
+        -- vsync <= '1' xor vsync_rand;
+        vsync <= '1';
       end if;
       
       if (lineCnt >= tHrefPreamble and
           (lineCnt < (tVsyncPeriod - tHrefPostamble))) then
         if (pixCnt < tHrefHigh) then
-          href <= '1' xor href_rand;
+--          href <= '1' xor href_rand;
+            href <= '1';
+
           D    <= conv_word(pixCnt, D'length);
         end if;
       end if;
@@ -106,17 +109,17 @@ begin
       end if;
     end process;
 
-    Filter : entity work.OV76X0Filter
-      port map (
-        Rst_N => RstN,
-        Clk => XClk,
-        --
-        Href => href,
-        VSync => vsync,
-        --
-        HrefFiltered => HRefFilt,
-        VsyncFiltered => VsyncFilt
-        );
+    --Filter : entity work.OV76X0Filter
+    --  port map (
+    --    Rst_N => RstN,
+    --    Clk => XClk,
+    --    --
+    --    Href => href,
+    --    VSync => vsync,
+    --    --
+    --    HrefFiltered => HRefFilt,
+    --    VsyncFiltered => VsyncFilt
+    --    );
       
   end block;
 
