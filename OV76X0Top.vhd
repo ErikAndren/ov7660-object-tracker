@@ -79,6 +79,9 @@ architecture rtl of OV76X0 is
 	
 	signal Vsync_Clk : bit1;
 	
+	signal AlignedPixel : word(8-1 downto 0);
+	signal AlignedPixelVal : bit1;
+	
 begin
 	Pll : entity work.Pll
 	port map (
@@ -152,6 +155,20 @@ begin
 		--
 		Vsync_Clk => Vsync_Clk
 	);
+	
+	PixelAlign : entity work.PixelAligner
+	port map (
+		Clk         => Clk,
+		RstN        => RstN,
+		--
+		Vsync       => Vsync_Clk,
+		--
+		PixelInVal  => PixelVal,
+		PixelIn     => PixelData,
+		--
+		PixelOut    => AlignedPixel,
+		PixelOutVal => AlignedPixelVal
+	);
 
 --	VideoComp : entity work.VideoCompressor
 --	port map (
@@ -170,8 +187,8 @@ begin
 		Clk         => Clk,
 		RstN        => RstN,
 		--
-		PixelIn     => PixelData,
-		PixelInVal  => PixelVal,
+		PixelIn     => AlignedPixel,
+		PixelInVal  => AlignedPixelVal,
 		--
 		PixelOut    => PixelCompData,
 		PixelOutVal => PixelCompVal

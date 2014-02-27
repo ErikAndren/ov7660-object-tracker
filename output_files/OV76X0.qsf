@@ -95,7 +95,7 @@ set_location_assignment PIN_139 -to D[5]
 set_location_assignment PIN_141 -to D[4]
 set_location_assignment PIN_137 -to D[3]
 set_location_assignment PIN_149 -to D[2]
-set_location_assignment PIN_43 -to D[0]
+set_location_assignment PIN_164 -to D[0]
 
 set_location_assignment PIN_41 -to SramAddr[17]
 set_location_assignment PIN_92 -to SramAddr[16]
@@ -208,6 +208,7 @@ set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to VgaVsync
 set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to VSYNC
 set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to XCLK
 set_global_assignment -name SLD_FILE /home/erik/Development/FPGA/OV76X0/output_files/output_files/PixelOut_auto_stripped.stp
+set_global_assignment -name VHDL_FILE ../PixelAligner.vhd
 set_global_assignment -name VHDL_FILE ../FloydSteinberg2PRAM.vhd
 set_global_assignment -name VHDL_FILE ../DitherFloydSteinberg.vhd
 set_global_assignment -name VHDL_FILE ../FakeVgaCam.vhd
@@ -232,4 +233,5 @@ set_global_assignment -name QIP_FILE Pll.qip
 set_global_assignment -name SDC_FILE OV76X0.sdc
 set_global_assignment -name QIP_FILE ../AsyncFifo.qip
 set_global_assignment -name QIP_FILE ../FloydSteinberg2PRAM.qip
+set_location_assignment PIN_168 -to D[1]
 set_instance_assignment -name PARTITION_HIERARCHY root_partition -to | -section_id Top
