@@ -28,9 +28,7 @@ entity VideoCapturer is
 
 end entity;
 
-architecture rtl of VideoCapturer is 
-	signal RstNPClk : bit1;
-	
+architecture rtl of VideoCapturer is 	
 	signal ValData_N, ValData_D : bit1;
 	signal PixelData_N, PixelData_D : word(DataW-1 downto 0);
 	signal SeenVsync_N, SeenVsync_D : word(4-1 downto 0);
@@ -48,23 +46,18 @@ architecture rtl of VideoCapturer is
 	
 	signal VSync_META, VSync_D_Clk : bit1;
 begin
-	PClkRstSync : entity work.ResetSync
-	port map (
-		AsyncRst => PRstN,
-		Clk      => PClk,
-		--
-		Rst_N    => RstNPClk
-	);
-	
-	PClkSync : process (PCLK, RstNPClk)
+	PClkSync : process (PCLK, PRstN)
 	begin
-		if RstNPClk = '0' then
+		if PRstN = '0' then
 			PixelData_D  <= (others => '0');
 			ValData_D    <= '0';
 			SeenVsync_D  <= (others => '0');
 			Href_D       <= '0';
 			Vsync_D      <= '0';
 			Delay_D      <= (others => '0');
+			if Simulation then
+				Delay_D <= (others => '1');
+			end if;
 		elsif rising_edge(PCLK) then
 			PixelData_D  <= PixelData_N;
 			ValData_D    <= ValData_N;
@@ -75,24 +68,25 @@ begin
 		end if;
 	end process;
 	
-	-- Only capture two first frames
 	PClkAsync : process (PixelData, Href_D, Vsync_D, SeenVsync_D, Delay_D)
 	begin
 		PixelData_N <= PixelData;
 		ValData_N   <= '0';
 		SeenVsync_N <= SeenVsync_D;
-		Delay_N     <= Delay_D;
+		Delay_N     <= Delay_D + 1;
 
-		if (RedAnd(Delay_D) = '0') then
-			Delay_N <= Delay_D + 1;
+		if (RedAnd(Delay_D) = '1') then
+			Delay_N <= Delay_D;
 		end if;
 
 		-- Initial gating to ensure that we start to capture at the start of a frame
 		if (RedAnd(SeenVsync_D) = '1') then
+			-- VSync observed
 			null;
  		elsif (Vsync_D = '1' and RedAnd(Delay_D) = '1') then
 			SeenVsync_N <= SeenVsync_D + 1;
 		else
+			-- Vsync tracking lost, got ostart state
 			SeenVSync_N <= (others => '0');
 		end if;
 
@@ -133,7 +127,7 @@ begin
 			PixelOut_D <= (others => '0');
 			PixelVal_D <= '0';
 			VSync_META <= '0';
-			VSync_D_Clk    <= '0';
+			VSync_D_Clk <= '0';
 
 		elsif rising_edge(Clk) then
 			FifoRdVal_D <= FifoRdVal_N;
