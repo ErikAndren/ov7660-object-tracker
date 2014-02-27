@@ -27,30 +27,16 @@ add wave -noupdate -format Logic /tb/dut/sccbm/ov7660i/rst_n
 add wave -noupdate -format Logic /tb/dut/sccbm/sccbm/done
 add wave -noupdate -format Literal /tb/dut/sccbm/sccbm/stm
 add wave -noupdate -format Logic /tb/dut/sccbm/sccbm/data_pulse_i
-add wave -noupdate -format Literal /tb/dut/fakevgacam/clkcnt
-add wave -noupdate -format Literal /tb/dut/fakevgacam/linecnt
-add wave -noupdate -format Literal /tb/dut/fakevgacam/pixcnt
-add wave -noupdate -format Logic /tb/dut/fakevgacam/vsync
-add wave -noupdate -format Logic /tb/dut/fakevgacam/href
 add wave -noupdate -divider DitherFloydSteinberg
 add wave -noupdate -format Logic /tb/dut/videocomp/pixelinval
-add wave -noupdate -format Literal /tb/dut/videocomp/pixelin
+add wave -noupdate -format Literal -radix unsigned /tb/dut/videocomp/pixelin
+add wave -noupdate -format Literal -radix unsigned /tb/dut/videocomp/incpixelpluserr
+add wave -noupdate -format Literal -radix unsigned /tb/dut/videocomp/righterr_d
 add wave -noupdate -format Logic /tb/dut/videocomp/pixeloutval
 add wave -noupdate -format Literal /tb/dut/videocomp/pixelout
-add wave -noupdate -format Literal /tb/dut/videocomp/errorvect_d
-add wave -noupdate -format Literal /tb/dut/captpixel/pixeldata
-add wave -noupdate -format Logic /tb/dut/vsync
-add wave -noupdate -format Logic /tb/dut/href
-add wave -noupdate -format Logic /tb/dut/pclk
-add wave -noupdate -format Literal /tb/dut/d
-add wave -noupdate -format Literal /tb/dut/captpixel/pixeldata_n
-add wave -noupdate -format Literal /tb/dut/captpixel/delay_d
-add wave -noupdate -format Logic /tb/dut/captpixel/pclk
-add wave -noupdate -format Literal /tb/dut/captpixel/seenvsync_d
-add wave -noupdate -format Logic /tb/dut/captpixel/valdata_n
-add wave -noupdate -format Logic /tb/dut/captpixel/rstnpclk
+add wave -noupdate -format Literal -expand /tb/dut/videocomp/errorvect_d
 TreeUpdate [SetDefaultTree]
-WaveRestoreCursors {{Cursor 1} {157468754 ps} 0}
+WaveRestoreCursors {{Cursor 1} {941225609 ps} 0}
 configure wave -namecolwidth 246
 configure wave -valuecolwidth 201
 configure wave -justifyvalue left
@@ -65,4 +51,4 @@ configure wave -griddelta 40
 configure wave -timeline 0
 configure wave -timelineunits ps
 update
-WaveRestoreZoom {0 ps} {1181635613 ps}
+WaveRestoreZoom {941000196 ps} {941428976 ps}
