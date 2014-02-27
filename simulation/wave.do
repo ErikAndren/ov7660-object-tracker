@@ -39,8 +39,18 @@ add wave -noupdate -format Logic /tb/dut/videocomp/pixeloutval
 add wave -noupdate -format Literal /tb/dut/videocomp/pixelout
 add wave -noupdate -format Literal /tb/dut/videocomp/errorvect_d
 add wave -noupdate -format Literal /tb/dut/captpixel/pixeldata
+add wave -noupdate -format Logic /tb/dut/vsync
+add wave -noupdate -format Logic /tb/dut/href
+add wave -noupdate -format Logic /tb/dut/pclk
+add wave -noupdate -format Literal /tb/dut/d
+add wave -noupdate -format Literal /tb/dut/captpixel/pixeldata_n
+add wave -noupdate -format Literal /tb/dut/captpixel/delay_d
+add wave -noupdate -format Logic /tb/dut/captpixel/pclk
+add wave -noupdate -format Literal /tb/dut/captpixel/seenvsync_d
+add wave -noupdate -format Logic /tb/dut/captpixel/valdata_n
+add wave -noupdate -format Logic /tb/dut/captpixel/rstnpclk
 TreeUpdate [SetDefaultTree]
-WaveRestoreCursors {{Cursor 1} {969690000 ps} 0}
+WaveRestoreCursors {{Cursor 1} {157468754 ps} 0}
 configure wave -namecolwidth 246
 configure wave -valuecolwidth 201
 configure wave -justifyvalue left
@@ -55,4 +65,4 @@ configure wave -griddelta 40
 configure wave -timeline 0
 configure wave -timelineunits ps
 update
-WaveRestoreZoom {575811583 ps} {1154291233 ps}
+WaveRestoreZoom {0 ps} {1181635613 ps}
