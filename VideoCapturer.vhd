@@ -29,7 +29,7 @@ entity VideoCapturer is
 end entity;
 
 architecture rtl of VideoCapturer is 	
-	signal ValData_N, ValData_D : bit1;
+	signal ValData_N : bit1;
 	signal PixelData_N, PixelData_D : word(DataW-1 downto 0);
 	signal SeenVsync_N, SeenVsync_D : word(4-1 downto 0);
 	--
@@ -50,7 +50,6 @@ begin
 	begin
 		if PRstN = '0' then
 			PixelData_D  <= (others => '0');
-			ValData_D    <= '0';
 			SeenVsync_D  <= (others => '0');
 			Href_D       <= '0';
 			Vsync_D      <= '0';
@@ -60,7 +59,6 @@ begin
 			end if;
 		elsif rising_edge(PCLK) then
 			PixelData_D  <= PixelData_N;
-			ValData_D    <= ValData_N;
 			SeenVsync_D  <= SeenVsync_N;
 			Href_D       <= Href;
 			Vsync_D      <= vsync;
