@@ -134,6 +134,9 @@ begin
 			PixelOut_N    <= ClosestPixelVal;
 
 			PixelCnt_N    <= PixelCnt_D + 1;
+			if (PixelCnt_D = FrameW-1) then 
+				PixelCnt_N <= (others => '0');
+			end if;
 		end if;
 	end process;
 	
