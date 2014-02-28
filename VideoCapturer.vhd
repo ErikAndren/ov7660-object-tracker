@@ -42,7 +42,8 @@ architecture rtl of VideoCapturer is
 	signal PixelVal_D : bit1;
 	
 	signal Delay_N, Delay_D : word(20-1 downto 0);
-	signal Href_D, Vsync_D : bit1;
+	signal Href_D : bit1;
+	signal VSync_D : word(4-1 downto 0);
 	
 	signal VSync_META, VSync_D_Clk : bit1;
 begin
@@ -52,7 +53,7 @@ begin
 			PixelData_D  <= (others => '0');
 			SeenVsync_D  <= (others => '0');
 			Href_D       <= '0';
-			Vsync_D      <= '0';
+			Vsync_D      <= (others => '0');
 			Delay_D      <= (others => '0');
 			if Simulation then
 				Delay_D <= (others => '1');
@@ -61,7 +62,11 @@ begin
 			PixelData_D  <= PixelData_N;
 			SeenVsync_D  <= SeenVsync_N;
 			Href_D       <= Href;
-			Vsync_D      <= vsync;
+			Vsync_D(0)   <= vsync;
+			for i in 1 to 3 loop
+				Vsync_D(i) <= Vsync_D(i-1);
+			end loop;
+
 			Delay_D      <= Delay_N;
 		end if;
 	end process;
@@ -81,7 +86,7 @@ begin
 		if (RedAnd(SeenVsync_D) = '1') then
 			-- VSync observed
 			null;
- 		elsif (Vsync_D = '1' and RedAnd(Delay_D) = '1') then
+ 		elsif (RedAnd(Vsync_D) = '1' and RedAnd(Delay_D) = '1') then
 			SeenVsync_N <= SeenVsync_D + 1;
 		else
 			-- Vsync tracking lost, got ostart state
@@ -131,7 +136,7 @@ begin
 			FifoRdVal_D <= FifoRdVal_N;
 			PixelOut_D <= RdData;
 			PixelVal_D <= FifoRdVal_D;
-			VSync_META <= VSync;
+			VSync_META <= RedAnd(VSync);
 			
 			-- FIXME: Add threshold?
 			VSync_D_Clk    <= VSync_META;
