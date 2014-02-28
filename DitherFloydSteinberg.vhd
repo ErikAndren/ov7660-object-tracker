@@ -15,6 +15,8 @@ entity DitherFloydSteinberg is
 	RstN     : in bit1;
 	Clk      : in bit1;
 	--
+	Vsync    : in bit1;
+	--
 	PixelInVal : in bit1;
 	PixelIn    : in word(DataW-1 downto 0);
 	--
@@ -29,25 +31,21 @@ architecture rtl of DitherFloydSteinberg is
 	constant MaxError : positive := 7 * MaxTruncErr + 3 * MaxTruncErr + 5 * MaxTruncErr + 1 * MaxTruncErr;
 	constant MaxErrorW : positive := bits(MaxError);
 	constant RightErrFact : positive := 7;
-	
+	--
 	signal ClosestPixelVal : word(CompDataW-1 downto 0);
 	signal Error : word(TruncBits-1 downto 0);
-	
+	--
 	signal RightErr_N, RightErr_D : word(MaxErrorW-1 downto 0);
-
-	
 	signal AdjPixelIn : word(DataW-1 downto 0);
-	
+	--
 	signal PixelOutVal_N, PixelOutVal_D : bit1;
 	signal PixelOut_N, PixelOut_D : word(CompDataW-1 downto 0);
-	
-
-	
+	--
 	constant LookAheadBufs : positive := 3;
 	type ErrorVector is array (natural range <>) of word(MaxErrorW-1 downto 0);
 	signal ErrorVect_N, ErrorVect_D : ErrorVector(LookAheadBufs-1 downto 0);
 	
-	-- FIXME: Split out to be a general resource
+	signal LineCnt_N, LineCnt_D : word(FrameHW-1 downto 0);
 	signal PixelCnt_N, PixelCnt_D : word(bits(FrameW)-1 downto 0);
 
 	signal FromErrMem, ToErrMem : word(MaxErrorW-1 downto 0);
@@ -99,18 +97,21 @@ begin
 			PixelOutVal_D <= '0';
 			PixelOut_D    <= (others => '0');
 			ErrorVect_D   <= (others => (others => '0'));
-			PixelCnt_D     <= (others => '0');
+			PixelCnt_D    <= (others => '0');
+			LineCnt_D     <= (others => '0');
 		elsif rising_edge(Clk) then
 			RightErr_D <= RightErr_N;
 			PixelOutVal_D <= PixelOutVal_N;
 			PixelOut_D <= PixelOut_N;
 			ErrorVect_D <= ErrorVect_N;
 			PixelCnt_D <= PixelCnt_N;
+			LineCnt_D   <= LineCnt_N;
 		end if;
 	end process;
 	
-	AsyncProc : process (RightErr_D, PixelInVal, Error, PixelOut_D, ClosestPixelVal, PixelCnt_D, ErrorVect_D, FromErrMem)
+	AsyncProc : process (RightErr_D, PixelInVal, Error, PixelOut_D, ClosestPixelVal, PixelCnt_D, ErrorVect_D, FromErrMem, LineCnt_D, Vsync)
 	begin
+		LineCnt_N <= LineCnt_D;
 		RightErr_N <= RightErr_D;
 		PixelOut_N <= PixelOut_D;
 		PixelOutVal_N <= '0';
@@ -118,6 +119,10 @@ begin
 		ErrorVect_N <= ErrorVect_D;
 
 		ToErrMem <= ErrorVect_D(0) + conv_word(3 * conv_integer(Error), MaxErrorW);
+		-- Zero out error on end of frame
+		if (LineCnt_D = FrameH-1) then
+			ToErrMem <= (others => '0');
+		end if;
 
 		if (PixelInVal = '1') then
 			-- 7/16 East, OK, read error_vector[1], low,  and add the result and push right
@@ -125,6 +130,10 @@ begin
 			-- 5/16 South, OK, error vector [0], Set new error value
 			-- 1/16 South East, OK, error vector [1], write new error
 			RightErr_N        <= conv_word(7 * conv_integer(Error), MaxErrorW) + ErrorVect_D(2);
+			-- Do not propagate error on the end of the line
+			if (PixelCnt_D = FrameW-1) then
+				RightErr_N <= (others => '0');
+			end if;
 			--
 			ErrorVect_N(0)    <= ErrorVect_D(1) + conv_word(5 * conv_integer(Error), MaxErrorW);
 			ErrorVect_N(1)    <= xt0(Error, MaxErrorW);
@@ -136,7 +145,16 @@ begin
 			PixelCnt_N    <= PixelCnt_D + 1;
 			if (PixelCnt_D = FrameW-1) then 
 				PixelCnt_N <= (others => '0');
+				LineCnt_N <= LineCnt_D + 1;
+				if (LineCnt_D = FrameH-1) then
+					LineCnt_N <= (others => '0');
+				end if;
 			end if;
+		end if;
+		
+		if (Vsync = '1') then
+			PixelCnt_N <= (others => '0');
+			LineCnt_N <= (others => '0');
 		end if;
 	end process;
 	

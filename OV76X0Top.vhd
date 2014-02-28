@@ -187,6 +187,8 @@ begin
 		Clk         => Clk,
 		RstN        => RstN,
 		--
+		Vsync => Vsync_Clk,
+		--
 		PixelIn     => AlignedPixel,
 		PixelInVal  => AlignedPixelVal,
 		--
