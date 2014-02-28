@@ -138,7 +138,6 @@ begin
 			PixelVal_D <= FifoRdVal_D;
 			VSync_META <= RedAnd(VSync);
 			
-			-- FIXME: Add threshold?
 			VSync_D_Clk    <= VSync_META;
 		end if;
 	end process;	
