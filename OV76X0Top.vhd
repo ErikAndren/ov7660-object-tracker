@@ -98,18 +98,22 @@ begin
 		Rst_N    => RstN
 	);
 	
-	DebBtn1 : entity work.Debounce
+	DebBtn1 : entity work.ButtonPulse
 	port map (
-		Clk => Clk,
-		x   => Button1,
-		DBx => Btn1Stab
+		Clk         => Clk,
+		RstN        => RstN,
+		--
+		Button      => Button1,
+		ButtonPulse => Btn1Stab
 	);
-	
-	DebBtn12 : entity work.Debounce
+
+	DebBtn2 : entity work.ButtonPulse
 	port map (
-		Clk => Clk,
-		x   => Button2,
-		DBx => Btn2Stab
+		Clk         => Clk,
+		RstN        => RstN,
+		--
+		Button      => Button2,
+		ButtonPulse => Btn2Stab
 	);
 
 	SccbM : entity work.SccbMaster
