@@ -184,16 +184,18 @@ begin
 
 	VideoComp : entity work.DitherFloydSteinberg
 	port map (
-		Clk         => Clk,
-		RstN        => RstN,
+		Clk          => Clk,
+		RstN         => RstN,
 		--
-		Vsync => Vsync_Clk,
+		Vsync        => Vsync_Clk,
 		--
-		PixelIn     => AlignedPixel,
-		PixelInVal  => AlignedPixelVal,
+		ToggleEnable => Btn1Stab,
 		--
-		PixelOut    => PixelCompData,
-		PixelOutVal => PixelCompVal
+		PixelIn      => AlignedPixel,
+		PixelInVal   => AlignedPixelVal,
+		--
+		PixelOut     => PixelCompData,
+		PixelOutVal  => PixelCompVal
 	);
 	
 	VideoPack : entity work.VideoPacker
