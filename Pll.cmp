@@ -16,7 +16,6 @@
 component Pll
 	PORT
 	(
-		areset		: IN STD_LOGIC  := '0';
 		inclk0		: IN STD_LOGIC  := '0';
 		c0		: OUT STD_LOGIC 
 	);
