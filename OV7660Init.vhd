@@ -30,6 +30,7 @@ architecture fpga of OV7660Init is
 	constant COM9 : word(8-1 downto 0)  := x"14";
 	constant COM10 : word(8-1 downto 0) := x"15";
 	constant TSLB : word(8-1 downto 0)  := x"3a";
+	constant COM15 : word(8-1 downto 0) := x"40";
 	constant MANU : word(8-1 downto 0)  := x"67";
 	constant MANV : word(8-1 downto 0)  := x"68";
 	
@@ -76,12 +77,26 @@ begin
 					AddrData <= COM7 & x"80"; -- SCCB Register reset
 					We       <= '1';
 					Start    <= '1';
-
-				
+					
 				when "0001" =>
-					AddrData <= COM7 & x"00"; -- SCCB Register reset release
+					AddrData <= COM2 & x"03"; -- Enable 4x drive
 					We       <= '1';
-					Start    <= '1';
+					Start    <= '1';					
+
+--				when "0001" =>
+--					AddrData <= COM7 & x"00"; -- SCCB Register reset release
+--					We       <= '1';
+--					Start    <= '1';
+--					
+--				when "0001" =>
+--					AddrData <= COM7 & x"04"; -- Enable RGB
+--					We       <= '1';
+--					Start    <= '1';
+----					
+--				when "0010" =>
+--					AddrData <= COM15 & x"D0"; -- Enable RGB565
+--					We       <= '1';
+--					Start    <= '1';
 
 --				when "0010" =>
 --					AddrData <= AECH & x"01"; -- 
