@@ -194,6 +194,7 @@ begin
 		Vsync        => Vsync_Clk,
 		--
 		ToggleEnable => Btn1Stab,
+		ToggleTrunc  => Btn2Stab,
 		--
 		PixelIn      => AlignedPixel,
 		PixelInVal   => AlignedPixelVal,
