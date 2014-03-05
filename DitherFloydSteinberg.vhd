@@ -31,7 +31,7 @@ end entity;
 architecture rtl of DitherFloydSteinberg is
   constant TruncBits                  : positive := DataW-CompDataW;
   constant MaxTruncErr                : positive := 2**TruncBits-1;
-  constant MaxError                   : positive := 7 * MaxTruncErr + 3 * MaxTruncErr + 5 * MaxTruncErr + 1 * MaxTruncErr;
+  constant MaxError                   : positive := (7 * MaxTruncErr + 3 * MaxTruncErr + 5 * MaxTruncErr + 1 * MaxTruncErr);
   constant MaxErrorW                  : positive := bits(MaxError);
   constant RightErrFact               : positive := 7;
   --
@@ -51,7 +51,8 @@ architecture rtl of DitherFloydSteinberg is
   signal LineCnt_N, LineCnt_D   : word(FrameHW-1 downto 0);
   signal PixelCnt_N, PixelCnt_D : word(bits(FrameW)-1 downto 0);
 
-  signal FromErrMem, ToErrMem : word(MaxErrorW-1 downto 0);
+  signal ToErrMem : word(MaxErrorW-1 downto 0);
+  signal FromErrMem, ToErrMemTrunc        : word(TruncBits-1 downto 0);
   signal WrAddr, RdAddr       : word(bits(FrameW)-1 downto 0);
 
   signal Enabled_N, Enabled_D : bit1;
@@ -157,7 +158,7 @@ begin
       ErrorVect_N(0) <= ErrorVect_D(1) + conv_word(5 * conv_integer(error), MaxErrorW);
       -- Error vector is overwritten
       ErrorVect_N(1) <= xt0(error, MaxErrorW);
-      ErrorVect_N(2) <= FromErrMem;
+      ErrorVect_N(2) <= xt0(FromErrMem, ErrorVect_N(2)'length);
 
       PixelOutVal_N <= '1';
       PixelOut_N    <= ClosestPixelVal;
@@ -177,6 +178,7 @@ begin
       LineCnt_N  <= (others => '0');
     end if;
   end process;
+  ToErrMemTrunc <= (others => '1') when ToErrMem > 31 else ToErrMem(TruncBits-1 downto 0);
 
   AddrCalc : process (PixelCnt_D)
   begin
@@ -197,7 +199,7 @@ begin
   ErrorMemory : entity work.FloydSteinberg2PRAM
     port map (
       clock     => Clk,
-      data      => ToErrMem,
+      data      => ToErrMemTrunc,
       rdaddress => RdAddr,
       wraddress => WrAddr,
       --
