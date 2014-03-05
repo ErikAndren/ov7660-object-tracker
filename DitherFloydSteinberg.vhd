@@ -55,7 +55,6 @@ architecture rtl of DitherFloydSteinberg is
   signal WrAddr, RdAddr       : word(bits(FrameW)-1 downto 0);
 
   signal Enabled_N, Enabled_D : bit1;
-  signal Trunc_N, Trunc_D     : bit1;
 
   --Pixel 1, 0
   --1. Add error from right error to pixel (contains prev. right err and error_vector error)
@@ -76,8 +75,6 @@ architecture rtl of DitherFloydSteinberg is
   signal PixelInExt      : word(DataW downto 0);
 begin
   PixelInExt      <= '0' & PixelIn;
-  -- Divide error by 16
-  -- OPTIMIZATION: Truncate error before writing to memory, this will save 4 bits * LineW
   IncPixelPlusErr <= PixelInExt + RightErr_D;
 
   PixelValCalc : process (PixelIn, IncPixelPlusErr, Enabled_D)
@@ -109,7 +106,6 @@ begin
       PixelCnt_D    <= (others => '0');
       LineCnt_D     <= (others => '0');
       Enabled_D     <= '1';
-      Trunc_D       <= '0';
     elsif rising_edge(Clk) then
       RightErr_D    <= RightErr_N;
       PixelOutVal_D <= PixelOutVal_N;
@@ -118,14 +114,13 @@ begin
       PixelCnt_D    <= PixelCnt_N;
       LineCnt_D     <= LineCnt_N;
       Enabled_D     <= Enabled_N;
-      Trunc_D       <= Trunc_N;
     end if;
   end process;
   
   AsyncProc : process (RightErr_D, PixelInVal, error, PixelOut_D,
                        ClosestPixelVal, PixelCnt_D, ErrorVect_D,
-                       FromErrMem, LineCnt_D, Vsync, Enabled_D, Trunc_D,
-                       ToggleEnable, ToggleTrunc
+                       FromErrMem, LineCnt_D, Vsync, Enabled_D,
+                       ToggleEnable
                        )
   begin
     LineCnt_N     <= LineCnt_D;
@@ -134,22 +129,13 @@ begin
     PixelOutVal_N <= '0';
     PixelCnt_N    <= PixelCnt_D;
     ErrorVect_N   <= ErrorVect_D;
-    Trunc_N       <= Trunc_D;
 
     Enabled_N <= Enabled_D;
     if (ToggleEnable = '0') then
       Enabled_N <= not Enabled_D;
     end if;
 
-    if (ToggleTrunc = '0') then
-      Trunc_N <= not Trunc_D;
-    end if;
-
-    if (Trunc_D = '1') then
-      ToErrMem <= SHR(ErrorVect_D(0) + conv_word(3 * conv_integer(error), MaxErrorW), "100");
-    else
-      ToErrMem <= ErrorVect_D(0) + conv_word(3 * conv_integer(error), MaxErrorW);
-    end if;
+    ToErrMem <= SHR(ErrorVect_D(0) + conv_word(3 * conv_integer(error), MaxErrorW), "100");
 
     -- Zero out error on end of frame
     if (LineCnt_D = FrameH-1) then
@@ -161,11 +147,7 @@ begin
       -- 3/16 South west, N/A [n-1], ok to set anyways?
       -- 5/16 South, OK, error vector [0], Set new error value
       -- 1/16 South East, OK, error vector [1], write new error
-      if (Trunc_D = '0') then
-        RightErr_N <= SHR(conv_word(7 * conv_integer(error), MaxErrorW) + ErrorVect_D(2), "100");
-      else
-        RightErr_N <= SHR(conv_word(7 * conv_integer(error), MaxErrorW), "100") + ErrorVect_D(2);
-      end if;
+      RightErr_N <= SHR(conv_word(7 * conv_integer(error), MaxErrorW), "100") + ErrorVect_D(2);
 
       -- Do not propagate error on the end of the line
       if (PixelCnt_D = FrameW-1) then
