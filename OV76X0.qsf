@@ -143,12 +143,7 @@ set_global_assignment -name ENABLE_SIGNALTAP OFF
 set_global_assignment -name USE_SIGNALTAP_FILE output_files/PixelOut.stp
 set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to HREF
 set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to D[0]
-set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to altera_reserved_tck
-set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to altera_reserved_tdi
-set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to altera_reserved_tdo
-set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to altera_reserved_tms
 set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to AsyncRstN
-set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to auto_stp_external_storage_qualifier
 set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to Button1
 set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to Button2
 set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to Clk
