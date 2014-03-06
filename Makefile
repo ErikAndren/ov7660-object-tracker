@@ -32,11 +32,16 @@ MODELSIMINI_PATH=/home/erik/Development/FPGA/OV76X0/modelsim.ini
 CC=vcom
 FLAGS=-work /tmp/work -93 -modelsimini $(MODELSIMINI_PATH)
 
-all: work altera_mf altera vhdlfiles
-	@$(MAKE) -C ../Lib -f ../Lib/Makefile
+all: work altera_mf altera lib sramcontroller vhdlfiles
 
 clean:
 	rm -rf *~ rtl_work *.wlf transcript
+
+lib:
+	@$(MAKE) -C ../Lib -f ../Lib/Makefile
+
+sramcontroller:
+	@$(MAKE) -C ../SramTest-IS61LV25616AL -f ../SramTest-IS61LV25616AL/Makefile
 
 work:
 	$(VLIB) $(WORK_DIR)
