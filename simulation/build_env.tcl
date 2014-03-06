@@ -27,7 +27,8 @@ vcom -work cycloneii -2002 -explicit $path_to_quartus/eda/sim_lib/cycloneii_comp
 vcom -93 -work work {/home/erik/Development/FPGA/OV76X0/AsyncFifo.vhd}
 vcom -93 -work work {/home/erik/Development/FPGA/Lib/Types.vhd}
 vcom -93 -work work {/home/erik/Development/FPGA/Lib/Debounce.vhd}
-vcom -93 -work work {/home/erik/Development/FPGA/OV76X0/output_files/Pll.vhd}
+vcom -93 -work work {/home/erik/Development/FPGA/Lib/ButtonPulse.vhd}
+vcom -93 -work work {/home/erik/Development/FPGA/OV76X0/Pll.vhd}
 vcom -93 -work work {/home/erik/Development/FPGA/OV76X0/OV76X0Pack.vhd}
 vcom -93 -work work {/home/erik/Development/FPGA/OV76X0/VGAGenerator.vhd}
 vcom -93 -work work {/home/erik/Development/FPGA/OV76X0/VideoCompressor.vhd}
