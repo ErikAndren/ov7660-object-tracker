@@ -107,7 +107,7 @@ begin
       --
       -- The following matrix is used:
       --  0  1  2
-      -- -1  X -1
+      -- -1  X  1
       -- -2  1  0
       --
       -- FIXME: Feed matrix as a constant instead of hard coding it
@@ -150,10 +150,10 @@ begin
         -- 1 -> 0
         -- 2 -> 1
 
-        
+        -- Flush out left column of pixels to memory
         WriteToMem(i) <= PixArr(i)(0);
         --
-        
+        -- Shift pixel memory one step
         PixArr_N(i)(0) <= PixArr(i)(1);
         PixArr_N(i)(1) <= PixArr(i)(2);
         --
@@ -167,7 +167,7 @@ begin
 
         -- FIXME: Thresholding function here?
         PixelOut    <= WriteToMem(CalcMem(LineCnt_D, 0));
-        -- Clear pixel
+        -- Clear pixel memory
         WriteToMem(0) <= (others => '0');
       end if;  
 
