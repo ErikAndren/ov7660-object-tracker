@@ -1,6 +1,6 @@
 log -r /*
 
 # Load waveforms
-do wave.do
+do simulation/wave.do
 
 run 10 ms
