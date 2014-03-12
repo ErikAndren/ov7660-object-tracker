@@ -182,7 +182,7 @@ begin
         -- Run one line more than the image height to flush out the result of
         -- the last line
         if (LineCnt_D = FrameH) then
-          LineCnt_D <= (others => '0');
+          LineCnt_N <= (others => '0');
         end if;
       end if;
     end if;
