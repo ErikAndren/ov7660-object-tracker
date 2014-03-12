@@ -99,7 +99,7 @@ begin
     PixArr      := PixArr_D;
     --
     PixelOutVal <= '0';
-    PixelOut    <= PixArr(0)(0);
+    PixelOut    <= (others => '0');
 
     -- Need to run the line after the last
     if (PixelInVal = '1' or LastLine = '1') then
