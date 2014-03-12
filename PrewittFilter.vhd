@@ -30,10 +30,12 @@ architecture rtl of PrewittFilter is
     variable tmp : word(OldVal'length downto 0);
     variable NewValExt : word(NewVal'length-1+(Mul-1) downto 0);
   begin
-    NewValExt(NewValExt'high downto Mul-1) := NewVal & xt0(Mul-1);
-    tmp := OldVal + NewValExt;
+    NewValExt := (others => '0');
+    NewValExt := xt0(SHL(NewVal, conv_word(Mul-1, bits(Mul))), NewValExt'length);
+    
+    tmp := ('0' & OldVal) + NewValExt;
     tmp := minval(tmp, x"FF");
-    return tmp;
+    return tmp(OldVal'length-1 downto 0);
   end function;
 
   function MinValue(OldVal : word; NewVal : word; Mul : natural := 1) return word is
@@ -41,9 +43,11 @@ architecture rtl of PrewittFilter is
     variable NewValExt : word(NewVal'length-1+(Mul-1) downto 0);
   begin
     tmp(tmp'high) := '1';
-    NewValExt(NewValExt'high downto (Mul-1)) := NewVal & xt0(Mul-1);
+    NewValExt := (others => '0');
 
-    tmp := OldVal - NewVal;
+    NewValExt := xt0(SHL(NewVal, conv_word(Mul-1, bits(Mul))), NewValExt'length);
+
+    tmp := ('0' & OldVal) - NewValExt;
     if tmp(tmp'high) = '0' then
       return x"00";
     else
