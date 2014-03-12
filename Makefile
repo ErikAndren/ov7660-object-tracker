@@ -18,7 +18,6 @@ FILES=OV76X0Pack.vhd \
 	tb.vhd \
 	VGAGenerator.vhd \
 	VideoCapturer.vhd \
-	VideoCompressor.vhd \
 	VideoController.vhd \
 	VideoPacker.vhd \
 	OV76X0Top.vhd
