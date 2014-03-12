@@ -205,6 +205,7 @@ set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to VSYNC
 set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to XCLK
 set_global_assignment -name SLD_FILE /home/erik/Development/FPGA/OV76X0/output_files/output_files/PixelOut_auto_stripped.stp
 
+set_global_assignment -name VHDL_FILE PrewittFilter.vhd
 set_global_assignment -name VHDL_FILE ../Lib/ButtonPulse.vhd
 set_global_assignment -name VHDL_FILE PixelAligner.vhd
 set_global_assignment -name VHDL_FILE FloydSteinberg2PRAM.vhd
@@ -214,7 +215,6 @@ set_global_assignment -name VHDL_FILE OV76X0Pack.vhd
 set_global_assignment -name VHDL_FILE VGAGenerator.vhd
 set_global_assignment -name VHDL_FILE VideoController.vhd
 set_global_assignment -name VHDL_FILE VideoPacker.vhd
-set_global_assignment -name VHDL_FILE VideoCompressor.vhd
 set_global_assignment -name VHDL_FILE SramArbiter.vhd
 set_global_assignment -name VHDL_FILE "../SramTest-IS61LV25616AL/SramController.vhd"
 set_global_assignment -name VHDL_FILE AsyncFifo.vhd

@@ -174,18 +174,6 @@ begin
       PixelOutVal => AlignedPixelVal
       );
 
---      VideoComp : entity work.VideoCompressor
---      port map (
---              Clk       => Clk,
---              RstN      => RstN,
---              --
---              PixelData => PixelData,
---              PixelVal  => PixelVal,
---              --
---              PixelCompData => PixelCompData,
---              PixelCompVal  => PixelCompVal
---      );
-
   VideoComp : entity work.DitherFloydSteinberg
     port map (
       Clk          => Clk,
