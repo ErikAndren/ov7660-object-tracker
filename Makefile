@@ -25,9 +25,16 @@ FILES=OV76X0Pack.vhd \
 
 QUARTUS_PATH=/opt/altera/13.0sp1/quartus
 
+WORK_DIR=/tmp/work
+
 VMAP=vmap
 VLIB=vlib
-WORK_DIR=/tmp/work
+VSIM=vsim
+TBTOP=tb
+
+TB_TASK_FILE=simulation/run_tb.tcl
+VSIM_ARGS=-novopt -t 1ps -lib $(WORK_DIR) -do $(TB_TASK_FILE)
+
 MODELSIMINI_PATH=/home/erik/Development/FPGA/OV76X0/modelsim.ini
 CC=vcom
 FLAGS=-work /tmp/work -93 -modelsimini $(MODELSIMINI_PATH)
@@ -61,7 +68,11 @@ altera_mf:
 		-explicit $(QUARTUS_PATH)/eda/sim_lib/altera_mf_components.vhd \
 		-explicit $(QUARTUS_PATH)/eda/sim_lib/altera_mf.vhd
 
-
 vhdlfiles:
 	$(CC) $(FLAGS) $(FILES)
+
+isim: all
+	$(VSIM) $(TBTOP) $(VSIM_ARGS)
+
+
 
