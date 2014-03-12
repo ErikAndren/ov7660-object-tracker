@@ -171,7 +171,7 @@ begin
 
         -- FIXME: Thresholding function here?
         -- Slice out the 3 MSBs for now. (Dithering?)
-        PixelOut    <= WriteToMem(CalcMem(LineCnt_D, 0))(WriteToMem(0)'high downto WriteToMem(0)'high-PixelOut'length);
+        PixelOut    <= WriteToMem(CalcMem(LineCnt_D, 0))(WriteToMem(0)'high downto WriteToMem(0)'high-PixelOut'high);
         -- Clear pixel memory
         WriteToMem(0) <= (others => '0');
       end if;  
