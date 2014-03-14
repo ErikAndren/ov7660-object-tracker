@@ -27,10 +27,10 @@ end entity;
 
 architecture rtl of PrewittFilter is
     function MaxValue(OldVal : word; NewVal : word; Mul : integer := 1) return word is
-    variable tmp : word(OldVal'length downto 0);
-    variable NewValExt : word(NewVal'length-1+(Mul-1) downto 0);
-    variable val1, val2 : integer;
-    variable sum : integer;
+    variable tmp             : word(OldVal'length downto 0);
+    variable NewValExt       : word(NewVal'length-1+(Mul-1) downto 0);
+    variable val1, val2      : integer;
+    variable sum             : integer;
   begin
     val1 := conv_integer(OldVal);
     val2 := conv_integer(NewVal) * Mul;
@@ -61,7 +61,7 @@ architecture rtl of PrewittFilter is
     elsif (Mult > 0) then
       return MaxValue(OldVal, PixelIn, Mult);
     else
-      return MinValue(OldVal, PixelIn, Mult);
+      return MinValue(OldVal, PixelIn, -Mult);
     end if;
   end function;
     
@@ -89,6 +89,7 @@ architecture rtl of PrewittFilter is
   -- the incoming pixel is p(2, 2);
   -- For p(0, 1) = p(2, 1)
   -- For p(0, 2) = p(2, 0)
+  -- etc
     
   constant PrewittWeights    : IntArray2D := (( 0,  1,  2),
                                               (-1,  0,  1),
@@ -105,7 +106,7 @@ architecture rtl of PrewittFilter is
   signal WriteAddr, ReadAddr : word(bits(FrameW)-1 downto 0);
 
   signal LastLine : bit1;
-  
+
   function CalcMem(LineCnt : word; Offs : integer) return natural is
     variable Cnt, AdjOffs : integer;
   begin
@@ -132,7 +133,7 @@ begin
 
   LastLine <= '1' when LineCnt_D = FrameH else '0';
   
-  AsyncProc : process (PixelCnt_D, LineCnt_D, PixelInVal, Vsync, PixArr_D, LastLine)
+  AsyncProc : process (PixelCnt_D, LineCnt_D, PixelIn, PixelInVal, Vsync, PixArr_D, LastLine, ReadFromMem)
     variable PixArr : PixelArray2D(3-1 downto 0);
   begin
     PixelCnt_N  <= PixelCnt_D;
@@ -141,9 +142,8 @@ begin
     PixArr      := PixArr_D;
     --
     PixelOutVal <= '0';
-    PixelOut    <= (others => '0');
+	 WriteToMem <= (others => (others => 'X'));
 
-    -- Need to run the line after the last
     if (PixelInVal = '1' or LastLine = '1') then
       -- Calculate the impact on all surround pixels according to the
       -- predefined weights
@@ -155,33 +155,8 @@ begin
       
       -- Shift data
       for i in 0 to 3-1 loop
-        -- On line 0 mapping is:
-        -- 0 -> 2 -- ignored
-        -- 1 -> 0
-        -- 2 -> 1
- 
-        -- On line 1 mapping is:
-        -- 0 -> 0 -- pixel out 
-        -- 1 -> 1
-        -- 2 -> 2
-
-        -- On line 2 mapping is:
-        -- 0 -> 1 -- pixel out
-        -- 1 -> 2
-        -- 2 -> 0
-        
-        -- On line 3 mapping is:
-        -- 0 -> 2 -- pixel out 
-        -- 1 -> 0
-        -- 2 -> 1
-       
-        -- On line 479 mapping is:
-        -- 0 -> 2 -- pixel out 
-        -- 1 -> 0
-        -- 2 -> 1
 
         -- Flush out left column of pixels to memory
-        -- WriteToMem(CalcMem(LineCnt_D, i)) <= PixArr(i)(0);
         WriteToMem(CalcMem(LineCnt_D, i)) <= PixArr(i)(0);
         --
         -- Shift pixel memory one step
@@ -196,11 +171,8 @@ begin
       if (LineCnt_D > 0) then
         PixelOutVal <= '1';
 
-        -- FIXME: Thresholding function here?
-        -- Slice out the 3 MSBs for now. (Dithering?)
-        PixelOut    <= WriteToMem(CalcMem(LineCnt_D, 0))(WriteToMem(0)'high downto WriteToMem(0)'high-PixelOut'high);
         -- Clear pixel memory
-        WriteToMem(0) <= (others => '0');
+        WriteToMem(CalcMem(LineCnt_D, 0)) <= (others => '0');
       end if;  
 
       PixelCnt_N <= PixelCnt_D + 1;
@@ -221,6 +193,10 @@ begin
     end if;
   end process;
 
+  -- FIXME: Thresholding function here?
+  -- Slice out the 3 MSBs for now. (Dithering?)
+  PixelOut    <= WriteToMem(CalcMem(LineCnt_D, 0))(WriteToMem(0)'high downto WriteToMem(0)'high-PixelOut'high);
+  
   AddrCalc : process (PixelCnt_D) is
   begin
     ReadAddr <= PixelCnt_D + 2;
@@ -241,7 +217,7 @@ begin
       port map (
         clock     => Clk,
         data      => WriteToMem(i),
---        wren      => PixelIn,
+        wren      => PixelInVal,
         rdaddress => ReadAddr,
         wraddress => WriteAddr,
         q         => ReadFromMem(i)
