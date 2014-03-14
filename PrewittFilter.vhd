@@ -26,42 +26,81 @@ entity PrewittFilter is
 end entity;
 
 architecture rtl of PrewittFilter is
-  function MaxValue(OldVal : word; NewVal : word; Mul : natural := 1) return word is
+    function MaxValue(OldVal : word; NewVal : word; Mul : integer := 1) return word is
     variable tmp : word(OldVal'length downto 0);
     variable NewValExt : word(NewVal'length-1+(Mul-1) downto 0);
+    variable val1, val2 : integer;
+    variable sum : integer;
   begin
-    NewValExt := (others => '0');
-    NewValExt := xt0(SHL(NewVal, conv_word(Mul-1, bits(Mul))), NewValExt'length);
+    val1 := conv_integer(OldVal);
+    val2 := conv_integer(NewVal) * Mul;
     
-    tmp := ('0' & OldVal) + NewValExt;
-    tmp := minval(tmp, x"FF");
-    return tmp(OldVal'length-1 downto 0);
+    sum := minval(val1 + val2, 255);
+    return conv_word(sum, OldVal'length);
   end function;
 
   function MinValue(OldVal : word; NewVal : word; Mul : natural := 1) return word is
     variable tmp       : word(OldVal'length downto 0);
     variable NewValExt : word(NewVal'length-1+(Mul-1) downto 0);
+    variable val1, val2 : integer;
+    variable dif : integer;
   begin
-    tmp(tmp'high) := '1';
-    NewValExt := (others => '0');
-
-    NewValExt := xt0(SHL(NewVal, conv_word(Mul-1, bits(Mul))), NewValExt'length);
-
-    tmp := ('0' & OldVal) - NewValExt;
-    if tmp(tmp'high) = '0' then
-      return x"00";
-    else
-      return tmp(OldVal'length-1 downto 0);
+    val1 := conv_integer(OldVal);
+    val2 := conv_integer(NewVal) * Mul;
+    dif := val1 - val2;
+    if (dif < 0) then
+      return conv_word(0, OldVal'length);
     end if;
+    return conv_word(dif, OldVal'length);
   end function;
 
+  function CalcValue(OldVal : word; PixelIn : word; Mult : integer) return word is
+  begin
+    if (Mult = 0) then
+      return OldVal;
+    elsif (Mult > 0) then
+      return MaxValue(OldVal, PixelIn, Mult);
+    else
+      return MinValue(OldVal, PixelIn, Mult);
+    end if;
+  end function;
+    
   signal PixelCnt_D, PixelCnt_N : word(bits(FrameW)-1 downto 0);
   signal LineCnt_D, LineCnt_N : word(bits(FrameH)-1 downto 0);
 
   type PixelArray is array (natural range <>) of word(8-1 downto 0);
   type PixelArray2D is array (natural range <>) of PixelArray(3-1 downto 0);
+  type IntArray is array (natural range <>) of integer;
+  type IntArray2D is array (natural range <>) of IntArray(3-1 downto 0);
+
+  -- The following matrix is used:
+  --  0  1  2
+  -- -1  X  1
+  -- -2 -1  0
+
+  -- In a software implementation you would look at all surrounding pixels and
+  -- calculate a new value. This is hard to implement in hardware as we do not
+  -- know all surrounding pixels until all have passed.
+  -- Then the first pixels are all long gone.
+  -- Instead, flip the concept:
+  -- Upon each arriving pixel, calculate its impact upon all surround pixels
+  -- according to the weights chosen
+  -- This means that from the perspective of p(0, 0)
+  -- the incoming pixel is p(2, 2);
+  -- For p(0, 1) = p(2, 1)
+  -- For p(0, 2) = p(2, 0)
+    
+  constant PrewittWeights    : IntArray2D := (( 0,  1,  2),
+                                              (-1,  0,  1),
+                                              (-2, -1,  0));
+    
+  constant InvPrewittWeights : IntArray2D := (( 0, -1, -2),
+                                              ( 1,  0, -1),
+                                              ( 2,  1,  0));
+
   -- Create 3x3 array
   signal PixArr_N, PixArr_D : PixelArray2D(3-1 downto 0);
+  
   signal WriteToMem, ReadFromMem : PixelArray(3-1 downto 0);
   signal WriteAddr, ReadAddr : word(bits(FrameW)-1 downto 0);
 
@@ -70,7 +109,6 @@ architecture rtl of PrewittFilter is
   function CalcMem(LineCnt : word; Offs : integer) return natural is
     variable Cnt, AdjOffs : integer;
   begin
-
     -- Offset offset by one. We want to calculate -1, 0, 1
     AdjOffs := Offs - 1;
     
@@ -107,26 +145,14 @@ begin
 
     -- Need to run the line after the last
     if (PixelInVal = '1' or LastLine = '1') then
-      -- Seen from the perspective of each pixel
-      --
-      -- The following matrix is used:
-      --  0  1  2
-      -- -1  X  1
-      -- -2  1  0
-      --
-      -- FIXME: Feed matrix as a constant instead of hard coding it
-      PixArr(0)(1) := MinValue(PixArr_D(0)(1), PixelIn);
-      -- -2p7
-      PixArr(0)(2) := MinValue(PixArr_D(0)(2), PixelIn, 2);
-      -- p6
-      PixArr(1)(0) := MaxValue(PixArr_D(1)(0), PixelIn);
-      -- -p4
-      PixArr(1)(2) := MinValue(PixArr_D(1)(2), PixelIn);
-      -- 2p3
-      PixArr(2)(0) := MaxValue(PixArr_D(2)(0), PixelIn, 2);
-      -- p2
-      PixArr(2)(1) := MaxValue(PixArr_D(2)(1), PixelIn);
-
+      -- Calculate the impact on all surround pixels according to the
+      -- predefined weights
+      for i in 0 to 3-1 loop
+        for j in 0 to 3-1 loop
+          PixArr(i)(j) := CalcValue(PixArr_D(i)(j), PixelIn, InvPrewittWeights(i)(j));
+        end loop;
+      end loop;
+      
       -- Shift data
       for i in 0 to 3-1 loop
         -- On line 0 mapping is:
@@ -155,7 +181,8 @@ begin
         -- 2 -> 1
 
         -- Flush out left column of pixels to memory
-        WriteToMem(i) <= PixArr(i)(0);
+        -- WriteToMem(CalcMem(LineCnt_D, i)) <= PixArr(i)(0);
+        WriteToMem(CalcMem(LineCnt_D, i)) <= PixArr(i)(0);
         --
         -- Shift pixel memory one step
         PixArr_N(i)(0) <= PixArr(i)(1);
@@ -214,6 +241,7 @@ begin
       port map (
         clock     => Clk,
         data      => WriteToMem(i),
+--        wren      => PixelIn,
         rdaddress => ReadAddr,
         wraddress => WriteAddr,
         q         => ReadFromMem(i)
