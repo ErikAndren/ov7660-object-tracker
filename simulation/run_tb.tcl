@@ -1,3 +1,4 @@
+restart -f
 log -r /*
 
 # Load waveforms
