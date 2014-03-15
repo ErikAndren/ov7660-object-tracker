@@ -123,7 +123,7 @@ begin
       
   end block;
 
-  DUT : entity work.OV76X0
+  DUT : entity work.OV76X0Top
     port map (
       AsyncRstN => RstN,
       Clk       => Clk50,

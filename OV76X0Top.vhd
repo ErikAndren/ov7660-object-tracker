@@ -5,7 +5,7 @@ use ieee.std_logic_arith.all;
 use work.Types.all;
 use work.OV76X0Pack.all;
 
-entity OV76X0 is
+entity OV76X0Top is
   generic (
     Freq     : positive := 25000000;
     Displays : positive := 8
@@ -43,7 +43,7 @@ entity OV76X0 is
     );
 end entity;
 
-architecture rtl of OV76X0 is
+architecture rtl of OV76X0Top is
   signal Btn1Stab, Btn2Stab : bit1;
   signal SccbData, DispData : word(SccbDataW-1 downto 0);
   signal SccbRe             : bit1;
@@ -174,7 +174,25 @@ begin
       PixelOutVal => AlignedPixelVal
       );
 
-  VideoComp : entity work.DitherFloydSteinberg
+  --Prewitt : entity work.PrewittFilter
+  --  generic map (
+  --    DataW     => 8,
+  --    CompDataW => 3
+  --    )
+  --  port map (
+  --    RstN        => RstN,
+  --    Clk         => Clk,
+  --    --
+  --    Vsync       => Vsync,
+  --    --
+  --    PixelIn     => AlignedPixel,
+  --    PixelInVal  => AlignedPixelVal,
+  --    --
+  --    PixelOut    => PixelCompData,
+  --    PixelOutVal => PixelCompVal
+  --    );
+  
+  VideoCompFloydSteinberg : entity work.DitherFloydSteinberg
     port map (
       Clk          => Clk,
       RstN         => RstN,
