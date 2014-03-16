@@ -109,7 +109,7 @@ architecture rtl of PrewittFilter is
   signal LastLine : bit1;
 
   signal TopLine, MiddleLine, BottomLine : natural;
-    
+  
   function CalcMem(LineCnt : word; Offs : integer) return natural is
     variable Cnt, AdjOffs    : integer;
   begin
@@ -142,6 +142,7 @@ begin
 
   AsyncProc : process (PixelCnt_D, LineCnt_D, PixelIn, PixelInVal, Vsync, PixArr_D, LastLine, ReadFromMem, TopLine)
     variable PixArr : PixelArray2D(3-1 downto 0);
+    variable WriteToMemT : PixelArray(3-1 downto 0);
   begin
     PixelCnt_N  <= PixelCnt_D;
     LineCnt_N   <= LineCnt_D;
@@ -150,6 +151,8 @@ begin
     --
     PixelOutVal <= '0';
     WriteToMem  <= (others => (others => '0'));
+    PixelOut    <= (others => '0');
+    WriteToMemT := (others => (others => '0'));
 
     if (PixelInVal = '1' or LastLine = '1') then
       -- Calculate the impact on all surround pixels according to the
@@ -164,13 +167,16 @@ begin
       for i in 0 to 3-1 loop
 
         -- Flush out left column of pixels to memory
-        WriteToMem(CalcMem(LineCnt_D, i)) <= PixArr(i)(0);
+        WriteToMemT(CalcMem(LineCnt_D, i)) := PixArr(i)(0);
         --
         -- Shift pixel memory one step
+        -- Left column
         PixArr_N(i)(0)                    <= PixArr(i)(1);
+        -- Middle column
         PixArr_N(i)(1)                    <= PixArr(i)(2);
         --
         -- Calculate which memory that maps where
+        -- Right column
         PixArr_N(i)(2)                    <= ReadFromMem(CalcMem(LineCnt_D, i));
       end loop;
 
@@ -178,9 +184,14 @@ begin
       if (LineCnt_D > 0) then
         PixelOutVal <= '1';
 
+        -- FIXME: Thresholding function here?
+        -- Slice out the 3 MSBs for now. (Dithering?)
+        PixelOut <= WriteToMemT(TopLine)(WriteToMem(0)'high downto WriteToMem(0)'high-PixelOut'high);
+
         -- Clear pixel memory
-        WriteToMem(TopLine) <= (others => '0');
+        WriteToMemT(TopLine) := (others => '0');
       end if;
+      WriteToMem <= WriteToMemT;
 
       PixelCnt_N <= PixelCnt_D + 1;
       if (PixelCnt_D = FrameW-1) then
@@ -200,9 +211,6 @@ begin
     end if;
   end process;
 
-  -- FIXME: Thresholding function here?
-  -- Slice out the 3 MSBs for now. (Dithering?)
-  PixelOut <= WriteToMem(TopLine)(WriteToMem(0)'high downto WriteToMem(0)'high-PixelOut'high);
 
   AddrCalc : process (PixelCnt_D) is
   begin
