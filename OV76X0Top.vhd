@@ -165,7 +165,7 @@ begin
       Clk         => Clk,
       RstN        => RstN,
       --
-      Vsync       => Vsync_Clk,
+      Vsync       => VSync_Clk,
       --
       PixelInVal  => PixelVal,
       PixelIn     => PixelData,
@@ -174,40 +174,40 @@ begin
       PixelOutVal => AlignedPixelVal
       );
 
-  --Prewitt : entity work.PrewittFilter
-  --  generic map (
-  --    DataW     => 8,
-  --    CompDataW => 3
-  --    )
-  --  port map (
-  --    RstN        => RstN,
-  --    Clk         => Clk,
-  --    --
-  --    Vsync       => Vsync,
-  --    --
-  --    PixelIn     => AlignedPixel,
-  --    PixelInVal  => AlignedPixelVal,
-  --    --
-  --    PixelOut    => PixelCompData,
-  --    PixelOutVal => PixelCompVal
-  --    );
-  
-  VideoCompFloydSteinberg : entity work.DitherFloydSteinberg
+  Prewitt : entity work.PrewittFilter
+    generic map (
+      DataW     => 8,
+      CompDataW => 3
+      )
     port map (
-      Clk          => Clk,
-      RstN         => RstN,
+      RstN        => RstN,
+      Clk         => Clk,
       --
-      Vsync        => Vsync_Clk,
+      Vsync       => Vsync_Clk,
       --
-      ToggleEnable => Btn1Stab,
-      ToggleTrunc  => Btn2Stab,
+      PixelIn     => AlignedPixel,
+      PixelInVal  => AlignedPixelVal,
       --
-      PixelIn      => AlignedPixel,
-      PixelInVal   => AlignedPixelVal,
-      --
-      PixelOut     => PixelCompData,
-      PixelOutVal  => PixelCompVal
+      PixelOut    => PixelCompData,
+      PixelOutVal => PixelCompVal
       );
+  
+  --VideoCompFloydSteinberg : entity work.DitherFloydSteinberg
+  --  port map (
+  --    Clk          => Clk,
+  --    RstN         => RstN,
+  --    --
+  --    Vsync        => Vsync_Clk,
+  --    --
+  --    ToggleEnable => Btn1Stab,
+  --    ToggleTrunc  => Btn2Stab,
+  --    --
+  --    PixelIn      => AlignedPixel,
+  --    PixelInVal   => AlignedPixelVal,
+  --    --
+  --    PixelOut     => PixelCompData,
+  --    PixelOutVal  => PixelCompVal
+  --    );
 
   VideoPack : entity work.VideoPacker
     port map (
