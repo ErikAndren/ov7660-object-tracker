@@ -165,7 +165,7 @@ begin
       Clk         => Clk,
       RstN        => RstN,
       --
-      Vsync       => VSync_Clk,
+      Vsync       => Vsync_Clk,
       --
       PixelInVal  => PixelVal,
       PixelIn     => PixelData,
