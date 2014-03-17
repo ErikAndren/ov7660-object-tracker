@@ -68,6 +68,16 @@ architecture rtl of PrewittFilter is
   signal PixelCnt_D, PixelCnt_N : word(bits(FrameW)-1 downto 0);
   signal LineCnt_D, LineCnt_N   : word(bits(FrameH)-1 downto 0);
 
+  function GenModTable(constant Entries : natural; constant Modulo : natural) return natural_vector is
+    variable Table : natural_vector(Entries downto 0);
+  begin
+    for i in 0 to Entries loop
+      Table(i) := i mod Modulo;
+    end loop;
+    return Table;
+  end function;
+
+  constant ModTable : natural_vector(FrameH downto 0) := GenModTable(FrameH, 3);
   
   type PixelArray is array (natural range <>) of word(8-1 downto 0);
   type PixelArray2D is array (natural range <>) of PixelArray(3-1 downto 0);
@@ -110,6 +120,7 @@ architecture rtl of PrewittFilter is
 
   signal TopLine, MiddleLine, BottomLine : natural;
   
+  
   function CalcMem(LineCnt : word; Offs : integer) return natural is
     variable Cnt, AdjOffs    : integer;
   begin
@@ -118,7 +129,11 @@ architecture rtl of PrewittFilter is
 
     Cnt := conv_integer(LineCnt) + AdjOffs;
 
-    return Cnt mod 3;
+    -- Wrap
+    if (Cnt < 0) then
+      Cnt := FrameH + Cnt;
+    end if;
+    return ModTable(Cnt);
   end function;
 begin
   TopLine    <= CalcMem(LineCnt_D, 0);
@@ -210,7 +225,6 @@ begin
       LineCnt_N  <= (others => '0');
     end if;
   end process;
-
 
   AddrCalc : process (PixelCnt_D) is
   begin
