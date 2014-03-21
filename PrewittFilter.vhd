@@ -103,13 +103,22 @@ architecture rtl of PrewittFilter is
   -- etc
   
   constant PrewittWeights : IntArray2D := ((0, 1, 2),
-                                              (-1, 0, 1),
-                                              (-2, -1, 0));
+                                          (-1, 0, 1),
+                                          (-2, -1, 0));
 
   constant InvPrewittWeights : IntArray2D := ((0, -1, -2),
                                               (1, 0, -1),
                                               (2, 1, 0));
 
+  constant HorPrewittWeights : IntArray2D := ((1,  1,  1),
+                                             ( 0,  0,  0),
+                                             (-1, -1, -1));
+  
+  constant InvHorPrewittWeights : IntArray2D := ((-1, -1, -1),
+                                              (0, 0, 0),
+                                              (1, 1, 1));
+
+  
   -- Create 3x3 array
   signal PixArr_N, PixArr_D : PixelArray2D(3-1 downto 0);
 
@@ -156,7 +165,7 @@ begin
   LastLine <= '1' when LineCnt_D = FrameH else '0';
 
   AsyncProc : process (PixelCnt_D, LineCnt_D, PixelIn, PixelInVal, Vsync, PixArr_D, LastLine, ReadFromMem, TopLine)
-    variable PixArr : PixelArray2D(3-1 downto 0);
+    variable PixArr      : PixelArray2D(3-1 downto 0);
     variable WriteToMemT : PixelArray(3-1 downto 0);
   begin
     PixelCnt_N  <= PixelCnt_D;
@@ -174,7 +183,7 @@ begin
       -- predefined weights
       for i in 0 to 3-1 loop
         for j in 0 to 3-1 loop
-          PixArr(i)(j) := CalcValue(PixArr_D(i)(j), PixelIn, InvPrewittWeights(i)(j));
+          PixArr(i)(j) := CalcValue(PixArr_D(i)(j), PixelIn, InvHorPrewittWeights(i)(j));
         end loop;
       end loop;
 
@@ -199,7 +208,6 @@ begin
       if (LineCnt_D > 0) then
         PixelOutVal <= '1';
 
-        -- FIXME: Thresholding function here?
         -- Slice out the 3 MSBs for now. (Dithering?)
         PixelOut <= WriteToMemT(TopLine)(WriteToMem(0)'high downto WriteToMem(0)'high-PixelOut'high);
 
