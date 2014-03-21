@@ -28,17 +28,25 @@ add wave -noupdate -format Logic /tb/dut/sccbm/sccbm/done
 add wave -noupdate -format Literal /tb/dut/sccbm/sccbm/stm
 add wave -noupdate -format Logic /tb/dut/sccbm/sccbm/data_pulse_i
 add wave -noupdate -divider DitherFloydSteinberg
-add wave -noupdate -format Logic /tb/dut/videocomp/pixelinval
-add wave -noupdate -format Literal -radix unsigned /tb/dut/videocomp/pixelin
-add wave -noupdate -format Literal -radix unsigned /tb/dut/videocomp/incpixelpluserr
-add wave -noupdate -format Literal -radix unsigned /tb/dut/videocomp/righterr_d
-add wave -noupdate -format Logic /tb/dut/videocomp/pixeloutval
-add wave -noupdate -format Literal /tb/dut/videocomp/pixelout
-add wave -noupdate -format Literal -expand /tb/dut/videocomp/errorvect_d
+add wave -noupdate -divider PrewittFilter
+add wave -noupdate -format Logic /tb/dut/prewitt/vsync
+add wave -noupdate -format Literal -radix unsigned /tb/dut/prewitt/pixelin
+add wave -noupdate -format Logic /tb/dut/prewitt/pixelinval
+add wave -noupdate -format Literal /tb/dut/prewitt/linecnt_d
+add wave -noupdate -format Literal /tb/dut/prewitt/linecnt_n
+add wave -noupdate -format Literal -radix unsigned /tb/dut/prewitt/pixelcnt_d
+add wave -noupdate -format Literal /tb/dut/prewitt/pixelcnt_n
+add wave -noupdate -format Literal -expand /tb/dut/prewitt/asyncproc/pixarr
+add wave -noupdate -format Literal -radix unsigned -expand /tb/dut/prewitt/pixarr_n
+add wave -noupdate -format Literal /tb/dut/prewitt/pixarr_d
+add wave -noupdate -format Literal /tb/dut/prewitt/writetomem
+add wave -noupdate -format Literal /tb/dut/prewitt/readfrommem
+add wave -noupdate -format Logic /tb/dut/prewitt/pixeloutval
+add wave -noupdate -format Literal /tb/dut/prewitt/pixelout
 TreeUpdate [SetDefaultTree]
-WaveRestoreCursors {{Cursor 1} {941225609 ps} 0}
-configure wave -namecolwidth 246
-configure wave -valuecolwidth 201
+WaveRestoreCursors {{Cursor 1} {941162902 ps} 0}
+configure wave -namecolwidth 189
+configure wave -valuecolwidth 307
 configure wave -justifyvalue left
 configure wave -signalnamewidth 1
 configure wave -snapdistance 10
@@ -51,4 +59,4 @@ configure wave -griddelta 40
 configure wave -timeline 0
 configure wave -timelineunits ps
 update
-WaveRestoreZoom {941000196 ps} {941428976 ps}
+WaveRestoreZoom {941113015 ps} {941306567 ps}
