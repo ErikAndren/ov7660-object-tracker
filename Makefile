@@ -8,6 +8,8 @@ FILES=OV76X0Pack.vhd \
 	OV76X0Pack.vhd \
 	Pll.vhd \
 	PixelAligner.vhd \
+	LineSampler1PRAM.vhd \
+	LineSampler.vhd \
 	PrewittFilter2PRAM.vhd \
 	PrewittFilter.vhd \
 	SccbAddrReader.vhd \
