@@ -39,7 +39,7 @@ architecture rtl of LineSampler is
 
   function CalcLine(CurLine : word; Offs : natural) return natural is
   begin
-    return conv_integer(CurLine) + Offs + 1 mod Buffers;
+    return ((conv_integer(CurLine) + Offs + 1) mod Buffers);
   end function;
 begin
   SyncProc : process (Clk, RstN)
@@ -77,7 +77,7 @@ begin
         end if;
       end if;
         
-      for i in 0 to 3-1 loop
+      for i in 0 to OutRes-1 loop
         PixArr_N(i)(0) <= PixArr_D(i)(1);
         PixArr_N(i)(1) <= PixArr_D(i)(2);
         PixArr_N(i)(2) <= RamOut(CalcLine(LineCnt_D, i));
@@ -107,10 +107,5 @@ begin
   end generate;
 
   PixelOutVal <= PixelInVal;
-  PixelOutMux : process (RamOut, LineCnt_D, PixArr_D)
-  begin
-    for i in 0 to OutRes-1 loop
-      PixelOut(i) <= PixArr_D(CalcLine(LineCnt_D, i));
-    end loop;
-  end process;
+  PixelOut    <= PixArr_D;
 end architecture rtl;
