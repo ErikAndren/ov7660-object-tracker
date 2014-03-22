@@ -23,6 +23,7 @@ package OV76X0Pack is
   constant BufferAddrOffs : positive := 16#10000#;
 
   constant FrameW   : positive := 640;
+  constant FrameWW  : positive := bits(FrameW);
   constant FrameH   : positive := 480;
   constant FrameHW  : positive := bits(FrameH);
   constant FrameRes : positive := FrameW * FrameH;
@@ -48,7 +49,8 @@ package OV76X0Pack is
   constant tHrefPeriod : positive := tHrefHigh + tHrefLow;
 
   constant PixelW : positive := 8;
-  type PixVec is array (natural range <>) of word(PixelW-1 downto 0);
+  type PixVec is array (3-1 downto 0) of word(PixelW-1 downto 0);
+  type PixVec2D is array (natural range <>) of PixVec;
   
 end package;
 
