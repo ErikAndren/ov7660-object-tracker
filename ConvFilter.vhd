@@ -44,9 +44,11 @@ begin
   begin
     PixelOut_N <= PixelOut_D;
     
-    -- Prewitt filter
     if PixelInVal = '1' then
-      PixelOut_N    <= PixelIn(0)(1) + SHL(PixelIn(0)(2), "1") + PixelIn(1)(2) - PixelIn(1)(0) - SHL(PixelIn(2)(0), "1") - PixelIn(2)(1);
+       -- Prewitt filter
+       -- PixelOut_N    <= PixelIn(0)(1) + SHL(PixelIn(0)(2), "1") + PixelIn(1)(2) - PixelIn(1)(0) - SHL(PixelIn(2)(0), "1") - PixelIn(2)(1);
+      -- Sobel filter
+      PixelOut_N    <= SHL(PixelIn(0)(1), "1") + SHL(PixelIn(0)(2), "1") + SHL(PixelIn(1)(2), "1") - SHL(PixelIn(1)(0), "1") - SHL(PixelIn(2)(0), "1") - SHL(PixelIn(2)(1), "1");
     end if;
     PixelOutVal_N <= PixelInVal;
   end process;
