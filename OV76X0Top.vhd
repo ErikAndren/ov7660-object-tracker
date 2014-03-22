@@ -174,6 +174,23 @@ begin
       PixelOutVal => AlignedPixelVal
       );
 
+  FChain : entity work.FilterChain
+    generic map (
+      DataW => 8,
+      CompDataW => 3
+      )
+    port map (
+      Clk => Clk,
+      RstN => RstN,
+      --
+      Vsync => Vsync_Clk,
+      --
+      PixelIn => AlignedPixel,
+      PixelInVal => AlignedPixelVal,
+      --
+      PixelOut => PixelCompData,
+      PixelOutVal => PixelCompVal
+      );
   
   --VideoCompFloydSteinberg : entity work.DitherFloydSteinberg
   --  port map (
