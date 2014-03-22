@@ -25,42 +25,49 @@ entity LineSampler is
 end entity;
 
 architecture rtl of LineSampler is
-  signal WrAddr_N, WrAddr_D : word(FrameHW-1 downto 0);
-  signal RdAddr_N, RdAddr_D : word(FrameHW-1 downto 0);
+  signal Addr_N, Addr_D       : word(FrameWW-1 downto 0);
   type AddrArr is array (natural range <>) of word(Buffers-1 downto 0);
   --
-  signal Addr : AddrArr(Buffers-1 downto 0);
+  signal Addr                 : AddrArr(Buffers-1 downto 0);
   signal LineCnt_N, LineCnt_D : word(bits(Buffers)-1 downto 0);
-  signal WrEn : word(Buffers-1 downto 0);
+  signal WrEn                 : word(Buffers-1 downto 0);
+  signal RamOut               : PixVec(OutRes-1 downto 0);
 begin
   SyncProc : process (Clk, RstN)
   begin
     if RstN = '0' then
       LineCnt_D <= (others => '0');
-      WrAddr_D  <= (others => '0');
-      RdAddr_D  <= (others => '0');
+      Addr_D    <= (others => '0');
     elsif rising_edge(Clk) then
       LineCnt_D <= LineCnt_N;
-      WrAddr_D  <= WrAddr_N;
-      RdAddr_D  <= RdAddr_N;
+      Addr_D    <= Addr_N;
     end if;
   end process;
 
-  AsyncProc : process (LineCnt_D)
+  AsyncProc : process (LineCnt_D, Addr_D)
   begin
     LineCnt_N <= LineCnt_D;
-    WrAddr_N  <= WrAddr_D;
-    RdAddr_N  <= RdAddr_N;
-  end process;
+    Addr_N    <= Addr_D;
 
-  OneHotProc : process (LineCnt_D, PixelInVal, WrAddr_D, RdAddr_D)
+    if PixelInVal = '1' then
+      Addr_N <= Addr_D + 1;
+      if Addr_D + 1 = FrameW then
+        Addr_N <= (others => '0');
+        LineCnt_N <= LineCnt_D + 1;
+        if LineCnt_D + 1 = Buffers then
+          LineCnt_N <= (others => '0');
+        end if;
+       end if;
+    end if;
+  end process;
+  Addr <= (others => Addr_D);
+
+  OneHotProc : process (LineCnt_D, PixelInVal)
   begin
     WrEn <= (others => '0');
-    Addr <= (others => RdAddr_D);
 
     if PixelInVal = '1' then
       WrEn(conv_integer(LineCnt_D)) <= '1';
-      Addr(conv_integer(LineCnt_D)) <= WrAddr_D;
     end if;
   end process;
 
@@ -70,9 +77,18 @@ begin
         Clock   => Clk,
         Data    => PixelIn,
         WrEn    => WrEn(i),
-        address => Addr(i),
+        address => Addr_D,
         --
-        q       => PixelOut(i)
+        q       => RamOut(i)
         );
   end generate;
+
+  PixelOutVal <= PixelInVal;
+  PixelOutMux : process (RamOut, LineCnt_D)
+  begin
+    -- FIXME: Is this synthesisable>
+    for i in 0 to OutRes-1 loop
+      PixelOut(i) <= RamOut(conv_integer(LineCnt_D) + i + 1 mod Buffers);
+    end loop;
+  end process;
 end architecture rtl;
