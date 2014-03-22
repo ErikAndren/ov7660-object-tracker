@@ -11,6 +11,7 @@ FILES=OV76X0Pack.vhd \
 	LineSampler1PRAM.vhd \
 	LineSampler.vhd \
 	ConvFilter.vhd \
+	FilterChain.vhd \
 	PrewittFilter2PRAM.vhd \
 	PrewittFilter.vhd \
 	SccbAddrReader.vhd \
