@@ -16,6 +16,8 @@ entity LineSampler is
     Clk         : in  bit1;
     RstN        : in  bit1;
     --
+    Vsync       : in  bit1;
+    --
     PixelIn     : in  word(DataW-1 downto 0);
     PixelInVal  : in  bit1;
     --
@@ -30,10 +32,10 @@ architecture rtl of LineSampler is
   signal PixArr_N, PixArr_D   : PixVec2D(3-1 downto 0);
   --
   --
-  signal Addr                 : AddrArr(Buffers-1 downto 0);
   signal LineCnt_N, LineCnt_D : word(bits(Buffers)-1 downto 0);
   signal WrEn                 : word(Buffers-1 downto 0);
-  signal RamOut               : PixVec;
+  type BuffArr is array (natural range <>) of word(PixelW-1 downto 0);
+  signal RamOut               : BuffArr(Buffers-1 downto 0);
 
   function CalcLine(CurLine : word; Offs : natural) return natural is
   begin
@@ -50,10 +52,16 @@ begin
       LineCnt_D <= LineCnt_N;
       Addr_D    <= Addr_N;
       PixArr_D  <= PixArr_N;
+
+      if Vsync = '1' then
+        LineCnt_D <= (others => '0');
+        Addr_D    <= (others => '0');
+        PixArr_D  <= (others => (others => (others => '0')));
+      end if;
     end if;
   end process;
 
-  AsyncProc : process (LineCnt_D, Addr_D, PixArr_D)
+  AsyncProc : process (LineCnt_D, Addr_D, PixArr_D, PixelInVal, RamOut)
   begin
     LineCnt_N <= LineCnt_D;
     Addr_N    <= Addr_D;
@@ -70,13 +78,12 @@ begin
       end if;
         
       for i in 0 to 3-1 loop
-        PixArr_N(i)(0) <= PixArr_N(i)(1);
-        PixArr_N(i)(1) <= PixArr_N(i)(2);
+        PixArr_N(i)(0) <= PixArr_D(i)(1);
+        PixArr_N(i)(1) <= PixArr_D(i)(2);
         PixArr_N(i)(2) <= RamOut(CalcLine(LineCnt_D, i));
       end loop;
     end if;
   end process;
-  Addr <= (others => Addr_D);
 
   OneHotProc : process (LineCnt_D, PixelInVal)
   begin
@@ -100,7 +107,7 @@ begin
   end generate;
 
   PixelOutVal <= PixelInVal;
-  PixelOutMux : process (RamOut, LineCnt_D)
+  PixelOutMux : process (RamOut, LineCnt_D, PixArr_D)
   begin
     for i in 0 to OutRes-1 loop
       PixelOut(i) <= PixArr_D(CalcLine(LineCnt_D, i));

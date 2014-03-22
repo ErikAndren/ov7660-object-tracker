@@ -40,8 +40,10 @@ begin
     end if;
   end process;
 
-  AsyncProc : process (PixelIn, PixelInVal)
+  AsyncProc : process (PixelIn, PixelInVal, PixelOut_D)
   begin
+    PixelOut_N <= PixelOut_D;
+    
     -- Prewitt filter
     if PixelInVal = '1' then
       PixelOut_N    <= PixelIn(0)(1) + SHL(PixelIn(0)(2), "1") + PixelIn(1)(2) - PixelIn(1)(0) - SHL(PixelIn(2)(0), "1") - PixelIn(2)(1);
