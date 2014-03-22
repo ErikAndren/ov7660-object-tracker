@@ -174,23 +174,6 @@ begin
       PixelOutVal => AlignedPixelVal
       );
 
-  Prewitt : entity work.PrewittFilter
-    generic map (
-      DataW     => 8,
-      CompDataW => 3
-      )
-    port map (
-      RstN        => RstN,
-      Clk         => Clk,
-      --
-      Vsync       => Vsync_Clk,
-      --
-      PixelIn     => AlignedPixel,
-      PixelInVal  => AlignedPixelVal,
-      --
-      PixelOut    => PixelCompData,
-      PixelOutVal => PixelCompVal
-      );
   
   --VideoCompFloydSteinberg : entity work.DitherFloydSteinberg
   --  port map (
