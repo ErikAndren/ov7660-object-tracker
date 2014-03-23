@@ -13,13 +13,13 @@ entity ConvFilter is
     Res       : positive
     );
   port (
-    Clk        : in  bit1;
-    RstN      : in  bit1;
+    Clk         : in  bit1;
+    RstN        : in  bit1;
     --
-    PixelInVal : in  bit1;
-    PixelIn    : in  PixVec2D(Res-1 downto 0);
+    PixelInVal  : in  bit1;
+    PixelIn     : in  PixVec2D(Res-1 downto 0);
     --
-    PixelOut   : out word(CompDataW-1 downto 0);
+    PixelOut    : out word(CompDataW-1 downto 0);
     PixelOutVal : out bit1
     );
 end entity;
@@ -41,14 +41,31 @@ begin
   end process;
 
   AsyncProc : process (PixelIn, PixelInVal, PixelOut_D)
+    -- variable TmpRes : integer;
+    variable SumX, SumY, Sum   : word(DataW+1 downto 0);
   begin
     PixelOut_N <= PixelOut_D;
-    
+
     if PixelInVal = '1' then
-       -- Prewitt filter
-       -- PixelOut_N    <= PixelIn(0)(1) + SHL(PixelIn(0)(2), "1") + PixelIn(1)(2) - PixelIn(1)(0) - SHL(PixelIn(2)(0), "1") - PixelIn(2)(1);
       -- Sobel filter
-      PixelOut_N    <= SHL(PixelIn(0)(1), "1") + SHL(PixelIn(0)(2), "1") + SHL(PixelIn(1)(2), "1") - SHL(PixelIn(1)(0), "1") - SHL(PixelIn(2)(0), "1") - SHL(PixelIn(2)(1), "1");
+      SumX := ("00" & PixelIn(0)(0)) + ('0' & PixelIn(0)(1) & '0') + ("00" & PixelIn(0)(2)) - (("00" & PixelIn(2)(0)) + ('0' & PixelIn(2)(1) & '0') + ("00" & PixelIn(2)(2)));
+      SumY := ("00" & PixelIn(0)(2)) + ('0' & PixelIn(1)(2) & '0') + ("00" & PixelIn(2)(2)) - (("00" & PixelIn(0)(0)) + ('0' & PixelIn(1)(0) & '0') + ("00" & PixelIn(0)(2)));
+
+      -- Convert to Absolute values
+      if (SumX(SumX'high) = '1') then
+        SumX := not SumX + 1;
+      end if;
+
+      if (SumY(SumY'high) = '1') then
+        SumY := not SumY + 1;
+      end if;
+
+      Sum := SumX + SumY;
+      if Sum > 127 then
+        PixelOut_N <= (others => '1');
+      else
+        PixelOut_N <= Sum(PixelOut_N'length-1 downto 0);
+      end if;
     end if;
     PixelOutVal_N <= PixelInVal;
   end process;
