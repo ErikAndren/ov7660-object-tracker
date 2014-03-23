@@ -17,9 +17,6 @@ entity DitherFloydSteinberg is
     --
     Vsync        : in  bit1;
     --
-    ToggleEnable : in  bit1;
-    ToggleTrunc  : in  bit1;
-    --
     PixelInVal   : in  bit1;
     PixelIn      : in  word(DataW-1 downto 0);
     --
@@ -120,8 +117,7 @@ begin
   
   AsyncProc : process (RightErr_D, PixelInVal, error, PixelOut_D,
                        ClosestPixelVal, PixelCnt_D, ErrorVect_D,
-                       FromErrMem, LineCnt_D, Vsync, Enabled_D,
-                       ToggleEnable
+                       FromErrMem, LineCnt_D, Vsync, Enabled_D
                        )
   begin
     LineCnt_N     <= LineCnt_D;
@@ -130,11 +126,6 @@ begin
     PixelOutVal_N <= '0';
     PixelCnt_N    <= PixelCnt_D;
     ErrorVect_N   <= ErrorVect_D;
-
-    Enabled_N <= Enabled_D;
-    if (ToggleEnable = '0') then
-      Enabled_N <= not Enabled_D;
-    end if;
 
     ToErrMem <= SHR(ErrorVect_D(0) + conv_word(3 * conv_integer(error), MaxErrorW), "100");
 
