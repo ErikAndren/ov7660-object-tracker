@@ -16,6 +16,9 @@ entity ConvFilter is
     Clk         : in  bit1;
     RstN        : in  bit1;
     --
+    RdAddr      : in  word(bits(FrameW)-1 downto 0);
+    Vsync       : in  bit1;
+    --
     PixelInVal  : in  bit1;
     PixelIn     : in  PixVec2D(Res-1 downto 0);
     --
@@ -27,24 +30,37 @@ end entity;
 architecture rtl of ConvFilter is
   signal PixelOut_N, PixelOut_D       : word(DataW-1 downto 0);
   signal PixelOutVal_N, PixelOutVal_D : bit1;
+
+  constant RowsToFilter             : natural := 5;
+  constant LinesToFilter            : natural := 9;
+  signal LineFilter_N, LineFilter_D : word(bits(LinesToFilter)-1 downto 0);
+  signal FirstColumn                : bit1;
 begin
-  -- FIXME: How to handle line delay of 2
   SyncProc : process (Clk, RstN)
   begin
     if RstN = '0' then
       PixelOut_D    <= (others => '0');
       PixelOutVal_D <= '0';
+      LineFilter_D  <= (others => '0');
     elsif rising_edge(Clk) then
       PixelOut_D    <= PixelOut_N;
       PixelOutVal_D <= PixelOutVal_N;
+      LineFilter_D  <= LineFilter_N;
     end if;
   end process;
 
-  AsyncProc : process (PixelIn, PixelInVal, PixelOut_D)
-    -- variable TmpRes : integer;
+  -- FIlter out noise in left column
+  FirstColumn <= '1' when RdAddr < RowsToFilter else '0';
+
+  AsyncProc : process (PixelIn, PixelInVal, PixelOut_D, Vsync, LineFilter_D, FirstColumn, RdAddr)
     variable SumX, SumY, Sum   : word(DataW+1 downto 0);
   begin
     PixelOut_N <= PixelOut_D;
+    LineFilter_N <= LineFilter_D;
+
+    if Vsync = '1' then
+      LineFilter_N <= conv_word(LinesToFilter, LineFilter_N'length);
+    end if;
 
     if PixelInVal = '1' then
       -- Sobel filter
@@ -67,7 +83,18 @@ begin
         PixelOut_N <= Sum(PixelOut_N'length-1 downto 0);
       end if;
     end if;
+
     PixelOutVal_N <= PixelInVal;
+    if FirstColumn = '1' then
+      PixelOut_N <= (others => '0');
+    end if;
+
+    if LineFilter_D > 0 then
+      PixelOut_N <= (others => '0');
+      if RdAddr = FrameW-1 then
+        LineFilter_N <= LineFilter_D - 1;
+      end if;
+    end if;
   end process;
 
   -- Slice out the resolution we support
