@@ -17,6 +17,7 @@ entity LineSampler is
     RstN        : in  bit1;
     --
     Vsync       : in  bit1;
+    RdAddr      : out word(bits(FrameW)-1 downto 0);
     --
     PixelIn     : in  word(DataW-1 downto 0);
     PixelInVal  : in  bit1;
@@ -30,7 +31,6 @@ architecture rtl of LineSampler is
   signal Addr_N, Addr_D       : word(FrameWW-1 downto 0);
   type AddrArr is array (natural range <>) of word(Buffers-1 downto 0);
   signal PixArr_N, PixArr_D   : PixVec2D(3-1 downto 0);
-  --
   --
   signal LineCnt_N, LineCnt_D : word(bits(Buffers)-1 downto 0);
   signal WrEn                 : word(Buffers-1 downto 0);
@@ -78,9 +78,14 @@ begin
       end if;
         
       for i in 0 to OutRes-1 loop
-        PixArr_N(i)(0) <= PixArr_D(i)(1);
+        PixArr_N(i)(0) <= PixArr_D(i)(1);        
         PixArr_N(i)(1) <= PixArr_D(i)(2);
         PixArr_N(i)(2) <= RamOut(CalcLine(LineCnt_D, i));
+
+        -- Clear buffer on the end of the line
+        if (Addr_D = FrameW-1) then
+          PixArr_N <= (others => (others => (others => '0')));
+        end if;
       end loop;
     end if;
   end process;
@@ -106,6 +111,7 @@ begin
         );
   end generate;
 
+  RdAddr      <= Addr_D;
   PixelOutVal <= PixelInVal;
   PixelOut    <= PixArr_D;
 end architecture rtl;
