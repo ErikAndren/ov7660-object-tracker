@@ -52,8 +52,6 @@ architecture rtl of DitherFloydSteinberg is
   signal FromErrMem, ToErrMemTrunc        : word(TruncBits-1 downto 0);
   signal WrAddr, RdAddr       : word(bits(FrameW)-1 downto 0);
 
-  signal Enabled_N, Enabled_D : bit1;
-
   --Pixel 1, 0
   --1. Add error from right error to pixel (contains prev. right err and error_vector error)
   --2. Round pixel
@@ -75,7 +73,7 @@ begin
   PixelInExt      <= '0' & PixelIn;
   IncPixelPlusErr <= PixelInExt + RightErr_D;
 
-  PixelValCalc : process (PixelIn, IncPixelPlusErr, Enabled_D)
+  PixelValCalc : process (PixelIn, IncPixelPlusErr)
     variable Err : word(DataW-1 downto 0);
   begin
     -- Check for overflow
@@ -84,10 +82,6 @@ begin
       AdjPixelIn <= xt1(DataW-CompDataW) & xt0(CompDataW);
     else
       AdjPixelIn <= IncPixelPlusErr(DataW-1 downto 0);
-    end if;
-
-    if Enabled_D = '0' then
-      AdjPixelIn <= PixelIn;
     end if;
   end process;
 
@@ -103,7 +97,6 @@ begin
       ErrorVect_D   <= (others => (others => '0'));
       PixelCnt_D    <= (others => '0');
       LineCnt_D     <= (others => '0');
-      Enabled_D     <= '1';
     elsif rising_edge(Clk) then
       RightErr_D    <= RightErr_N;
       PixelOutVal_D <= PixelOutVal_N;
@@ -111,13 +104,12 @@ begin
       ErrorVect_D   <= ErrorVect_N;
       PixelCnt_D    <= PixelCnt_N;
       LineCnt_D     <= LineCnt_N;
-      Enabled_D     <= Enabled_N;
     end if;
   end process;
   
   AsyncProc : process (RightErr_D, PixelInVal, error, PixelOut_D,
                        ClosestPixelVal, PixelCnt_D, ErrorVect_D,
-                       FromErrMem, LineCnt_D, Vsync, Enabled_D
+                       FromErrMem, LineCnt_D, Vsync
                        )
   begin
     LineCnt_N     <= LineCnt_D;

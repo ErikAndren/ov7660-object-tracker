@@ -176,19 +176,20 @@ begin
 
   FChain : entity work.FilterChain
     generic map (
-      DataW => 8,
+      DataW     => 8,
       CompDataW => 3
       )
     port map (
-      Clk => Clk,
-      RstN => RstN,
+      Clk         => Clk,
+      RstN        => RstN,
       --
-      Vsync => Vsync_Clk,
+      Vsync       => Vsync_Clk,
+      ToggleMode  => Btn2Stab,
       --
-      PixelIn => AlignedPixel,
-      PixelInVal => AlignedPixelVal,
+      PixelIn     => AlignedPixel,
+      PixelInVal  => AlignedPixelVal,
       --
-      PixelOut => PixelCompData,
+      PixelOut    => PixelCompData,
       PixelOutVal => PixelCompVal
       );
 
