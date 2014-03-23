@@ -27,13 +27,14 @@ entity FilterChain is
 end entity;
 
 architecture rtl of FilterChain is
-  constant Res                  : positive := 3;
-  signal PixelArray             : PixVec2D(Res-1 downto 0);
-  signal PixelArrayVal          : bit1;
-  signal PixelFromSobel         : word(CompDataW-1 downto 0);
-  signal PixelFromSobelVal      : bit1;
-  signal PixelFromDither        : word(CompDataW-1 downto 0);
+  constant Res              : positive := 3;
+  signal PixelArray         : PixVec2D(Res-1 downto 0);
+  signal PixelArrayVal      : bit1;
+  signal PixelFromSobel     : word(CompDataW-1 downto 0);
+  signal PixelFromSobelVal  : bit1;
+  signal PixelFromDither    : word(CompDataW-1 downto 0);
   signal PixelFromDitherVal : bit1;
+  signal RdAddr             : word(bits(FrameW)-1 downto 0);
 
   constant NONE_MODE              : natural := 0;
   constant DITHER_MODE            : natural := 1;
@@ -41,7 +42,6 @@ architecture rtl of FilterChain is
   constant MODES                  : natural := SOBEL_MODE + 1;
   signal FilterSel_N, FilterSel_D : word(bits(MODES)-1 downto 0);
 begin
-
   LS : entity work.LineSampler
     generic map (
       DataW   => DataW,
@@ -53,6 +53,7 @@ begin
       RstN        => RstN,
       --
       Vsync       => Vsync,
+      RdAddr      => RdAddr,
       --
       PixelIn     => PixelIn,
       PixelInVal  => PixelInVal,
@@ -68,14 +69,17 @@ begin
       Res       => Res
     )
     port map (
-      Clk                    => Clk,
-      RstN                   => RstN,
+      Clk         => Clk,
+      RstN        => RstN,
       --
-      PixelIn                => PixelArray,
-      PixelInVal             => PixelArrayVal,
+      Vsync       => Vsync,
+      RdAddr      => RdAddr,
       --
-      PixelOut               => PixelFromSobel,
-      PixelOutVal            => PixelFromSobelVal
+      PixelIn     => PixelArray,
+      PixelInVal  => PixelArrayVal,
+      --
+      PixelOut    => PixelFromSobel,
+      PixelOutVal => PixelFromSobelVal
       );
 
   VideoCompFloydSteinberg : entity work.DitherFloydSteinberg
