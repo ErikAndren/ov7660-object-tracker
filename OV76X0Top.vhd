@@ -191,17 +191,19 @@ begin
       CompDataW => 3
       )
     port map (
-      Clk         => Clk,
-      RstN        => RstN,
+      Clk          => Clk,
+      RstN         => RstN,
       --
-      Vsync       => Vsync_Clk,
-      ToggleMode  => Btn3Pulse,
+      Vsync        => Vsync_Clk,
+      ToggleMode   => Btn3Pulse,
+      IncThreshold => Btn2Pulse,
+      DecThreshold => Btn1Pulse,
       --
-      PixelIn     => AlignedPixel,
-      PixelInVal  => AlignedPixelVal,
+      PixelIn      => AlignedPixel,
+      PixelInVal   => AlignedPixelVal,
       --
-      PixelOut    => PixelCompData,
-      PixelOutVal => PixelCompVal
+      PixelOut     => PixelCompData,
+      PixelOutVal  => PixelCompVal
       );
 
   VideoPack : entity work.VideoPacker

@@ -13,19 +13,22 @@ entity ConvFilter is
     Res       : positive
     );
   port (
-    Clk         : in  bit1;
-    RstN        : in  bit1;
+    Clk          : in  bit1;
+    RstN         : in  bit1;
     --
-    FilterSel   :  in  word(MODESW-1 downto 0);
+    FilterSel    : in  word(MODESW-1 downto 0);
     --
-    RdAddr      : in  word(bits(FrameW)-1 downto 0);
-    Vsync       : in  bit1;
+    IncThreshold : in  bit1;
+    DecThreshold : in bit1;
     --
-    PixelInVal  : in  bit1;
-    PixelIn     : in  PixVec2D(Res-1 downto 0);
+    RdAddr       : in  word(bits(FrameW)-1 downto 0);
+    Vsync        : in  bit1;
     --
-    PixelOut    : out word(CompDataW-1 downto 0);
-    PixelOutVal : out bit1
+    PixelInVal   : in  bit1;
+    PixelIn      : in  PixVec2D(Res-1 downto 0);
+    --
+    PixelOut     : out word(CompDataW-1 downto 0);
+    PixelOutVal  : out bit1
     );
 end entity;
 
@@ -38,7 +41,9 @@ architecture rtl of ConvFilter is
   signal LineFilter_N, LineFilter_D : word(bits(LinesToFilter)-1 downto 0);
   signal FirstColumn                : bit1;
 
-  constant Threshold : natural := 255;
+  constant ThresholdStep : natural := 32;
+
+  signal CurThres_N, CurThres_D : word(3-1 downto 0);
 begin
   SyncProc : process (Clk, RstN)
   begin
@@ -46,17 +51,19 @@ begin
       PixelOut_D    <= (others => '0');
       PixelOutVal_D <= '0';
       LineFilter_D  <= (others => '0');
+      CurThres_D    <= (others => '1');
     elsif rising_edge(Clk) then
       PixelOut_D    <= PixelOut_N;
       PixelOutVal_D <= PixelOutVal_N;
       LineFilter_D  <= LineFilter_N;
+      CurThres_D    <= CurThres_N;
     end if;
   end process;
 
   -- Filter out noise in left column
   FirstColumn <= '1' when RdAddr < RowsToFilter else '0';
 
-  AsyncProc : process (PixelIn, PixelInVal, PixelOut_D, Vsync, LineFilter_D, FirstColumn, RdAddr, FilterSel)
+  AsyncProc : process (PixelIn, PixelInVal, PixelOut_D, Vsync, LineFilter_D, FirstColumn, RdAddr, FilterSel, IncThreshold, DecThreshold, CurThres_D)
     variable SumX, SumY, Sum : word(DataW+1 downto 0);
     variable Lapl1           : word(DataW+2 downto 0);
     variable Lapl2           : word(DataW+2 downto 0);
@@ -65,6 +72,19 @@ begin
     LineFilter_N  <= LineFilter_D;
     -- Filter away edges
     PixelOutVal_N <= PixelInVal;
+    CurThres_N    <= CurThres_D;
+
+    if IncThreshold = '1' and DecThreshold = '1' then
+      null;
+    elsif IncThreshold = '1' then
+      if CurThres_D /= xt1(CurThres_D'length) then
+        CurThres_N <= CurThres_D + 1;
+      end if;
+    elsif DecThreshold = '1' then
+      if CurThres_D /= xt0(CurThres_D'length) then
+        CurThres_N <= CurThres_D - 1;
+      end if;
+    end if;
     
     if Vsync = '1' then
       LineFilter_N <= conv_word(LinesToFilter, LineFilter_N'length);
@@ -92,19 +112,19 @@ begin
       Lapl2 := (PixelIn(1)(1) & "000") - ("000" & PixelIn(0)(0)) - ("000" & PixelIn(0)(1)) - ("000" & PixelIn(0)(2)) - ("000" & PixelIn(1)(0)) - ("000" & PixelIn(1)(2)) - ("000" & PixelIn(2)(0)) - ("000" & PixelIn(2)(1)) - ("000" & PixelIn(2)(2)); 
 
       if FilterSel = SOBEL_MODE then
-        if Sum > Threshold then
+        if Sum > ((conv_integer(CurThres_D)+1) * ThresholdStep)-1 then
           PixelOut_N <= (others => '1');
         else
           PixelOut_N <= Sum(PixelOut_N'length-1 downto 0);
         end if;
       elsif FilterSel = LAPLACIAN_1_MODE then 
-        if Lapl1 > Threshold then
+        if Lapl1 > ((conv_integer(CurThres_D)+1) * ThresholdStep)-1 then
           PixelOut_N <= (others => '1');
         else
           PixelOut_N <= Lapl1(PixelOut_N'length-1 downto 0);
         end if;
       elsif FilterSel = LAPLACIAN_2_MODE then
-        if Lapl2 > Threshold then
+        if Lapl2 > ((conv_integer(CurThres_D)+1) * ThresholdStep)-1 then
           PixelOut_N <= (others => '1');
         else
           PixelOut_N <= Lapl2(PixelOut_N'length-1 downto 0);

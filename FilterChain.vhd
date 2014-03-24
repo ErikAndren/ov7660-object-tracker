@@ -16,7 +16,10 @@ entity FilterChain is
     RstN        : in  bit1;
     --
     Vsync       : in  bit1;
+    --
     ToggleMode  : in  bit1;
+    IncThreshold : in bit1;
+    DecThreshold : in bit1;
     --
     PixelIn     : in  word(DataW-1 downto 0);
     PixelInVal  : in  bit1;
@@ -65,18 +68,21 @@ begin
       Res       => Res
     )
     port map (
-      Clk         => Clk,
-      RstN        => RstN,
+      Clk          => Clk,
+      RstN         => RstN,
       --
-      Vsync       => Vsync,
-      RdAddr      => RdAddr,
-      FilterSel   => FilterSel_D,
+      Vsync        => Vsync,
+      IncThreshold => IncThreshold,
+      DecThreshold => DecThreshold,
       --
-      PixelIn     => PixelArray,
-      PixelInVal  => PixelArrayVal,
+      RdAddr       => RdAddr,
+      FilterSel    => FilterSel_D,
       --
-      PixelOut    => PixelFromSobel,
-      PixelOutVal => PixelFromSobelVal
+      PixelIn      => PixelArray,
+      PixelInVal   => PixelArrayVal,
+      --
+      PixelOut     => PixelFromSobel,
+      PixelOutVal  => PixelFromSobelVal
       );
 
   VideoCompFloydSteinberg : entity work.DitherFloydSteinberg
