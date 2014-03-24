@@ -36,11 +36,7 @@ architecture rtl of FilterChain is
   signal PixelFromDitherVal : bit1;
   signal RdAddr             : word(bits(FrameW)-1 downto 0);
 
-  constant NONE_MODE              : natural := 0;
-  constant DITHER_MODE            : natural := 1;
-  constant SOBEL_MODE             : natural := 2;
-  constant MODES                  : natural := SOBEL_MODE + 1;
-  signal FilterSel_N, FilterSel_D : word(bits(MODES)-1 downto 0);
+  signal FilterSel_N, FilterSel_D : word(MODESW-1 downto 0);
 begin
   LS : entity work.LineSampler
     generic map (
@@ -74,6 +70,7 @@ begin
       --
       Vsync       => Vsync,
       RdAddr      => RdAddr,
+      FilterSel   => FilterSel_D,
       --
       PixelIn     => PixelArray,
       PixelInVal  => PixelArrayVal,

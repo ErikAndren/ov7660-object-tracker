@@ -51,7 +51,16 @@ package OV76X0Pack is
   constant PixelW : positive := 8;
   type PixVec is array (3-1 downto 0) of word(PixelW-1 downto 0);
   type PixVec2D is array (natural range <>) of PixVec;
-  
+
+
+  constant NONE_MODE              : natural := 0;
+  constant DITHER_MODE            : natural := 1;
+  constant SOBEL_MODE             : natural := 2;
+  constant LAPLACIAN_1_MODE       : natural := 3;
+  constant LAPLACIAN_2_MODE       : natural := 4;
+  constant MODES                  : natural := LAPLACIAN_2_MODE + 1;
+  constant MODESW                 : natural := bits(MODES);
+
 end package;
 
 package body OV76X0Pack is
