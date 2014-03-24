@@ -16,6 +16,7 @@ entity OV76X0Top is
     --
     Button1   : in    bit1;
     Button2   : in    bit1;
+    Button3   : in    bit1;
     --
     VSYNC     : in    bit1;
     HREF      : in    bit1;
@@ -44,7 +45,7 @@ entity OV76X0Top is
 end entity;
 
 architecture rtl of OV76X0Top is
-  signal Btn1Stab, Btn2Stab : bit1;
+  Signal Btn1Pulse, Btn2Pulse, Btn3Pulse : bit1;
   signal SccbData, DispData : word(SccbDataW-1 downto 0);
   signal SccbRe             : bit1;
   signal SccbWe             : bit1;
@@ -104,7 +105,7 @@ begin
       RstN        => RstN,
       --
       Button      => Button1,
-      ButtonPulse => Btn1Stab
+      ButtonPulse => Btn1Pulse
       );
 
   DebBtn2 : entity work.ButtonPulse
@@ -113,9 +114,19 @@ begin
       RstN        => RstN,
       --
       Button      => Button2,
-      ButtonPulse => Btn2Stab
+      ButtonPulse => Btn2Pulse
       );
 
+  DebBtn3 : entity work.ButtonPulse
+    port map (
+      Clk         => Clk,
+      RstN        => RstN,
+      --
+      Button      => Button3,
+      ButtonPulse => Btn3Pulse
+      );
+
+  
   SccbM : entity work.SccbMaster
     generic map (
       ClkFreq => Freq
@@ -184,7 +195,7 @@ begin
       RstN        => RstN,
       --
       Vsync       => Vsync_Clk,
-      ToggleMode  => Btn2Stab,
+      ToggleMode  => Btn3Pulse,
       --
       PixelIn     => AlignedPixel,
       PixelInVal  => AlignedPixelVal,
