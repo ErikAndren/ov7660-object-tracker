@@ -38,7 +38,7 @@ architecture rtl of ConvFilter is
   signal LineFilter_N, LineFilter_D : word(bits(LinesToFilter)-1 downto 0);
   signal FirstColumn                : bit1;
 
-  constant Threshold : natural := 127;
+  constant Threshold : natural := 255;
 begin
   SyncProc : process (Clk, RstN)
   begin
@@ -57,12 +57,12 @@ begin
   FirstColumn <= '1' when RdAddr < RowsToFilter else '0';
 
   AsyncProc : process (PixelIn, PixelInVal, PixelOut_D, Vsync, LineFilter_D, FirstColumn, RdAddr, FilterSel)
-    variable SumX, SumY, Sum   : word(DataW+1 downto 0);
-    variable Lapl1 : word(DataW+2 downto 0);
-    variable Lapl2 : word(DataW+2 downto 0);
+    variable SumX, SumY, Sum : word(DataW+1 downto 0);
+    variable Lapl1           : word(DataW+2 downto 0);
+    variable Lapl2           : word(DataW+2 downto 0);
   begin
-    PixelOut_N <= PixelOut_D;
-    LineFilter_N <= LineFilter_D;
+    PixelOut_N    <= PixelOut_D;
+    LineFilter_N  <= LineFilter_D;
     -- Filter away edges
     PixelOutVal_N <= PixelInVal;
     
@@ -89,7 +89,7 @@ begin
       -- Version 1 of laplacian/gaussian
       Lapl1 := ("0" & PixelIn(1)(1) & "00") - ("000" & PixelIn(0)(1)) - ("000" & PixelIn(1)(0)) - ("000" & PixelIn(1)(2)) - ("000" & PixelIn(2)(1));
       -- Version 2 of laplacian/gaussian
-      Lapl2 := (PixelIn(1)(1) & "00") - ("000" & PixelIn(0)(0)) - ("000" & PixelIn(0)(1)) - ("000" & PixelIn(0)(2)) - ("000" & PixelIn(1)(0)) - ("000" & PixelIn(1)(2)) - ("000" & PixelIn(2)(0)) - ("000" & PixelIn(2)(1)) - ("000" & PixelIn(2)(2)); 
+      Lapl2 := (PixelIn(1)(1) & "000") - ("000" & PixelIn(0)(0)) - ("000" & PixelIn(0)(1)) - ("000" & PixelIn(0)(2)) - ("000" & PixelIn(1)(0)) - ("000" & PixelIn(1)(2)) - ("000" & PixelIn(2)(0)) - ("000" & PixelIn(2)(1)) - ("000" & PixelIn(2)(2)); 
 
       if FilterSel = SOBEL_MODE then
         if Sum > Threshold then
