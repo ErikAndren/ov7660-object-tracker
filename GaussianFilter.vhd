@@ -51,10 +51,10 @@ begin
     variable Sum : word(DataW+3 downto 0);
   begin
     PixelOutVal_N <= PixelInVal;
-    PixelOut      <= (others => '0');
+    PixelOut_N    <= (others => '0');
 
     if PixelInVal = '1' then
-      Sum := PixelIn(0)(0) + (PixelIn(0)(1) & "0") + PixelIn(0)(2) +
+      Sum := ("0000" & PixelIn(0)(0)) + (PixelIn(0)(1) & "0") + PixelIn(0)(2) +
               (PixelIn(1)(0) & "0") + (PixelIn(1)(1) & "00") + (PixelIn(1)(2) & "0") +
               PixelIn(2)(0) + (PixelIn(2)(1) & "0") + PixelIn(2)(2);
       -- Divide by 16
