@@ -52,7 +52,6 @@ package OV76X0Pack is
   type PixVec is array (3-1 downto 0) of word(PixelW-1 downto 0);
   type PixVec2D is array (natural range <>) of PixVec;
 
-
   constant NONE_MODE              : natural := 0;
   constant DITHER_MODE            : natural := 1;
   constant SOBEL_MODE             : natural := 2;

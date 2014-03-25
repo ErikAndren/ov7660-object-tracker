@@ -30,14 +30,16 @@ entity FilterChain is
 end entity;
 
 architecture rtl of FilterChain is
-  constant Res              : positive := 3;
-  signal PixelArray         : PixVec2D(Res-1 downto 0);
-  signal PixelArrayVal      : bit1;
-  signal PixelFromSobel     : word(CompDataW-1 downto 0);
-  signal PixelFromSobelVal  : bit1;
-  signal PixelFromDither    : word(CompDataW-1 downto 0);
-  signal PixelFromDitherVal : bit1;
-  signal RdAddr             : word(bits(FrameW)-1 downto 0);
+  constant Res                : positive := 3;
+  signal PixelArray           : PixVec2D(Res-1 downto 0);
+  signal PixelArrayVal        : bit1;
+  signal PixelFromSobel       : word(CompDataW-1 downto 0);
+  signal PixelFromSobelVal    : bit1;
+  signal PixelFromDither      : word(CompDataW-1 downto 0);
+  signal PixelFromDitherVal   : bit1;
+  signal PixelFromGaussian    : word(DataW-1 downto 0);
+  signal PixelFromGaussianVal : bit1;
+  signal RdAddr               : word(bits(FrameW)-1 downto 0);
 
   signal FilterSel_N, FilterSel_D : word(MODESW-1 downto 0);
 begin
@@ -60,6 +62,22 @@ begin
       PixelOut    => PixelArray,
       PixelOutVal => PixelArrayVal
     );
+
+  GF : entity work.GaussianFilter
+    generic map (
+      DataW => DataW,
+      Res   => Res
+      )
+    port map (
+      Clk         => Clk,
+      RstN        => RstN,
+      --
+      PixelIn     => PixelArray,
+      PixelInVal  => PixelInVal,
+      --
+      PixelOut    => PixelFromGaussian,
+      PixelOutVal => PixelFromGaussianVal
+      );
 
   CF : entity work.ConvFilter
     generic map (

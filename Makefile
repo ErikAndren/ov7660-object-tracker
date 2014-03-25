@@ -1,6 +1,7 @@
 FILES=OV76X0Pack.vhd \
 	AsyncFifo.vhd \
 	FakeVgaCam.vhd \
+	GaussianFilter.vhd \
 	FloydSteinberg2PRAM.vhd \
 	DitherFloydSteinberg.vhd \
 	OV7660Init.vhd \
