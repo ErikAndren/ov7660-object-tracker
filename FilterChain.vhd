@@ -30,16 +30,16 @@ entity FilterChain is
 end entity;
 
 architecture rtl of FilterChain is
-  constant Res                : positive := 3;
-  signal PixelArray           : PixVec2D(Res-1 downto 0);
-  signal PixelArrayVal        : bit1;
-  signal PixelFromSobel       : word(CompDataW-1 downto 0);
-  signal PixelFromSobelVal    : bit1;
-  signal PixelFromDither      : word(CompDataW-1 downto 0);
-  signal PixelFromDitherVal   : bit1;
-  signal PixelFromGaussian    : word(DataW-1 downto 0);
-  signal PixelFromGaussianVal : bit1;
-  signal RdAddr               : word(bits(FrameW)-1 downto 0);
+  constant Res                                    : positive := 3;
+  signal PixelArray, PixelArrayToConvFilter       : PixVec2D(Res-1 downto 0);
+  signal PixelArrayVal, PixelArrayToConvFilterVal : bit1;
+  signal PixelFromSobel                           : word(CompDataW-1 downto 0);
+  signal PixelFromSobelVal                        : bit1;
+  signal PixelFromDither                          : word(CompDataW-1 downto 0);
+  signal PixelFromDitherVal                       : bit1;
+  signal PixelFromGaussian                        : word(DataW-1 downto 0);
+  signal PixelFromGaussianVal                     : bit1;
+  signal RdAddr                                   : word(bits(FrameW)-1 downto 0);
 
   signal FilterSel_N, FilterSel_D : word(MODESW-1 downto 0);
 begin
@@ -54,7 +54,7 @@ begin
       RstN        => RstN,
       --
       Vsync       => Vsync,
-      RdAddr      => RdAddr,
+      RdAddr      => open,
       --
       PixelIn     => PixelIn,
       PixelInVal  => PixelInVal,
@@ -73,11 +73,31 @@ begin
       RstN        => RstN,
       --
       PixelIn     => PixelArray,
-      PixelInVal  => PixelInVal,
+      PixelInVal  => PixelArrayVal,
       --
       PixelOut    => PixelFromGaussian,
       PixelOutVal => PixelFromGaussianVal
       );
+
+  LS_Conv : entity work.LineSampler
+    generic map (
+      DataW   => DataW,
+      Buffers => 4,
+      OutRes  => Res
+      )
+    port map (
+      Clk         => Clk,
+      RstN        => RstN,
+      --
+      Vsync       => Vsync,
+      RdAddr      => RdAddr,
+      --
+      PixelIn     => PixelFromGaussian,
+      PixelInVal  => PixelFromGaussianVal,
+      --
+      PixelOut    => PixelArrayToConvFilter,
+      PixelOutVal => PixelArrayToConvFilterVal
+    );
 
   CF : entity work.ConvFilter
     generic map (
@@ -96,8 +116,8 @@ begin
       RdAddr       => RdAddr,
       FilterSel    => FilterSel_D,
       --
-      PixelIn      => PixelArray,
-      PixelInVal   => PixelArrayVal,
+      PixelIn      => PixelArrayToConvFilter,
+      PixelInVal   => PixelArrayToConvFilterVal,
       --
       PixelOut     => PixelFromSobel,
       PixelOutVal  => PixelFromSobelVal
@@ -137,7 +157,7 @@ begin
     end if;
   end process;
 
-  FilterMux : process (FilterSel_D, PixelFromSobel, PixelFromSobelVal, PixelFromDither, PixelFromDitherVal, PixelIn, PixelInVal)
+  FilterMux : process (FilterSel_D, PixelFromSobel, PixelFromSobelVal, PixelFromDither, PixelFromDitherVal, PixelIn, PixelInVal, PixelFromGaussian, PixelFromGaussianVal)
   begin
     if FilterSel_D = SOBEL_MODE or FilterSel_D = LAPLACIAN_1_MODE or FilterSel_D = LAPLACIAN_2_MODE then
       PixelOutVal <= PixelFromSobelVal;
@@ -145,6 +165,9 @@ begin
     elsif FilterSel_D = DITHER_MODE then
       PixelOutVal <= PixelFromDitherVal;
       PixelOut    <= PixelFromDither;
+    elsif FilterSel_D = GAUSSIAN_MODE then
+      PixelOutVal <= PixelFromGaussianVal;
+      PixelOut <= PixelFromGaussian(PixelIn'length-1 downto PixelIn'length-PixelOut'length);
     else
       PixelOutVal <= PixelInVal;
       PixelOut    <= PixelIn(PixelIn'length-1 downto PixelIn'length-PixelOut'length);
