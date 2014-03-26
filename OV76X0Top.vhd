@@ -46,13 +46,13 @@ end entity;
 
 architecture rtl of OV76X0Top is
   Signal Btn1Pulse, Btn2Pulse, Btn3Pulse : bit1;
-  signal SccbData, DispData : word(SccbDataW-1 downto 0);
-  signal SccbRe             : bit1;
-  signal SccbWe             : bit1;
-  signal SccbAddr           : word(SccbAddrW-1 downto 0);
-  signal XCLK_i             : bit1;
-  signal RstN               : bit1;
-  signal RstNPClk           : bit1;
+  signal DispData                        : word(SccbDataW-1 downto 0);
+  signal SccbRe                          : bit1;
+  signal SccbWe                          : bit1;
+  signal SccbAddr                        : word(SccbAddrW-1 downto 0);
+  signal XCLK_i                          : bit1;
+  signal RstN                            : bit1;
+  signal RstNPClk                        : bit1;
 
   signal PixelData : word(8-1 downto 0);
   signal PixelVal  : bit1;
@@ -135,7 +135,7 @@ begin
       Clk          => XCLK_i,
       Rst_N        => RstN,
       --
-      DataFromSccb => SccbData,
+      DataFromSccb => open,
       --
       SIO_C        => SIO_C,
       SIO_D        => SIO_D
