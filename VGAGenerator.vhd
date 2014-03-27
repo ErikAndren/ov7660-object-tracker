@@ -7,18 +7,19 @@ use work.Types.all;
 
 entity VGAGenerator is
   generic (
+    DataW     : positive := 3;
     DivideClk : boolean := true
     );
   port (
     Clk           : in  bit1;
     RstN          : in  bit1;
     --
-    DataToDisplay : in  word(3-1 downto 0);
+    DataToDisplay : in  word(DataW-1 downto 0);
     InView        : out bit1;
     --
-    Red           : out word(3-1 downto 0);
-    Green         : out word(3-1 downto 0);
-    Blue          : out word(3-1 downto 0);
+    Red           : out word(DataW-1 downto 0);
+    Green         : out word(DataW-1 downto 0);
+    Blue          : out word(DataW-1 downto 0);
     HSync         : out bit1;
     VSync         : out bit1
     );
@@ -93,7 +94,7 @@ begin
   Hsync    <= '1' when hcount > hsync_end                                                                                    else '0';
   Vsync    <= '1' when vcount > vsync_end                                                                                    else '0';
 
-  Red   <= (others => '0') when InView_i = '0' else DataToDisplay(3-1 downto 0);
-  Green <= (others => '0') when InView_i = '0' else DataToDisplay(3-1 downto 0);
-  Blue  <= (others => '0') when InView_i = '0' else DataToDisplay(3-1 downto 0);
+  Red   <= (others => '0') when InView_i = '0' else DataToDisplay(DataW-1 downto 0);
+  Green <= (others => '0') when InView_i = '0' else DataToDisplay(DataW-1 downto 0);
+  Blue  <= (others => '0') when InView_i = '0' else DataToDisplay(DataW-1 downto 0);
 end architecture rtl;
