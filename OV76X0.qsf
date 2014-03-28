@@ -210,32 +210,30 @@ set_global_assignment -name OUTPUT_PIN_LOAD 10 -section_id "3.3-V PCI"
 set_global_assignment -name OUTPUT_PIN_LOAD 10 -section_id "3.3-V PCI-X"
 set_global_assignment -name RESERVE_ALL_UNUSED_PINS_NO_OUTPUT_GND "AS INPUT TRI-STATED"
 set_location_assignment PIN_146 -to Button3
+set_global_assignment -name VHDL_FILE ../Lib/Types.vhd
+set_global_assignment -name VHDL_FILE ../Lib/Debounce.vhd
+set_global_assignment -name VHDL_FILE ../Lib/ButtonPulse.vhd
+set_global_assignment -name VHDL_FILE ../Lib/ResetSync.vhd
+set_global_assignment -name VHDL_FILE "../SramTest-IS61LV25616AL/SramController.vhd"
 set_global_assignment -name VHDL_FILE ObjectFinder.vhd
 set_global_assignment -name VHDL_FILE GaussianFilter.vhd
 set_global_assignment -name VHDL_FILE FilterChain.vhd
 set_global_assignment -name VHDL_FILE ConvFilter.vhd
 set_global_assignment -name VHDL_FILE LineSampler.vhd
-set_global_assignment -name VHDL_FILE ../Lib/ButtonPulse.vhd
 set_global_assignment -name VHDL_FILE PixelAligner.vhd
 set_global_assignment -name VHDL_FILE FloydSteinberg2PRAM.vhd
 set_global_assignment -name VHDL_FILE DitherFloydSteinberg.vhd
-set_global_assignment -name VHDL_FILE FakeVgaCam.vhd
 set_global_assignment -name VHDL_FILE OV76X0Pack.vhd
 set_global_assignment -name VHDL_FILE VGAGenerator.vhd
 set_global_assignment -name VHDL_FILE VideoController.vhd
 set_global_assignment -name VHDL_FILE VideoPacker.vhd
 set_global_assignment -name VHDL_FILE SramArbiter.vhd
-set_global_assignment -name VHDL_FILE "../SramTest-IS61LV25616AL/SramController.vhd"
 set_global_assignment -name VHDL_FILE AsyncFifo.vhd
 set_global_assignment -name VHDL_FILE VideoCapturer.vhd
-set_global_assignment -name VHDL_FILE ../Lib/ResetSync.vhd
 set_global_assignment -name VHDL_FILE SccbCtrl.vhd
 set_global_assignment -name VHDL_FILE OV7660Init.vhd
 set_global_assignment -name VHDL_FILE SccbMaster.vhd
-set_global_assignment -name VHDL_FILE SccbAddrReader.vhd
 set_global_assignment -name VHDL_FILE OV76X0Top.vhd
-set_global_assignment -name VHDL_FILE ../Lib/Types.vhd
-set_global_assignment -name VHDL_FILE ../Lib/Debounce.vhd
 set_global_assignment -name SDC_FILE OV76X0.sdc
 set_global_assignment -name QIP_FILE AsyncFifo.qip
 set_global_assignment -name QIP_FILE FloydSteinberg2PRAM.qip
