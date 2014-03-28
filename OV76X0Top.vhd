@@ -53,27 +53,31 @@ architecture rtl of OV76X0Top is
   signal XCLK_i                          : bit1;
   signal RstN                            : bit1;
   signal RstNPClk                        : bit1;
-
-  signal PixelData : word(8-1 downto 0);
-  signal PixelVal  : bit1;
-
-  signal VgaContAddr  : word(18-1 downto 0);
-  signal PixelInData  : word(16-1 downto 0);
-  signal PixelOutData : word(16-1 downto 0);
-  signal VgaContWe    : bit1;
-  signal VgaContRe    : bit1;
-  signal VgaInView    : bit1;
-  signal VgaDispData  : word(3-1 downto 0);
-
-  signal PixelCompData : word(3-1 downto 0);
-  signal PixelCompVal  : bit1;
-
-  signal PixelPopWrite : bit1;
-  signal PixelRead     : bit1;
-  signal PixelReadPop  : bit1;
-
-  signal SramWriteReq                : bit1;
-  signal SramWriteAddr, SramReadAddr : word(SramAddrW-1 downto 0);
+  --
+  signal PixelData                       : word(8-1 downto 0);
+  signal PixelVal                        : bit1;
+  --
+  signal VgaContAddr                     : word(18-1 downto 0);
+  signal PixelInData                     : word(16-1 downto 0);
+  signal PixelOutData                    : word(16-1 downto 0);
+  signal VgaContWe                       : bit1;
+  signal VgaContRe                       : bit1;
+  signal VgaInView                       : bit1;
+  signal PixelDispData                   : word(3-1 downto 0);
+  signal PixelDisp                       : bit1;
+  signal DrawRect                        : bit1;
+  signal PixelToObjFind                  : word(PixelResW-1 downto 0);
+  signal PixelToObjFindVal               : bit1;
+  signal PixelToVga                      : word(PixelResW-1 downto 0);
+  signal PixelCompData                   : word(3-1 downto 0);
+  signal PixelCompVal                    : bit1;
+  --
+  signal PixelPopWrite                   : bit1;
+  signal PixelRead                       : bit1;
+  signal PixelReadPop                    : bit1;
+  --
+  signal SramWriteReq                    : bit1;
+  signal SramWriteAddr, SramReadAddr     : word(SramAddrW-1 downto 0);
 
   signal FakeHref, FakeVSync : bit1;
   signal FakeD               : word(8-1 downto 0);
@@ -89,7 +93,7 @@ begin
       inclk0 => Clk,
       c0     => XCLK_i
       );
-  XCLK <= XCLK_i;
+  CameraClkAssign : XCLK <= XCLK_i;
 
   RstSync : entity work.ResetSync
     port map (
@@ -126,7 +130,6 @@ begin
       ButtonPulse => Btn3Pulse
       );
 
-  
   SccbM : entity work.SccbMaster
     generic map (
       ClkFreq => Freq
@@ -279,24 +282,46 @@ begin
       SramData      => PixelOutData,
       --
       InView        => VgaInView,
-      DataToDisp    => VgaDispData
+      PixelToDisp   => PixelToObjFind,
+      PixelVal      => PixelToObjFindVal
+      );
+
+  ObjectFinder : entity work.ObjectFinder
+    generic map (
+      DataW => PixelResW
+      )
+    port map (
+      RstN        => RstN,
+      Clk         => Clk,
+      --
+      Vsync       => Vsync_Clk,
+      --
+      PixelIn     => PixelToObjFind,
+      PixelInVal  => PixelToObjFindVal,
+      --
+      PixelOut    => PixelToVga,
+      PixelOutVal => open,
+      RectAct     => DrawRect
       );
 
   VgaGen : entity work.VgaGenerator
     generic map (
-      DivideClk => true
+      DivideClk => true,
+      DataW     => PixelResW,
+      Offset    => 1
       )
     port map (
-      Clk           => Clk,
-      RstN          => RstN,
+      Clk            => Clk,
+      RstN           => RstN,
       --
-      DataToDisplay => VgaDispData,
-      InView        => VgaInView,
+      PixelToDisplay => PixelToVga,
+      DrawRect       => DrawRect,
+      InView         => VgaInView,
       --
-      Red           => VgaRed,
-      Green         => VgaGreen,
-      Blue          => VgaBlue,
-      HSync         => VgaHsync,
-      VSync         => VgaVsync
+      Red            => VgaRed,
+      Green          => VgaGreen,
+      Blue           => VgaBlue,
+      HSync          => VgaHsync,
+      VSync          => VgaVsync
       );
 end architecture rtl;

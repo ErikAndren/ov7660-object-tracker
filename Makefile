@@ -4,6 +4,7 @@ FILES=OV76X0Pack.vhd \
 	GaussianFilter.vhd \
 	FloydSteinberg2PRAM.vhd \
 	DitherFloydSteinberg.vhd \
+	ObjectFinder.vhd \
 	OV7660Init.vhd \
 	OV76X0Filter.vhd \
 	OV76X0Pack.vhd \
@@ -18,13 +19,12 @@ FILES=OV76X0Pack.vhd \
 	SccbMasterNextGen.vhd \
 	SccbMaster.vhd \
 	SramArbiter.vhd \
-	tb.vhd \
 	VGAGenerator.vhd \
 	VideoCapturer.vhd \
 	VideoController.vhd \
 	VideoPacker.vhd \
-	OV76X0Top.vhd \
-	tb.vhd
+	OV76X0Top.vhd
+
 
 QUARTUS_PATH=/opt/altera/13.0sp1/quartus
 

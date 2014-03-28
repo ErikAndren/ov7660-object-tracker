@@ -210,6 +210,7 @@ set_global_assignment -name OUTPUT_PIN_LOAD 10 -section_id "3.3-V PCI"
 set_global_assignment -name OUTPUT_PIN_LOAD 10 -section_id "3.3-V PCI-X"
 set_global_assignment -name RESERVE_ALL_UNUSED_PINS_NO_OUTPUT_GND "AS INPUT TRI-STATED"
 set_location_assignment PIN_146 -to Button3
+set_global_assignment -name VHDL_FILE ObjectFinder.vhd
 set_global_assignment -name VHDL_FILE GaussianFilter.vhd
 set_global_assignment -name VHDL_FILE FilterChain.vhd
 set_global_assignment -name VHDL_FILE ConvFilter.vhd

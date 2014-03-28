@@ -8,20 +8,22 @@ use work.Types.all;
 entity VGAGenerator is
   generic (
     DataW     : positive := 3;
-    DivideClk : boolean := true
+    DivideClk : boolean  := true;
+    Offset    : natural  := 0
     );
   port (
-    Clk           : in  bit1;
-    RstN          : in  bit1;
+    Clk            : in  bit1;
+    RstN           : in  bit1;
     --
-    DataToDisplay : in  word(DataW-1 downto 0);
-    InView        : out bit1;
+    PixelToDisplay : in  word(DataW-1 downto 0);
+    DrawRect       : in  bit1;
+    InView         : out bit1;
     --
-    Red           : out word(DataW-1 downto 0);
-    Green         : out word(DataW-1 downto 0);
-    Blue          : out word(DataW-1 downto 0);
-    HSync         : out bit1;
-    VSync         : out bit1
+    Red            : out word(DataW-1 downto 0);
+    Green          : out word(DataW-1 downto 0);
+    Blue           : out word(DataW-1 downto 0);
+    HSync          : out bit1;
+    VSync          : out bit1
     );
 end entity;
 
@@ -89,12 +91,28 @@ begin
     end if;
   end process;
 
-  InView_i <= '1' when ((hcount >= hdat_begin) and (hcount < hdat_end)) and ((vcount >= vdat_begin) and (vcount < vdat_end)) else '0';
+  InView_i <= '1' when ((hcount >= hdat_begin - Offset) and (hcount < hdat_end - Offset)) and ((vcount >= vdat_begin) and (vcount < vdat_end)) else '0';
   InView   <= InView_i;
-  Hsync    <= '1' when hcount > hsync_end                                                                                    else '0';
-  Vsync    <= '1' when vcount > vsync_end                                                                                    else '0';
+  
+  Hsync <= '1' when hcount > hsync_end else '0';
+  Vsync <= '1' when vcount > vsync_end else '0';
 
-  Red   <= (others => '0') when InView_i = '0' else DataToDisplay(DataW-1 downto 0);
-  Green <= (others => '0') when InView_i = '0' else DataToDisplay(DataW-1 downto 0);
-  Blue  <= (others => '0') when InView_i = '0' else DataToDisplay(DataW-1 downto 0);
+  DrawColorProc : process (PixelToDisplay, DrawRect, InView_i)
+  begin
+    Red <= (others => '0');
+    Green <= (others => '0');
+    Blue <= (others => '0');
+
+    if InView_i = '1' then
+      Red <= PixelToDisplay;
+      Green <= PixelToDisplay;
+      Blue <= PixelToDisplay;
+
+      -- Draw green rectangle overlay
+      if DrawRect = '1' then
+        Green <= (others => '1');
+      end if;
+    end if;
+  end process;
+  
 end architecture rtl;

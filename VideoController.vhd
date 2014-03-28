@@ -20,7 +20,8 @@ entity VideoController is
     SramData      : in  word(SramDataW-1 downto 0);
     -- Vga Gen i/f
     InView        : in  bit1;
-    DataToDisp    : out word(PixelResW-1 downto 0)
+    PixelToDisp   : out word(PixelResW-1 downto 0);
+    PixelVal      : out bit1
     );
 end entity;
 
@@ -89,11 +90,13 @@ begin
     ReadSram        <= '0';
     SramAddr        <= xt0(FrameCnt_D & LineCnt_D & WordCnt_D, SramAddr'length);
     -- Display black screen if nothing else
-    DataToDisp      <= (others => '0');
+    PixelToDisp     <= (others => '0');
     WaitCnt_N       <= WaitCnt_D;
+    PixelVal        <= '0';
 
     if (InView = '1' and ValPixelCnt_D(WritePtr) > 0) then
-      DataToDisp <= ExtractSlice(Buf_D(WritePtr), PixelResW, conv_integer(ValPixelCnt_D(WritePtr))-1);
+      PixelVal    <= '1';
+      PixelToDisp <= ExtractSlice(Buf_D(WritePtr), PixelResW, conv_integer(ValPixelCnt_D(WritePtr))-1);
       if (WaitCnt_D = 0) then
         WaitCnt_N               <= conv_word(Penalty, PenaltyW);
         ValPixelCnt_N(WritePtr) <= ValPixelCnt_D(WritePtr) - 1;
