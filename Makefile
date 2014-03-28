@@ -16,7 +16,6 @@ FILES=OV76X0Pack.vhd \
 	FilterChain.vhd \
 	SccbAddrReader.vhd \
 	SccbCtrl.vhd \
-	SccbMasterNextGen.vhd \
 	SccbMaster.vhd \
 	SramArbiter.vhd \
 	VGAGenerator.vhd \
