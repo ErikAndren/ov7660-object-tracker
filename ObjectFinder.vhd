@@ -131,23 +131,29 @@ begin
         end if;
 
         -- If no valid pixel is found, gravitate back to middle
-        if Bottom_D.Y > MiddleYOfScreen then
-          Bottom_N.Y <= Bottom_D.Y - 1;
-        elsif Bottom_D.Y < MiddleYOfScreen then
-          Bottom_N.Y <= Bottom_D.Y + 1;
+        if (LineCnt_D = Bottom_D.Y) and (PixelCnt_D = Bottom_D.X) then
+          if Bottom_D.Y > MiddleYOfScreen then
+            Bottom_N.Y <= Bottom_D.Y - 1;
+          elsif Bottom_D.Y < MiddleYOfScreen then
+            Bottom_N.Y <= Bottom_D.Y + 1;
+          end if;
         end if;
 
         -- If no valid pixel is found, gravitate back to middle
-        if Left_D.X > MiddleXOfScreen then
-          Left_N.X <= Left_D.X - 1;
-        elsif Left_D.X < MiddleXOfScreen then
-          Left_N.X <= Left_D.X + 1;
+        if (PixelCnt_D = Left_D.X) and (LineCnt_D = Left_D.Y) then
+          if Left_D.X > MiddleXOfScreen then
+            Left_N.X <= Left_D.X - 1;
+          elsif Left_D.X < MiddleXOfScreen then
+            Left_N.X <= Left_D.X + 1;
+          end if;
         end if;
 
-        if Right_D.X > MiddleXOfScreen then
-          Right_N.X <= Right_D.X - 1;
-        elsif Right_D.X < MiddleXOfScreen then
-          Right_N.X <= Right_D.X + 1;
+        if (PixelCnt_D = Right_D.X) and (LineCnt_D = Right_D.Y) then
+          if Right_D.X > MiddleXOfScreen then
+            Right_N.X <= Right_D.X - 1;
+          elsif Right_D.X < MiddleXOfScreen then
+            Right_N.X <= Right_D.X + 1;
+          end if;
         end if;
       end if;
 
@@ -180,22 +186,22 @@ begin
 
     -- Draw rectangle
     -- Top line 
-    if LineCnt_D = Top_D.Y and (PixelCnt_D >= Left_D.X and PixelCnt_D <= Right_D.X) then
+    if (LineCnt_D = Top_D.Y) and ((PixelCnt_D >= Left_D.X) and (PixelCnt_D <= Right_D.X)) then
       RectAct <= '1';
     end if;
 
     -- Bottom line
-    if LineCnt_D = Bottom_D.Y and PixelCnt_D >= Left_D.X and PixelCnt_D <= Right_D.X then
+    if (LineCnt_D = Bottom_D.Y) and (PixelCnt_D >= Left_D.X) and (PixelCnt_D <= Right_D.X) then
       RectAct <= '1';
     end if;
 
     -- Left line
-    if PixelCnt_D = Left_D.X and LineCnt_D >= Top_D.Y and LineCnt_D <= Bottom_D.Y then
+    if (PixelCnt_D = Left_D.X) and ((LineCnt_D >= Top_D.Y) and (LineCnt_D <= Bottom_D.Y)) then
       RectAct <= '1';
     end if;
 
     -- Right line
-    if PixelCnt_D = Right_D.X and LineCnt_D >= Top_D.Y and LineCnt_D <= Bottom_D.Y then
+    if (PixelCnt_D = Right_D.X) and ((LineCnt_D >= Top_D.Y) and (LineCnt_D <= Bottom_D.Y)) then
       RectAct <= '1';
     end if;
   end process;
