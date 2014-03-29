@@ -85,10 +85,10 @@ begin
       PixelOut_D    <= PixelOut_N;
       PixelOutVal_D <= PixelOutVal_N;
 
-      if Vsync = '1' then
-        PixelCnt_D <= (others => '0');
-        LineCnt_D  <= (others => '0');
-      end if;      
+--      if Vsync = '1' then
+--        PixelCnt_D <= (others => '0');
+--        LineCnt_D  <= (others => '0');
+--      end if;      
     end if;
   end process;
 
@@ -208,22 +208,22 @@ begin
 
     -- Draw rectangle
     -- Top line 
-    if LineCnt_D = Top_D.Y and PixelCnt_D > Left_D.X and PixelCnt_D < Right_D.X then
+    if LineCnt_D = Top_D.Y and (PixelCnt_D >= Left_D.X and PixelCnt_D <= Right_D.X) then
       RectAct <= '1';
     end if;
 
     -- Bottom line
-    if LineCnt_D = Bottom_D.Y and PixelCnt_D > Left_D.X and PixelCnt_D < Right_D.X then
+    if LineCnt_D = Bottom_D.Y and PixelCnt_D >= Left_D.X and PixelCnt_D <= Right_D.X then
       RectAct <= '1';
     end if;
 
     -- Left line
-    if PixelCnt_D = Left_D.X and LineCnt_D > Top_D.Y and LineCnt_D < Bottom_D.Y then
+    if PixelCnt_D = Left_D.X and LineCnt_D >= Top_D.Y and LineCnt_D <= Bottom_D.Y then
       RectAct <= '1';
     end if;
 
     -- Right line
-    if PixelCnt_D = Right_D.X and LineCnt_D > Top_D.Y and LineCnt_D < Bottom_D.Y then
+    if PixelCnt_D = Right_D.X and LineCnt_D >= Top_D.Y and LineCnt_D <= Bottom_D.Y then
       RectAct <= '1';
     end if;
   end process;
