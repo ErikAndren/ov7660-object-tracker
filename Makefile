@@ -14,7 +14,6 @@ FILES=OV76X0Pack.vhd \
 	LineSampler.vhd \
 	ConvFilter.vhd \
 	FilterChain.vhd \
-	SccbAddrReader.vhd \
 	SccbCtrl.vhd \
 	SccbMaster.vhd \
 	SramArbiter.vhd \
@@ -22,7 +21,8 @@ FILES=OV76X0Pack.vhd \
 	VideoCapturer.vhd \
 	VideoController.vhd \
 	VideoPacker.vhd \
-	OV76X0Top.vhd
+	OV76X0Top.vhd \
+	tb.vhd
 
 
 QUARTUS_PATH=/opt/altera/13.0sp1/quartus
