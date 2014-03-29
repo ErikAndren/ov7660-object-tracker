@@ -65,8 +65,6 @@ begin
 
   AsyncProc : process (PixelIn, PixelInVal, PixelOut_D, Vsync, LineFilter_D, FirstColumn, RdAddr, FilterSel, IncThreshold, DecThreshold, CurThres_D)
     variable SumX, SumY, Sum : word(DataW+1 downto 0);
-    variable Lapl1           : word(DataW+2 downto 0);
-    variable Lapl2           : word(DataW+2 downto 0);
   begin
     PixelOut_N    <= PixelOut_D;
     LineFilter_N  <= LineFilter_D;
@@ -105,11 +103,6 @@ begin
       end if;
 
       Sum := SumX + SumY;
-      
-      -- Version 1 of laplacian/gaussian
-      Lapl1 := ("0" & PixelIn(1)(1) & "00") - ("000" & PixelIn(0)(1)) - ("000" & PixelIn(1)(0)) - ("000" & PixelIn(1)(2)) - ("000" & PixelIn(2)(1));
-      -- Version 2 of laplacian/gaussian
-      Lapl2 := (PixelIn(1)(1) & "000") - ("000" & PixelIn(0)(0)) - ("000" & PixelIn(0)(1)) - ("000" & PixelIn(0)(2)) - ("000" & PixelIn(1)(0)) - ("000" & PixelIn(1)(2)) - ("000" & PixelIn(2)(0)) - ("000" & PixelIn(2)(1)) - ("000" & PixelIn(2)(2)); 
 
       if FilterSel = SOBEL_MODE then
         if Sum > ((conv_integer(CurThres_D)+1) * ThresholdStep)-1 then
@@ -117,18 +110,6 @@ begin
         else
           PixelOut_N <= Sum(PixelOut_N'length-1 downto 0);
         end if;
-      elsif FilterSel = LAPLACIAN_1_MODE then 
-        if Lapl1 > ((conv_integer(CurThres_D)+1) * ThresholdStep)-1 then
-          PixelOut_N <= (others => '1');
-        else
-          PixelOut_N <= Lapl1(PixelOut_N'length-1 downto 0);
-        end if;
-      elsif FilterSel = LAPLACIAN_2_MODE then
-        if Lapl2 > ((conv_integer(CurThres_D)+1) * ThresholdStep)-1 then
-          PixelOut_N <= (others => '1');
-        else
-          PixelOut_N <= Lapl2(PixelOut_N'length-1 downto 0);
-        end if;          
       end if;
 
       if FirstColumn = '1' then

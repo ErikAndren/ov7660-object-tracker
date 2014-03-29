@@ -55,9 +55,7 @@ package OV76X0Pack is
   constant NONE_MODE              : natural := 0;
   constant DITHER_MODE            : natural := 1;
   constant SOBEL_MODE             : natural := 2;
-  constant LAPLACIAN_1_MODE       : natural := 3;
-  constant LAPLACIAN_2_MODE       : natural := 4;
-  constant GAUSSIAN_MODE          : natural := 5;
+  constant GAUSSIAN_MODE          : natural := 3;
   constant MODES                  : natural := GAUSSIAN_MODE + 1;
   constant MODESW                 : natural := bits(MODES);
 

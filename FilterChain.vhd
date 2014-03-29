@@ -159,7 +159,7 @@ begin
 
   FilterMux : process (FilterSel_D, PixelFromSobel, PixelFromSobelVal, PixelFromDither, PixelFromDitherVal, PixelIn, PixelInVal, PixelFromGaussian, PixelFromGaussianVal)
   begin
-    if FilterSel_D = SOBEL_MODE or FilterSel_D = LAPLACIAN_1_MODE or FilterSel_D = LAPLACIAN_2_MODE then
+    if FilterSel_D = SOBEL_MODE then
       PixelOutVal <= PixelFromSobelVal;
       PixelOut    <= PixelFromSobel;
     elsif FilterSel_D = DITHER_MODE then
