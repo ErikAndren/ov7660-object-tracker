@@ -191,7 +191,7 @@ begin
     end if;
 
     -- Bottom line
-    if (LineCnt_D = Bottom_D.Y) and (PixelCnt_D >= Left_D.X) and (PixelCnt_D <= Right_D.X) then
+    if (LineCnt_D = Bottom_D.Y) and ((PixelCnt_D >= Left_D.X) and (PixelCnt_D <= Right_D.X)) then
       RectAct <= '1';
     end if;
 
