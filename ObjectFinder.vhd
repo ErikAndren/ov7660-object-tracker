@@ -120,47 +120,21 @@ begin
         end if;
       end if;
 
-      if PixelIn >= Threshold and OnEdge = '0' then
+      if PixelIn < Threshold then
         -- If no valid pixel is found, gravitate back to middle
-        if Top_D.X > MiddleXOfScreen then
-          Top_N.X <= Top_D.X - 1;
-        elsif Top_D.X < MiddleXOfScreen then
-          Top_N.X <= Top_D.X + 1;
-        end if;
-
-        if Top_D.Y > MiddleYOfScreen then
-          Top_N.Y <= Top_D.Y - 1;
-        elsif Top_D.Y < MiddleYOfScreen then
-          Top_N.Y <= Top_D.Y + 1;
-        end if;
-        
-        -- Grow top if valid pixel is next to current
-        -- Prefer up to any other direction
-        if LineCnt_D = (Top_D.Y-1) and PixelCnt_D = Top_D.X then
-          Top_N.Y <= LineCnt_D;
-        elsif LineCnt_D = Top_D.Y and (PixelCnt_D = Top_D.X-1 or PixelCnt_D = Top_D.X+1) then
-          Top_N.X <= PixelCnt_D;          
+        if (LineCnt_D = Top_D.Y) and (PixelCnt_D = Top_D.X) then
+          if Top_D.Y > MiddleYOfScreen then
+            Top_N.Y <= Top_D.Y - 1;
+          elsif Top_D.Y < MiddleYOfScreen then
+            Top_N.Y <= Top_D.Y + 1;
+          end if;
         end if;
 
         -- If no valid pixel is found, gravitate back to middle
-        if Bottom_D.X > MiddleXOfScreen then
-          Bottom_N.X <= Bottom_D.X - 1;
-        elsif Bottom_D.X < MiddleXOfScreen then
-          Bottom_N.X <= Bottom_D.X + 1;
-        end if;
-
         if Bottom_D.Y > MiddleYOfScreen then
           Bottom_N.Y <= Bottom_D.Y - 1;
         elsif Bottom_D.Y < MiddleYOfScreen then
           Bottom_N.Y <= Bottom_D.Y + 1;
-        end if;
-        
-        -- Grow bottom if valid pixel is next to current
-        -- Prefer up to any other direction
-        if LineCnt_D = (Bottom_D.Y+1) and PixelCnt_D = Bottom_D.X then
-          Bottom_N.Y <= LineCnt_D;
-        elsif LineCnt_D = Bottom_D.Y and (PixelCnt_D = Bottom_D.X-1 or PixelCnt_D = Bottom_D.X+1) then
-          Bottom_N.X <= PixelCnt_D;          
         end if;
 
         -- If no valid pixel is found, gravitate back to middle
@@ -170,38 +144,36 @@ begin
           Left_N.X <= Left_D.X + 1;
         end if;
 
-        if Left_D.Y > MiddleYOfScreen then
-          Left_N.Y <= Left_D.Y - 1;
-        elsif Left_D.Y < MiddleYOfScreen then
-          Left_N.Y <= Left_D.Y + 1;
-        end if;
-        
-        -- Grow left if valid pixel is next to current
-        -- Prefer left to any other direction
-        if LineCnt_D = Left_D.Y and PixelCnt_D = Left_D.X-1 then
-          Left_N.X <= PixelCnt_D;
-        elsif PixelCnt_D = Left_D.X and (LineCnt_D = Left_D.Y-1 or LineCnt_D = Left_D.Y+1) then
-          Left_N.Y <= LineCnt_D;
-        end if;
-
         if Right_D.X > MiddleXOfScreen then
           Right_N.X <= Right_D.X - 1;
         elsif Right_D.X < MiddleXOfScreen then
           Right_N.X <= Right_D.X + 1;
         end if;
+      end if;
 
-        if Right_D.Y > MiddleYOfScreen then
-          Right_N.Y <= Right_D.Y - 1;
-        elsif Right_D.Y < MiddleYOfScreen then
-          Right_N.Y <= Right_D.Y + 1;
+      if PixelIn >= Threshold and OnEdge = '0' then        
+        -- Grow top if valid pixel is next to current
+        -- Prefer up to any other direction
+        if (LineCnt_D = Top_D.Y-1) and (PixelCnt_D = Top_D.X) then
+          Top_N.Y <= LineCnt_D;
+        end if;
+        
+        -- Grow bottom if valid pixel is next to current
+        -- Prefer up to any other direction
+        if (LineCnt_D = Bottom_D.Y+1) and (PixelCnt_D = Bottom_D.X) then
+          Bottom_N.Y <= LineCnt_D;
+        end if;
+        
+        -- Grow left if valid pixel is next to current
+        -- Prefer left to any other direction
+        if (LineCnt_D = Left_D.Y) and (PixelCnt_D = Left_D.X-1) then
+          Left_N.X <= PixelCnt_D;
         end if;
         
         -- Grow right if valid pixel is next to current
         -- Prefer right to any other direction
-        if LineCnt_D = Right_D.Y and PixelCnt_D = Right_D.X+1 then
+        if (LineCnt_D = Right_D.Y) and (PixelCnt_D = Right_D.X+1) then
           Right_N.X <= PixelCnt_D;
-        elsif PixelCnt_D = Right_D.X and (LineCnt_D = Right_D.Y-1 or LineCnt_D = Right_D.Y+1) then
-          Right_N.Y <= LineCnt_D;
         end if;
       end if;
     end if;
