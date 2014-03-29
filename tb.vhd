@@ -130,6 +130,7 @@ begin
       --
       Button1   => '1',
       Button2   => '1',
+      Button3   => '1',
       --
       VSYNC     => VSYNC,
       HREF      => HREF,
