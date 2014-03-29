@@ -39,6 +39,7 @@ architecture rtl of VideoController is
   signal LineCnt_N, LineCnt_D         : word(FrameHW-1 downto 0);
   signal FrameCnt_N, FrameCnt_D       : word(NoBuffersW-1 downto 0);
 
+  -- Vga generator runs at half frequency of system 25 MHz vs 50 MHz
   constant Penalty            : natural  := 1;
   constant PenaltyW           : positive := bits(Penalty);
   signal WaitCnt_N, WaitCnt_D : word(PenaltyW-1 downto 0);
@@ -95,9 +96,9 @@ begin
     PixelVal        <= '0';
 
     if (InView = '1' and ValPixelCnt_D(WritePtr) > 0) then
-      PixelVal    <= '1';
       PixelToDisp <= ExtractSlice(Buf_D(WritePtr), PixelResW, conv_integer(ValPixelCnt_D(WritePtr))-1);
       if (WaitCnt_D = 0) then
+        PixelVal    <= '1';
         WaitCnt_N               <= conv_word(Penalty, PenaltyW);
         ValPixelCnt_N(WritePtr) <= ValPixelCnt_D(WritePtr) - 1;
 
