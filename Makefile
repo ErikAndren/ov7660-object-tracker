@@ -24,7 +24,6 @@ FILES=OV76X0Pack.vhd \
 	OV76X0Top.vhd \
 	tb.vhd
 
-
 QUARTUS_PATH=/opt/altera/13.0sp1/quartus
 
 WORK_DIR=/tmp/work
