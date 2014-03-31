@@ -32,16 +32,13 @@ entity ObjectFinder is
     );
 end entity;
 
-architecture rtl of ObjectFinder is
-
-  
+architecture rtl of ObjectFinder is  
   signal TopLeft_N, TopLeft_D       : Cord;
   signal BottomRight_N, BottomRight_D : Cord;
 
   signal PixelCnt_N, PixelCnt_D : word(FrameWW-1 downto 0);
   signal LineCnt_N, LineCnt_D   : word(FrameHW-1 downto 0);
 
-  signal PixelOutVal_N, PixelOutVal_D : bit1; -- FIXME: Remove, no need to reclk
   signal PixelOut_N, PixelOut_D       : word(DataW-1 downto 0);
   
   -- Set low threshold for now
@@ -67,8 +64,6 @@ begin
       BottomRight_D <= MiddleOfScreen;
       PixelCnt_D    <= (others => '0');
       LineCnt_D     <= (others => '0');
-      PixelOutVal_D <= '0';
-      PixelOut_D    <= (others => '0');
       IncY0_D       <= '0';
       IncY1_D       <= '0';
       IncX0_D       <= '0';
@@ -83,8 +78,6 @@ begin
       BottomRight_D <= BottomRight_N;
       PixelCnt_D    <= PixelCnt_N;
       LineCnt_D     <= LineCnt_N;
-      PixelOut_D    <= PixelOut_N;
-      PixelOutVal_D <= PixelOutVal_N;
       IncY0_D       <= IncY0_N;
       IncY1_D       <= IncY1_N;
       IncX0_D       <= IncX0_N;
@@ -93,12 +86,8 @@ begin
       DecY1_D       <= DecY1_N;
       DecX0_D       <= DecX0_N;
       DecX1_D       <= DecX1_N;
-
     end if;
   end process;
-
-  PixelOut_N    <= PixelIn;
-  PixelOutVal_N <= PixelInVal;
   
   AsyncProc : process (TopLeft_D, BottomRight_D, PixelIn, PixelInVal, PixelCnt_D, LineCnt_D, IncY0_D, IncY1_D, IncX0_D, IncX1_D, DecY0_D, DecY1_D, DecX0_D, DecX1_D)
   begin
@@ -267,6 +256,6 @@ begin
   TopLeft     <= TopLeft_D;
   BottomRight <= BottomRight_D;
   
-  PixelOutAssign    : PixelOut    <= PixelOut_D;
-  PixelOutValAssign : PixelOutVal <= PixelOutVal_D;  
+  PixelOutAssign    : PixelOut    <= PixelIn;
+  PixelOutValAssign : PixelOutVal <= PixelInVal;
 end architecture rtl;
