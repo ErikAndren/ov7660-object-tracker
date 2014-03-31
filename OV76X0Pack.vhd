@@ -59,6 +59,32 @@ package OV76X0Pack is
   constant MODES                  : natural := GAUSSIAN_MODE + 1;
   constant MODESW                 : natural := bits(MODES);
 
+
+  type Cord is
+  record
+    X : word(FrameWW-1 downto 0);
+    Y : word(FrameHW-1 downto 0);
+  end record;
+  
+  constant Z_Cord : Cord :=
+    (X => (others => '0'),
+     Y => (others => '0'));
+
+  constant MiddleXOfScreen : natural := FrameW/2;
+  constant MiddleYOfScreen : natural := FrameH/2;
+
+  constant MiddleOfScreen : Cord :=
+    (X => conv_word(MiddleXOfScreen, FrameWW),
+     Y => conv_word(MiddleYOfScreen, FrameHW));
+
+  constant ServoResW : positive := 7;
+  constant ServoRes  : positive := 2**ServoResW;
+  constant MiddleServoPos : positive := ServoRes / 2;
+  
+  --
+  constant TileXRes : positive := FrameW / ServoRes; -- 5
+  constant TileYRes : positive := FrameH / ServoRes; -- 3.75 / 3
+  
 end package;
 
 package body OV76X0Pack is
