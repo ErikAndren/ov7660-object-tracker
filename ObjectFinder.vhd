@@ -22,30 +22,18 @@ entity ObjectFinder is
     --
     PixelIn     : in  word(DataW-1 downto 0);
     PixelInVal  : in  bit1;
-    --
+    -- Vga if
     PixelOut    : out word(DataW-1 downto 0);
     PixelOutVal : out bit1;
-    RectAct     : out bit1
+    RectAct     : out bit1;
+    -- Box if
+    TopLeft     : out Cord;
+    BottomRight : out Cord
     );
 end entity;
 
 architecture rtl of ObjectFinder is
-  type Cord is
-  record
-    X : word(FrameWW-1 downto 0);
-    Y : word(FrameHW-1 downto 0);
-  end record;
 
-  constant Z_Cord : Cord :=
-    (X => (others => '0'),
-     Y => (others => '0'));
-
-  constant MiddleXOfScreen : natural := FrameW/2;
-  constant MiddleYOfScreen : natural := FrameH/2;
-
-  constant MiddleOfScreen : Cord :=
-    (X => conv_word(MiddleXOfScreen, FrameWW),
-     Y => conv_word(MiddleYOfScreen, FrameHW));
   
   signal TopLeft_N, TopLeft_D       : Cord;
   signal BottomRight_N, BottomRight_D : Cord;
@@ -53,47 +41,82 @@ architecture rtl of ObjectFinder is
   signal PixelCnt_N, PixelCnt_D : word(FrameWW-1 downto 0);
   signal LineCnt_N, LineCnt_D   : word(FrameHW-1 downto 0);
 
-  signal PixelOutVal_N, PixelOutVal_D : bit1;
+  signal PixelOutVal_N, PixelOutVal_D : bit1; -- FIXME: Remove, no need to reclk
   signal PixelOut_N, PixelOut_D       : word(DataW-1 downto 0);
   
   -- Set low threshold for now
   constant Threshold : natural := 1;
 
+  signal IncY0_N, IncY0_D : bit1;
+  signal IncY1_N, IncY1_D : bit1;
+  signal IncX0_N, IncX0_D : bit1;
+  signal IncX1_N, IncX1_D : bit1;
+
+  signal DecY0_N, DecY0_D : bit1;
+  signal DecY1_N, DecY1_D : bit1;
+  signal DecX0_N, DecX0_D : bit1;
+  signal DecX1_N, DecX1_D : bit1;
+  
   signal OnEdge : bit1;
              
 begin
   SyncProc : process (Clk, RstN)
   begin
     if RstN = '0' then
-      TopLeft_D      <= MiddleOfScreen;
-      BottomRight_D  <= MiddleOfScreen;
-      PixelCnt_D     <= (others => '0');
-      LineCnt_D      <= (others => '0');
-      PixelOutVal_D  <= '0';
-      PixelOut_D     <= (others => '0');
+      TopLeft_D     <= MiddleOfScreen;
+      BottomRight_D <= MiddleOfScreen;
+      PixelCnt_D    <= (others => '0');
+      LineCnt_D     <= (others => '0');
+      PixelOutVal_D <= '0';
+      PixelOut_D    <= (others => '0');
+      IncY0_D       <= '0';
+      IncY1_D       <= '0';
+      IncX0_D       <= '0';
+      IncX1_D       <= '0';
+      DecY0_D       <= '0';
+      DecY1_D       <= '0';
+      DecX0_D       <= '0';
+      DecX1_D       <= '0';
+
     elsif rising_edge(Clk) then
-      TopLeft_D      <= TopLeft_N;
-      BottomRight_D  <= BottomRight_N;
-      PixelCnt_D     <= PixelCnt_N;
-      LineCnt_D      <= LineCnt_N;
-      PixelOut_D     <= PixelOut_N;
-      PixelOutVal_D  <= PixelOutVal_N;
+      TopLeft_D     <= TopLeft_N;
+      BottomRight_D <= BottomRight_N;
+      PixelCnt_D    <= PixelCnt_N;
+      LineCnt_D     <= LineCnt_N;
+      PixelOut_D    <= PixelOut_N;
+      PixelOutVal_D <= PixelOutVal_N;
+      IncY0_D       <= IncY0_N;
+      IncY1_D       <= IncY1_N;
+      IncX0_D       <= IncX0_N;
+      IncX1_D       <= IncX1_N;
+      DecY0_D       <= DecY0_N;
+      DecY1_D       <= DecY1_N;
+      DecX0_D       <= DecX0_N;
+      DecX1_D       <= DecX1_N;
+
     end if;
   end process;
-
-  OnEdge <= '1' when LineCnt_D = 0 or LineCnt_D = FrameH-1 or
-                     PixelCnt_D = 0 or PixelCnt_D = FrameW-1 else '0';
 
   PixelOut_N    <= PixelIn;
   PixelOutVal_N <= PixelInVal;
   
-  AsyncProc : process (TopLeft_D, BottomRight_D, PixelIn, PixelInVal, PixelCnt_D, LineCnt_D, OnEdge)
+  AsyncProc : process (TopLeft_D, BottomRight_D, PixelIn, PixelInVal, PixelCnt_D, LineCnt_D, IncY0_D, IncY1_D, IncX0_D, IncX1_D, DecY0_D, DecY1_D, DecX0_D, DecX1_D)
   begin
-    TopLeft_N      <= TopLeft_D;
-    BottomRight_N  <= BottomRight_D;
-    PixelCnt_N     <= PixelCnt_D;
-    LineCnt_N      <= LineCnt_D;
-    RectAct        <= '0';
+    TopLeft_N     <= TopLeft_D;
+    BottomRight_N <= BottomRight_D;
+    PixelCnt_N    <= PixelCnt_D;
+    LineCnt_N     <= LineCnt_D;
+    RectAct       <= '0';
+    --
+    IncY0_N       <= IncY0_D;
+    IncY1_N       <= IncY1_D;
+    IncX0_N       <= IncX0_D;
+    IncX1_N       <= IncX1_D;
+    --
+    DecY0_N       <= DecY0_D;
+    DecY1_N       <= DecY1_D;
+    DecX0_N       <= DecX0_D;
+    DecX1_N       <= DecX1_D;
 
     if PixelInVal = '1' then
       -- Pixel counting
@@ -105,69 +128,116 @@ begin
         if LineCnt_D + 1 = FrameH then
           LineCnt_N <= (others => '0');
           -- End of frame
+          -- Clear history
+          IncY0_N <= '0';
+          IncY1_N <= '0';
+          IncX0_N <= '0';
+          IncX1_N <= '0';
+          --
+          DecY0_N <= '0';
+          DecY1_N <= '0';
+          DecX0_N <= '0';
+          DecX1_N <= '0';
+
+          if IncY0_D = '1' then
+            if TopLeft_D.Y - 1 > 0 then
+              TopLeft_N.Y <= TopLeft_D.Y - 1;
+            end if;
+          elsif DecY0_D = '1' then
+            if TopLeft_D.Y + 1 < FrameH then
+              TopLeft_N.Y <= TopLeft_D.Y + 1;
+            end if;
+          end if;
+
+          if IncY1_D = '1' then
+            if BottomRight_D.Y + 1 < FrameH then
+              BottomRight_N.Y <= BottomRight_D.Y + 1;
+            end if;
+          elsif DecY1_D = '1' then
+            if BottomRight_D.Y - 1 > 0 then
+              BottomRight_N.Y <= BottomRight_D.Y - 1;
+            end if;
+          end if;
+
+          if IncX0_D = '1' then
+            if TopLeft_D.X - 1 > 0 then
+              TopLeft_N.X <= TopLeft_D.X - 1;
+            end if;
+          elsif DecX0_D = '1' then
+            if TopLeft_D.X + 1 < FrameW then
+              TopLeft_N.X <= TopLeft_D.X + 1;
+            end if;
+          end if;
+
+          if IncX1_D = '1' then
+            if BottomRight_D.X + 1 < FrameW then
+              BottomRight_N.X <= BottomRight_D.X + 1;
+            end if;
+          elsif DecX1_D = '1' then
+            if BottomRight_D.X - 1 > 0 then
+              BottomRight_N.X <= BottomRight_D.X - 1;
+            end if;
+          end if;
         end if;
       end if;
 
-      --if PixelIn < Threshold then
-      --  -- If no valid pixel is found on the top line, reduce one step, gravitate back to middle
-      --  if (LineCnt_D = TopLeft_D.Y) and ((PixelCnt_D >= TopLeft_D.X) and (PixelCnt_D <= BottomRight_D.X)) then
-      --      DecY0_N <= '1';
-      --  end if;
-
-
-    --  if TopLeft_D.Y > MiddleYOfScreen then
-        --    TopLeft_N.Y <= TopLeft_D.Y - 1;
-        --  elsif TopLeft_D.Y < MiddleYOfScreen then
-        --    TopLeft_N.Y <= TopLeft_D.Y + 1;
-        --  end if;
-        --end if;
-
-        ---- If no valid pixel is found, gravitate back to middle
-        --if (LineCnt_D = BottomRight_D.Y) and (PixelCnt_D = BottomRight_D.X) then
-        --  if BottomRight_D.Y > MiddleYOfScreen then
-        --    BottomRight_N.Y <= BottomRight_D.Y - 1;
-        --  elsif BottomRight_D.Y < MiddleYOfScreen then
-        --    BottomRight_N.Y <= BottomRight_D.Y + 1;
-        --  end if;
-        --end if;
-
-        ---- If no valid pixel is found, gravitate back to middle
-        --if (PixelCnt_D = BottomRightLeft_D.X) and (LineCnt_D = BottomRightLeft_D.Y) then
-        --  if BottomRightLeft_D.X > MiddleXOfScreen then
-        --    BottomRightLeft_N.X <= BottomRightLeft_D.X - 1;
-        --  elsif BottomRightLeft_D.X < MiddleXOfScreen then
-        --    BottomRightLeft_N.X <= BottomRightLeft_D.X + 1;
-        --  end if;
-        --end if;
-
-        --if (PixelCnt_D = TopRight_D.X) and (LineCnt_D = TopRight_D.Y) then
-        --  if TopRight_D.X > MiddleXOfScreen then
-        --    TopRight_N.X <= TopRight_D.X - 1;
-        --  elsif TopRight_D.X < MiddleXOfScreen then
-        --    TopRight_N.X <= TopRight_D.X + 1;
-        --  end if;
-        --end if;
-      -- end if;
-
-      if PixelIn >= Threshold and OnEdge = '0' then
-        -- Try to grow upper boundary, y0
-        if ((LineCnt_D = TopLeft_D.Y-1) and ((PixelCnt_D >= TopLeft_D.X) and (PixelCnt_D <= BottomRight_D.X))) then          
-          TopLeft_N.Y <= LineCnt_D;
+      -- Try to grow upper boundary, y0
+      if ((LineCnt_D = TopLeft_D.Y-1) and ((PixelCnt_D >= TopLeft_D.X) and (PixelCnt_D <= BottomRight_D.X))) then
+        -- TopLeft_N.Y <= LineCnt_D;
+        if PixelIn >= Threshold then
+          IncY0_N <= '1';
         end if;
-        
-        -- Try to grow lower boundary, y1
-        if ((LineCnt_D = BottomRight_D.Y+1) and ((PixelCnt_D >= TopLeft_D.X) and (PixelCnt_D <= BottomRight_D.X))) then
-          BottomRight_N.Y <= LineCnt_D;
+      end if;
+
+      if ((LineCnt_D = TopLeft_D.Y) and ((PixelCnt_D >= TopLeft_D.X) and (PixelCnt_D <= BottomRight_D.X))) then
+        -- TopLeft_N.Y <= LineCnt_D;
+        if PixelIn < Threshold then
+--          DecY0_N <= '1';
         end if;
-        
-        -- Try to grow left boundary, x0
-        if ((PixelCnt_D = TopLeft_D.X-1) and ((LineCnt_D >= TopLeft_D.Y) and (LineCnt_D <= BottomRight_D.Y)))  then
-          TopLeft_N.X <= PixelCnt_D;
+      end if;
+      
+      -- Try to grow lower boundary, y1
+      if ((LineCnt_D = BottomRight_D.Y+1) and ((PixelCnt_D >= TopLeft_D.X) and (PixelCnt_D <= BottomRight_D.X))) then
+        -- BottomRight_N.Y <= LineCnt_D;
+        if PixelIn >= Threshold then
+          IncY1_N <= '1';
         end if;
-        
-        -- Try to grow right boundary, x1
-        if ((PixelCnt_D = BottomRight_D.X+1) and ((LineCnt_D >= TopLeft_D.Y) and (LineCnt_D <= BottomRight_D.Y)))  then
-          BottomRight_N.X <= PixelCnt_D;
+      end if;
+
+      if ((LineCnt_D = BottomRight_D.Y) and ((PixelCnt_D >= TopLeft_D.X) and (PixelCnt_D <= BottomRight_D.X))) then
+        -- BottomRight_N.Y <= LineCnt_D;
+        if PixelIn < Threshold then
+  --        DecY1_N <= '1';
+        end if;
+      end if;
+
+      -- Try to grow left boundary, x0
+      if ((PixelCnt_D = TopLeft_D.X-1) and ((LineCnt_D >= TopLeft_D.Y) and (LineCnt_D <= BottomRight_D.Y)))  then
+        -- TopLeft_N.X <= PixelCnt_D;
+        if PixelIn >= Threshold then
+          IncX0_N <= '1';
+        end if;
+      end if;
+
+      if ((PixelCnt_D = TopLeft_D.X) and ((LineCnt_D >= TopLeft_D.Y) and (LineCnt_D <= BottomRight_D.Y)))  then
+        -- TopLeft_N.X <= PixelCnt_D;
+        if PixelIn < Threshold then
+    --      DecX0_N <= '1';
+        end if;
+      end if;
+      
+      -- Try to grow right boundary, x1
+      if ((PixelCnt_D = BottomRight_D.X+1) and ((LineCnt_D >= TopLeft_D.Y) and (LineCnt_D <= BottomRight_D.Y)))  then
+        -- BottomRight_N.X <= PixelCnt_D;
+        if PixelIn >= Threshold then
+          IncX1_N <= '1';
+        end if;
+      end if;
+
+      if ((PixelCnt_D = BottomRight_D.X) and ((LineCnt_D >= TopLeft_D.Y) and (LineCnt_D <= BottomRight_D.Y)))  then
+        -- BottomRight_N.X <= PixelCnt_D;
+        if PixelIn < Threshold then
+      --    DecX1_N <= '1';
         end if;
       end if;
     end if;
@@ -194,6 +264,9 @@ begin
     end if;
   end process;
 
+  TopLeft     <= TopLeft_D;
+  BottomRight <= BottomRight_D;
+  
   PixelOutAssign    : PixelOut    <= PixelOut_D;
   PixelOutValAssign : PixelOutVal <= PixelOutVal_D;  
 end architecture rtl;
