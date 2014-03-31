@@ -144,7 +144,7 @@ begin
               TopLeft_N.Y <= TopLeft_D.Y - 1;
             end if;
           elsif DecY0_D = '1' then
-            if TopLeft_D.Y + 1 < FrameH then
+            if (TopLeft_D.Y + 1 < FrameH) and (TopLeft_D.Y + 1 < BottomRight_D.Y) then
               TopLeft_N.Y <= TopLeft_D.Y + 1;
             end if;
           end if;
@@ -154,7 +154,7 @@ begin
               BottomRight_N.Y <= BottomRight_D.Y + 1;
             end if;
           elsif DecY1_D = '1' then
-            if BottomRight_D.Y - 1 > 0 then
+            if (BottomRight_D.Y - 1 > 0) and (BottomRight_D.Y - 1 > TopLeft_D.Y) then
               BottomRight_N.Y <= BottomRight_D.Y - 1;
             end if;
           end if;
@@ -164,7 +164,7 @@ begin
               TopLeft_N.X <= TopLeft_D.X - 1;
             end if;
           elsif DecX0_D = '1' then
-            if TopLeft_D.X + 1 < FrameW then
+            if (TopLeft_D.X + 1 < FrameW) and (TopLeft_D.X + 1 < BottomRight_D.X) then
               TopLeft_N.X <= TopLeft_D.X + 1;
             end if;
           end if;
@@ -174,7 +174,7 @@ begin
               BottomRight_N.X <= BottomRight_D.X + 1;
             end if;
           elsif DecX1_D = '1' then
-            if BottomRight_D.X - 1 > 0 then
+            if (BottomRight_D.X - 1 > 0) and (BottomRight_D.X - 1 > TopLeft_D.X) then
               BottomRight_N.X <= BottomRight_D.X - 1;
             end if;
           end if;
@@ -192,7 +192,7 @@ begin
       if ((LineCnt_D = TopLeft_D.Y) and ((PixelCnt_D >= TopLeft_D.X) and (PixelCnt_D <= BottomRight_D.X))) then
         -- TopLeft_N.Y <= LineCnt_D;
         if PixelIn < Threshold then
---          DecY0_N <= '1';
+          DecY0_N <= '1';
         end if;
       end if;
       
@@ -207,7 +207,7 @@ begin
       if ((LineCnt_D = BottomRight_D.Y) and ((PixelCnt_D >= TopLeft_D.X) and (PixelCnt_D <= BottomRight_D.X))) then
         -- BottomRight_N.Y <= LineCnt_D;
         if PixelIn < Threshold then
-  --        DecY1_N <= '1';
+          DecY1_N <= '1';
         end if;
       end if;
 
@@ -222,7 +222,7 @@ begin
       if ((PixelCnt_D = TopLeft_D.X) and ((LineCnt_D >= TopLeft_D.Y) and (LineCnt_D <= BottomRight_D.Y)))  then
         -- TopLeft_N.X <= PixelCnt_D;
         if PixelIn < Threshold then
-    --      DecX0_N <= '1';
+          DecX0_N <= '1';
         end if;
       end if;
       
@@ -237,7 +237,7 @@ begin
       if ((PixelCnt_D = BottomRight_D.X) and ((LineCnt_D >= TopLeft_D.Y) and (LineCnt_D <= BottomRight_D.Y)))  then
         -- BottomRight_N.X <= PixelCnt_D;
         if PixelIn < Threshold then
-      --    DecX1_N <= '1';
+          DecX1_N <= '1';
         end if;
       end if;
     end if;
