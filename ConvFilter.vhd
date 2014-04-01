@@ -51,7 +51,7 @@ begin
       PixelOut_D    <= (others => '0');
       PixelOutVal_D <= '0';
       LineFilter_D  <= (others => '0');
-      CurThres_D    <= (others => '1');
+      CurThres_D    <= conv_word(3, CurThres_D'length);
     elsif rising_edge(Clk) then
       PixelOut_D    <= PixelOut_N;
       PixelOutVal_D <= PixelOutVal_N;
