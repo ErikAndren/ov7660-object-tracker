@@ -42,9 +42,9 @@ architecture rtl of ObjectFinder is
   signal PixelOut_N, PixelOut_D       : word(DataW-1 downto 0);
   
   -- Set low threshold for now
-  constant Threshold : natural := 1;
+  constant Threshold : natural := 2;
 
-  constant Levels : positive := 2;
+  constant Levels : positive := 3;
   signal IncY0_N, IncY0_D : word(Levels-1 downto 0);
   signal IncY1_N, IncY1_D : word(Levels-1 downto 0);
   signal IncX0_N, IncX0_D : word(Levels-1 downto 0);
