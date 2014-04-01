@@ -301,7 +301,11 @@ begin
       --
       PixelOut    => PixelToVga,
       PixelOutVal => open,
-      RectAct     => DrawRect
+      RectAct     => DrawRect,
+		--
+		TopLeft     => open,
+		BottomRight => open
+		--
       );
 
   VgaGen : entity work.VgaGenerator
