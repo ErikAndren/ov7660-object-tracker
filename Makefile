@@ -21,6 +21,7 @@ FILES=OV76X0Pack.vhd \
 	VideoCapturer.vhd \
 	VideoController.vhd \
 	VideoPacker.vhd \
+	PWMCtrl.vhd \
 	OV76X0Top.vhd \
 	tb.vhd
 
