@@ -255,9 +255,8 @@ begin
     end if;
   end process;
 
-  TopLeft     <= TopLeft_D;
-  BottomRight <= BottomRight_D;
-  
+  TopLeftAssign     : TopLeft     <= TopLeft_D;
+  BottomRightAssign : BottomRight <= BottomRight_D;
   PixelOutAssign    : PixelOut    <= PixelIn;
   PixelOutValAssign : PixelOutVal <= PixelInVal;
 end architecture rtl;
