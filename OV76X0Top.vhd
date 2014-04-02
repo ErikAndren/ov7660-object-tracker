@@ -86,6 +86,8 @@ architecture rtl of OV76X0Top is
 
   signal AlignedPixel    : word(8-1 downto 0);
   signal AlignedPixelVal : bit1;
+
+  signal TopLeft, BottomRight : Cord;
   
 begin
   Pll : entity work.Pll
@@ -302,10 +304,9 @@ begin
       PixelOut    => PixelToVga,
       PixelOutVal => open,
       RectAct     => DrawRect,
-		--
-		TopLeft     => open,
-		BottomRight => open
-		--
+      --
+      TopLeft     => TopLeft,
+      BottomRight => BottomRight
       );
 
   VgaGen : entity work.VgaGenerator
@@ -328,4 +329,17 @@ begin
       HSync          => VgaHsync,
       VSync          => VgaVsync
       );
+
+  PWMCtrler : entity work.PWMCtrl
+    port map (
+      RstN     => RstN,
+      Clk      => Clk,
+      --
+      TopLeft    => TopLeft,
+      BottomRight => BottomRight,
+      --
+      YawPos     => open,
+      PitchPos   => open
+      );
+  
 end architecture rtl;
