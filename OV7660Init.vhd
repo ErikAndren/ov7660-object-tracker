@@ -80,7 +80,7 @@ begin
           Start    <= '1';
           
         when "0001" =>
-          AddrData <= COM2 & x"03";     -- Enable 4x drive
+          AddrData <= COM2 & x"00";     -- Enable 4x drive
           We       <= '1';
           Start    <= '1';
 
