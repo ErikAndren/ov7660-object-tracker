@@ -65,4 +65,7 @@ begin
       CurPitchPos_D <= CurPitchPos_N;
     end if;
   end process;
+  
+  YawPossAssign : YawPos <= CurYawPos_D;
+  PitchPosAssign : PitchPos <= CurPitchPos_D;
 end architecture rtl;
