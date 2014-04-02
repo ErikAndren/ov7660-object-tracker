@@ -49,13 +49,13 @@ architecture rtl of ObjectFinder is
   signal IncY1_N, IncY1_D : word(Levels-1 downto 0);
   signal IncX0_N, IncX0_D : word(Levels-1 downto 0);
   signal IncX1_N, IncX1_D : word(Levels-1 downto 0);
-
+  --
   signal DecY0_N, DecY0_D : word(Levels-1 downto 0);
   signal DecY1_N, DecY1_D : word(Levels-1 downto 0);
   signal DecX0_N, DecX0_D : word(Levels-1 downto 0);
   signal DecX1_N, DecX1_D : word(Levels-1 downto 0);
-  
-  signal OnEdge : bit1;
+
+  signal TrackLost_N, TrackLost_D : bit1;
              
 begin
   SyncProc : process (Clk, RstN)
@@ -73,6 +73,7 @@ begin
       DecY1_D       <= (others => '0');
       DecX0_D       <= (others => '0');
       DecX1_D       <= (others => '0');
+      TrackLost_D   <= '0';
 
     elsif rising_edge(Clk) then
       TopLeft_D     <= TopLeft_N;
@@ -87,10 +88,12 @@ begin
       DecY1_D       <= DecY1_N;
       DecX0_D       <= DecX0_N;
       DecX1_D       <= DecX1_N;
+      TrackLost_D   <= TrackLost_N;
     end if;
   end process;
   
-  AsyncProc : process (TopLeft_D, BottomRight_D, PixelIn, PixelInVal, PixelCnt_D, LineCnt_D, IncY0_D, IncY1_D, IncX0_D, IncX1_D, DecY0_D, DecY1_D, DecX0_D, DecX1_D)
+  AsyncProc : process (TopLeft_D, BottomRight_D, PixelIn, PixelInVal, PixelCnt_D, LineCnt_D, IncY0_D, IncY1_D, IncX0_D, IncX1_D, DecY0_D, DecY1_D, DecX0_D, DecX1_D, TrackLost_D)
+    variable TmpRectAct : bit1;
   begin
     TopLeft_N     <= TopLeft_D;
     BottomRight_N <= BottomRight_D;
@@ -107,6 +110,9 @@ begin
     DecY1_N       <= DecY1_D;
     DecX0_N       <= DecX0_D;
     DecX1_N       <= DecX1_D;
+    --
+    TrackLost_N   <= TrackLost_D;
+    TmpRectAct := '0';
 
     if PixelInVal = '1' then
       -- Pixel counting
@@ -118,7 +124,7 @@ begin
         if LineCnt_D + 1 = FrameH then
           LineCnt_N <= (others => '0');
           -- End of frame
-          -- Clear history
+          -- Clear frame history
           IncY0_N <= (others => '0');
           IncY1_N <= (others => '0');
           IncX0_N <= (others => '0');
@@ -168,6 +174,14 @@ begin
               BottomRight_N.X <= BottomRight_D.X - DecX1_D;
             end if;
           end if;
+
+          -- No rect was drawn this frame, we've lost track, reset to default
+          if TrackLost_D = '1' then
+            TopLeft_N     <= MiddleOfScreen;
+            BottomRight_N <= MiddleOfScreen;
+          end if;
+          -- Set trap for next frame
+          TrackLost_N <= '1';
         end if;
       end if;
 
@@ -236,23 +250,29 @@ begin
     -- Draw rectangle
     -- Top, y0 line
     if (LineCnt_D = TopLeft_D.Y) and ((PixelCnt_D >= TopLeft_D.X) and (PixelCnt_D <= BottomRight_D.X)) then
-      RectAct <= '1';
+      TmpRectAct := '1';
     end if;
 
     -- Bottom, y1 line
     if (LineCnt_D = BottomRight_D.Y) and ((PixelCnt_D >= TopLeft_D.X) and (PixelCnt_D <= BottomRight_D.X)) then
-      RectAct <= '1';
+      TmpRectAct := '1';
     end if;
 
     -- Left, x0 line
     if (PixelCnt_D = TopLeft_D.X) and ((LineCnt_D >= TopLeft_D.Y) and (LineCnt_D <= BottomRight_D.Y)) then
-      RectAct <= '1';
+      TmpRectAct := '1';
     end if;
 
     -- Right, x1 line
     if (PixelCnt_D = BottomRight_D.X) and ((LineCnt_D >= TopLeft_D.Y) and (LineCnt_D <= BottomRight_D.Y)) then
-      RectAct <= '1';
+      TmpRectAct := '1';
     end if;
+
+    if TmpRectAct = '1' then
+      TrackLost_N <= '0';
+    end if;
+    
+    RectAct <= TmpRectAct;
   end process;
 
   TopLeftAssign     : TopLeft     <= TopLeft_D;
