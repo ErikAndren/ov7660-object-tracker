@@ -210,6 +210,11 @@ set_global_assignment -name OUTPUT_PIN_LOAD 10 -section_id "3.3-V PCI"
 set_global_assignment -name OUTPUT_PIN_LOAD 10 -section_id "3.3-V PCI-X"
 set_global_assignment -name RESERVE_ALL_UNUSED_PINS_NO_OUTPUT_GND "AS INPUT TRI-STATED"
 set_location_assignment PIN_146 -to Button3
+set_location_assignment PIN_128 -to PitchServo
+set_location_assignment PIN_43 -to YawServo
+set_global_assignment -name VHDL_FILE ClkDiv.vhd
+set_global_assignment -name VHDL_FILE Servo_pwm.vhd
+set_global_assignment -name VHDL_FILE PWMCtrl.vhd
 set_global_assignment -name VHDL_FILE ../Lib/Types.vhd
 set_global_assignment -name VHDL_FILE ../Lib/Debounce.vhd
 set_global_assignment -name VHDL_FILE ../Lib/ButtonPulse.vhd
