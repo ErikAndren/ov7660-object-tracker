@@ -27,7 +27,9 @@ create_clock -name "Clk" -period 20.000ns [get_ports {Clk}]
 
 create_generated_clock -name PixelClk -source Clk -divide_by 2 [get_registers {VGAGenerator:VgaGen|PixelClk}]
 
-create_clock -name "PCLK" -period 40.000ns [get_ports {PCLK}]
+# create_clock -name "PCLK" -period 40.000ns [get_ports {PCLK}]
+
+create_generated_clock -name Clk64kHz -source Clk [get_registers {ClkDiv:Clk64kHzGen|temporal}] -divide_by 32000 
 
 # Automatically constrain PLL and other generated clocks
 derive_pll_clocks -create_base_clocks
