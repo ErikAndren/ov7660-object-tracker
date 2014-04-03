@@ -11,36 +11,40 @@ entity OV76X0Top is
     Displays : positive := 8
     );
   port (
-    AsyncRstN : in    bit1;
-    Clk       : in    bit1;
+    AsyncRstN  : in    bit1;
+    Clk        : in    bit1;
     --
-    Button1   : in    bit1;
-    Button2   : in    bit1;
-    Button3   : in    bit1;
+    Button1    : in    bit1;
+    Button2    : in    bit1;
+    Button3    : in    bit1;
     --
-    VSYNC     : in    bit1;
-    HREF      : in    bit1;
+    VSYNC      : in    bit1;
+    HREF       : in    bit1;
     --
-    XCLK      : out   bit1;
-    PCLK      : in    bit1;
-    D         : in    word(8-1 downto 0);
+    XCLK       : out   bit1;
+    PCLK       : in    bit1;
+    D          : in    word(8-1 downto 0);
     -- SCCB interface
-    SIO_C     : out   bit1;
-    SIO_D     : inout bit1;
+    SIO_C      : out   bit1;
+    SIO_D      : inout bit1;
     -- VGA interface
-    VgaRed    : out   word(3-1 downto 0);
-    VgaGreen  : out   word(3-1 downto 0);
-    VgaBlue   : out   word(3-1 downto 0);
-    VgaHsync  : out   bit1;
-    VgaVsync  : out   bit1;
+    VgaRed     : out   word(3-1 downto 0);
+    VgaGreen   : out   word(3-1 downto 0);
+    VgaBlue    : out   word(3-1 downto 0);
+    VgaHsync   : out   bit1;
+    VgaVsync   : out   bit1;
     -- Sram interface
-    SramD     : inout word(16-1 downto 0);
-    SramAddr  : out   word(18-1 downto 0);
-    SramCeN   : out   bit1;
-    SramOeN   : out   bit1;
-    SramWeN   : out   bit1;
-    SramUbN   : out   bit1;
-    SramLbN   : out   bit1
+    SramD      : inout word(16-1 downto 0);
+    SramAddr   : out   word(18-1 downto 0);
+    SramCeN    : out   bit1;
+    SramOeN    : out   bit1;
+    SramWeN    : out   bit1;
+    SramUbN    : out   bit1;
+    SramLbN    : out   bit1;
+    --
+    -- Servo interface
+    PitchServo : out   bit1;
+    YawServo   : out   bit1
     );
 end entity;
 
@@ -51,6 +55,7 @@ architecture rtl of OV76X0Top is
   signal SccbWe                          : bit1;
   signal SccbAddr                        : word(SccbAddrW-1 downto 0);
   signal XCLK_i                          : bit1;
+  signal Clk64KHz                        : bit1;
   signal RstN                            : bit1;
   signal RstNPClk                        : bit1;
   --
@@ -88,6 +93,8 @@ architecture rtl of OV76X0Top is
   signal AlignedPixelVal : bit1;
 
   signal TopLeft, BottomRight : Cord;
+
+  signal YawPos, PitchPos : word(ServoResW-1 downto 0);
   
 begin
   Pll : entity work.Pll
@@ -332,14 +339,48 @@ begin
 
   PWMCtrler : entity work.PWMCtrl
     port map (
-      RstN     => RstN,
-      Clk      => Clk,
+      RstN        => RstN,
+      Clk         => Clk,
       --
-      TopLeft    => TopLeft,
+      Btn1        => Btn2Pulse,
+      Btn2        => Btn1Pulse,
+      --
+      TopLeft     => TopLeft,
       BottomRight => BottomRight,
       --
-      YawPos     => open,
-      PitchPos   => open
+      YawPos      => YawPos,
+      PitchPos    => PitchPos
+      );
+
+  Clk64kHzGen: entity work.ClkDiv
+    generic map (
+      SourceFreq => Freq,
+      SinkFreq => 32000
+    )
+    port map (
+      Clk => Clk,
+      Reset => RstN,
+      Clk_out => Clk64Khz
+      );
+
+  YawServoDriver : entity work.Servo_pwm
+    port map (
+      Clk   => Clk64Khz,
+      RstN  => RstN,
+      --
+      Pos   => YawPos,
+      --
+      Servo => YawServo
+      );
+
+  PitchServoDriver : entity work.Servo_pwm
+    port map (
+      Clk   => Clk64Khz,
+      RstN  => RstN,
+      --
+      Pos   => PitchPos,
+      --
+      Servo => PitchServo
       );
   
 end architecture rtl;
