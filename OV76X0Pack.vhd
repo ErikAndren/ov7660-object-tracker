@@ -77,16 +77,24 @@ package OV76X0Pack is
     (X => conv_word(MiddleXOfScreen, FrameWW),
      Y => conv_word(MiddleYOfScreen, FrameHW));
 
-  constant ServoResW      : positive := 7;
-  constant ServoRes       : positive := 2**ServoResW;
-  constant MiddleServoPos : positive := ServoRes / 2;
-  constant ServoMax       : positive := 40;
-  constant ServoMiddle    : positive := 20;
+  constant ServoResW       : positive := 8;
+  constant ServoRes        : positive := 2**ServoResW;
+  constant MiddleServoPos  : positive := ServoRes / 2;
   --
-  constant TileXRes       : positive := FrameW / ServoMax;
-  constant TileXResW      : positive := bits(TileXRes);
-  constant TileYRes       : positive := FrameH / ServoMax;
-  constant TileYResW      : positive := bits(TileYRes);
+  constant ServoPitchMin   : natural  := 0;
+  constant ServoPitchMax   : positive := 120;
+  constant ServoPitchStart : positive := 100;
+  constant ServoPitchRange : positive := ServoPitchMax - ServoPitchMin;
+  --
+  constant ServoYawMin     : natural  := 0;
+  constant ServoYawMax     : positive := 160;
+  constant ServoYawStart   : positive := 62;
+  constant ServoYawRange   : positive := ServoYawMax - ServoYawMin;
+  --
+  constant TileXRes        : positive := FrameW / ServoYawRange;
+  constant TileXResW       : positive := bits(TileXRes);
+  constant TileYRes        : positive := FrameH / ServoPitchRange;
+  constant TileYResW       : positive := bits(TileYRes);
   
 end package;
 
