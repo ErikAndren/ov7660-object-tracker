@@ -27,7 +27,7 @@ architecture Behavioral of Servo_pwm is
   signal Cnt_D : word(MaxCntW-1 downto 0);
 
   -- Temporal signal used to generate the PWM pulse.
-  signal pwmi : word(8-1 downto 0);
+  signal pwmi : word(ResW downto 0);
 begin
   -- Minimum value should be 0.5ms.
   pwmi <= ('0' & Pos) + 32;
