@@ -364,6 +364,9 @@ begin
       );
 
   YawServoDriver : entity work.Servo_pwm
+    generic map (
+      ResW => ServoResW
+      )
     port map (
       Clk   => Clk64Khz,
       RstN  => RstN,
@@ -374,6 +377,9 @@ begin
       );
 
   PitchServoDriver : entity work.Servo_pwm
+    generic map (
+      ResW => ServoResW
+      )
     port map (
       Clk   => Clk64Khz,
       RstN  => RstN,
