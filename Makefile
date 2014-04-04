@@ -75,6 +75,9 @@ altera_mf:
 vhdlfiles:
 	$(CC) $(FLAGS) $(FILES)
 
+vhdlfiles-lint:
+	$(CC) $(FLAGS) -lint $(FILES)
+
 isim: all
 	$(VSIM) $(TBTOP) $(VSIM_ARGS)
 
