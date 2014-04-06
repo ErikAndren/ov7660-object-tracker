@@ -1,3 +1,6 @@
+-- Align the data to sram words and write them
+-- Copyright Erik Zachrisson - erik@zachrisson.info 2014
+
 library ieee;
 use ieee.std_logic_1164.all;
 use ieee.std_logic_arith.all;
