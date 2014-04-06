@@ -20,20 +20,21 @@ entity ClkDiv is
 end;
 
 architecture rtl of ClkDiv is
-  signal divisor     : bit1;
   constant Period     : positive := SourceFreq / SinkFreq;
   constant HalfPeriod : positive := Period / 2;
+  --
+  signal divisor      : bit1;
   signal counter      : word(bits(HalfPeriod)-1 downto 0);
 begin
   freq_divider : process (RstN, Clk)
   begin
     if (RstN = '0') then
       divisor <= '0';
-      counter  <= (others => '0');
+      counter <= (others => '0');
     elsif rising_edge(Clk) then
       if (counter = HalfPeriod-1) then
         divisor <= not divisor;
-        counter  <= (others => '0');
+        counter <= (others => '0');
       else
         counter <= counter + 1;
       end if;
