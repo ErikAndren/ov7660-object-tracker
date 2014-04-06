@@ -242,6 +242,7 @@ begin
       Vsync          => Vsync_Clk
       );
 
+  -- FIXME: This should be automagically padded
   PixelInData(15) <= '0';
 
   SramArb : entity work.SramArbiter
