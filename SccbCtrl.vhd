@@ -1,3 +1,6 @@
+-- State machine that controls the writing of the sccb bus as defined by omnivision
+-- Copyright Erik Zachrisson - erik@zachrisson.info
+
 library ieee;
 use ieee.std_logic_1164.all;
 use ieee.std_logic_arith.all;
@@ -85,7 +88,7 @@ begin
             when conv_word(1, stm'length) =>
               bit_out <= '1';
 
-                                        --Start write transaction.
+            --Start write transaction.
             when conv_word(2, stm'length) =>
               bit_out <= '0';
             when conv_word(3, stm'length) =>
