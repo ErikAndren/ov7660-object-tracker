@@ -1,4 +1,5 @@
--- This entity shall request frames from a memory and send it to VGA-generator.
+-- Read chunks of data from the SRAM and feed it to the vga generator.
+-- Copyright Erik Zachrisson erik@zachrisson.info 2014
 
 library ieee;
 use ieee.std_logic_1164.all;
