@@ -121,7 +121,6 @@ begin
         end if;
       end if;
     end if;
-    
   end process;
 
   -- Slice out the resolution we support
