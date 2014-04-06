@@ -1,6 +1,5 @@
 -- Find a object in the middle and try to track it
--- Erik Zachrisson - erik@zachrisson.info
---
+-- Erik Zachrisson - erik@zachrisson.info, copyright 2014
 
 library ieee;
 use ieee.std_logic_1164.all;
@@ -32,28 +31,28 @@ entity ObjectFinder is
     );
 end entity;
 
-architecture rtl of ObjectFinder is  
-  signal TopLeft_N, TopLeft_D       : Cord;
+architecture rtl of ObjectFinder is
+  signal TopLeft_N, TopLeft_D         : Cord;
   signal BottomRight_N, BottomRight_D : Cord;
-
-  signal PixelCnt_N, PixelCnt_D : word(FrameWW-1 downto 0);
-  signal LineCnt_N, LineCnt_D   : word(FrameHW-1 downto 0);
-
-  signal PixelOut_N, PixelOut_D       : word(DataW-1 downto 0);
-  
-  -- Set low threshold for now
-  constant Threshold : natural := 2;
-
-  constant Levels : positive := 3;
-  signal IncY0_N, IncY0_D : word(Levels-1 downto 0);
-  signal IncY1_N, IncY1_D : word(Levels-1 downto 0);
-  signal IncX0_N, IncX0_D : word(Levels-1 downto 0);
-  signal IncX1_N, IncX1_D : word(Levels-1 downto 0);
   --
-  signal DecY0_N, DecY0_D : word(Levels-1 downto 0);
-  signal DecY1_N, DecY1_D : word(Levels-1 downto 0);
-  signal DecX0_N, DecX0_D : word(Levels-1 downto 0);
-  signal DecX1_N, DecX1_D : word(Levels-1 downto 0);
+  signal PixelCnt_N, PixelCnt_D       : word(FrameWW-1 downto 0);
+  signal LineCnt_N, LineCnt_D         : word(FrameHW-1 downto 0);
+  --
+  signal PixelOut_N, PixelOut_D       : word(DataW-1 downto 0);
+  --
+  -- Set low threshold for now
+  constant Threshold                  : natural  := 2;
+  --
+  constant Levels                     : positive := 3;
+  signal IncY0_N, IncY0_D             : word(Levels-1 downto 0);
+  signal IncY1_N, IncY1_D             : word(Levels-1 downto 0);
+  signal IncX0_N, IncX0_D             : word(Levels-1 downto 0);
+  signal IncX1_N, IncX1_D             : word(Levels-1 downto 0);
+  --
+  signal DecY0_N, DecY0_D             : word(Levels-1 downto 0);
+  signal DecY1_N, DecY1_D             : word(Levels-1 downto 0);
+  signal DecX0_N, DecX0_D             : word(Levels-1 downto 0);
+  signal DecX1_N, DecX1_D             : word(Levels-1 downto 0);
 
   signal TrackLost_N, TrackLost_D : bit1;
              
@@ -63,8 +62,10 @@ begin
     if RstN = '0' then
       TopLeft_D     <= MiddleOfScreen;
       BottomRight_D <= MiddleOfScreen;
+      --
       PixelCnt_D    <= (others => '0');
       LineCnt_D     <= (others => '0');
+      --
       IncY0_D       <= (others => '0');
       IncY1_D       <= (others => '0');
       IncX0_D       <= (others => '0');
@@ -78,8 +79,10 @@ begin
     elsif rising_edge(Clk) then
       TopLeft_D     <= TopLeft_N;
       BottomRight_D <= BottomRight_N;
+      --
       PixelCnt_D    <= PixelCnt_N;
       LineCnt_D     <= LineCnt_N;
+      --
       IncY0_D       <= IncY0_N;
       IncY1_D       <= IncY1_N;
       IncX0_D       <= IncX0_N;
