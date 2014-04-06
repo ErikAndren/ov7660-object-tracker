@@ -33,7 +33,7 @@ architecture rtl of DitherFloydSteinberg is
   constant RightErrFact               : positive := 7;
   --
   signal ClosestPixelVal              : word(CompDataW-1 downto 0);
-  signal error                        : word(TruncBits-1 downto 0);
+  signal Error                        : word(TruncBits-1 downto 0);
   --
   signal RightErr_N, RightErr_D       : word(MaxErrorW-1 downto 0);
   signal AdjPixelIn                   : word(DataW-1 downto 0);
@@ -86,28 +86,31 @@ begin
   end process;
 
   ClosestPixelVal <= AdjPixelIn(DataW-1 downto TruncBits);
-  error           <= AdjPixelIn(TruncBits-1 downto 0);
+  Error           <= AdjPixelIn(TruncBits-1 downto 0);
 
-  SyncProc : process (RstN, Clk)
+  SyncRstProc : process (RstN, Clk)
   begin
     if RstN = '0' then
-      RightErr_D    <= (others => '0');
       PixelOutVal_D <= '0';
-      PixelOut_D    <= (others => '0');
-      ErrorVect_D   <= (others => (others => '0'));
       PixelCnt_D    <= (others => '0');
       LineCnt_D     <= (others => '0');
     elsif rising_edge(Clk) then
-      RightErr_D    <= RightErr_N;
       PixelOutVal_D <= PixelOutVal_N;
-      PixelOut_D    <= PixelOut_N;
-      ErrorVect_D   <= ErrorVect_N;
       PixelCnt_D    <= PixelCnt_N;
       LineCnt_D     <= LineCnt_N;
     end if;
   end process;
+
+  SyncNoRstProc : process (Clk)
+  begin
+    if rising_edge(Clk) then
+      RightErr_D    <= RightErr_N;
+      PixelOut_D    <= PixelOut_N;
+      ErrorVect_D   <= ErrorVect_N;
+    end if;
+  end process;
   
-  AsyncProc : process (RightErr_D, PixelInVal, error, PixelOut_D,
+  AsyncProc : process (RightErr_D, PixelInVal, Error, PixelOut_D,
                        ClosestPixelVal, PixelCnt_D, ErrorVect_D,
                        FromErrMem, LineCnt_D, Vsync
                        )
