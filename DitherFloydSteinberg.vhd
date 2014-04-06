@@ -26,6 +26,7 @@ entity DitherFloydSteinberg is
 end entity;
 
 architecture rtl of DitherFloydSteinberg is
+  constant Threshold                  : positive := 31;
   constant TruncBits                  : positive := DataW-CompDataW;
   constant MaxTruncErr                : positive := 2**TruncBits-1;
   constant MaxError                   : positive := (7 * MaxTruncErr + 3 * MaxTruncErr + 5 * MaxTruncErr + 1 * MaxTruncErr);
@@ -130,7 +131,7 @@ begin
     end if;
 
     if (PixelInVal = '1') then
-      -- 7/16 East, OK, read error_vector[1], low,  and add the result and push right
+      -- 7/16 East, OK, read error_vector[1], low, and add the result and push right
       -- 3/16 South west, N/A [n-1], ok to set anyways?
       -- 5/16 South, OK, error vector [0], Set new error value
       -- 1/16 South East, OK, error vector [1], write new error
@@ -164,7 +165,8 @@ begin
       LineCnt_N  <= (others => '0');
     end if;
   end process;
-  ToErrMemTrunc <= (others => '1') when ToErrMem > 31 else ToErrMem(TruncBits-1 downto 0);
+  
+  ToErrMemTrunc <= (others => '1') when ToErrMem > Threshold else ToErrMem(TruncBits-1 downto 0);
 
   AddrCalc : process (PixelCnt_D)
   begin
