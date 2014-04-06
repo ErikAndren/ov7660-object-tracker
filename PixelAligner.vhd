@@ -1,3 +1,8 @@
+-- Extract the different types of signals in the incoming data stream.
+-- Current implementation extracts the luminance from the incoming YUV encoded
+-- signal.
+-- Copyright Erik Zachrisson, erik@zachrisson.info 2014
+
 library ieee;
 use ieee.std_logic_1164.all;
 use ieee.std_logic_arith.all;
