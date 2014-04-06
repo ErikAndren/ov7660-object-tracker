@@ -32,21 +32,21 @@ end entity;
 architecture rtl of VGAGenerator is
   signal PixelClk : bit1;
 
-  constant hsync_end  : positive := 95;
-  constant hdat_begin : positive := 143;
-  constant hdat_end   : positive := 783;
-  constant hpixel_end : positive := 799;
-  constant vsync_end  : positive := 1;
-  constant vdat_begin : positive := 34;
-  constant vdat_end   : positive := 514;
-  constant vline_end  : positive := 524;
+  constant HSyncEnd  : positive := 95;
+  constant HDatBegin : positive := 143;
+  constant HDatEnd   : positive := 783;
+  constant HPixelEnd : positive := 799;
+  constant VSyncEnd  : positive := 1;
+  constant VDatBegin : positive := 34;
+  constant VDatEnd   : positive := 514;
+  constant VLineEnd  : positive := 524;
 
-  signal hCount    : word(10-1 downto 0);
-  signal vCount    : word(10-1 downto 0);
-  signal hCount_ov : bit1;
-  signal vCount_ov : bit1;
+  signal hCount     : word(bits(HPixelEnd)-1 downto 0);
+  signal vCount     : word(bits(VLineEnd)-1 downto 0);
+  signal HCountOvfl : bit1;
+  signal VCountOvfl : bit1;
   --
-  signal InView_i  : bit1;
+  signal InView_i   : bit1;
 begin
   DivClkGen : if DivideClk = true generate
     ClkDiv : process (RstN, Clk)
@@ -63,13 +63,13 @@ begin
     PixelClk <= Clk;
   end generate;
 
-  hcount_ov <= '1' when hcount = hpixel_end else '0';
+  HCountOvfl <= '1' when hcount = HPixelEnd else '0';
   HCnt : process (RstN, PixelClk)
   begin
     if RstN = '0' then
       hcount <= (others => '0');
     elsif rising_edge(PixelClk) then
-      if (hcount_ov = '1') then
+      if (HCountOvfl = '1') then
         hcount <= (others => '0');
       else
         hcount <= hcount + 1;
@@ -77,14 +77,14 @@ begin
     end if;
   end process;
 
-  vcount_ov <= '1' when vcount = vline_end else '0';
+  VCountOvfl <= '1' when vcount = VLineEnd else '0';
   VCnt : process (RstN, PixelClk)
   begin
     if RstN = '0' then
       vcount <= (others => '0');
     elsif rising_edge(PixelClk) then
-      if (hcount_ov = '1') then
-        if (vcount_ov = '1') then
+      if (HCountOvfl = '1') then
+        if (VCountOvfl = '1') then
           vcount <= (others => '0');
         else
           vcount <= vcount + 1;
@@ -93,11 +93,11 @@ begin
     end if;
   end process;
 
-  InView_i <= '1' when ((hcount >= hdat_begin - Offset) and (hcount < hdat_end - Offset)) and ((vcount >= vdat_begin) and (vcount < vdat_end)) else '0';
+  InView_i <= '1' when ((hcount >= HDatBegin - Offset) and (hcount < HDatEnd - Offset)) and ((vcount >= VDatBegin) and (vcount < VDatEnd)) else '0';
   InView   <= InView_i;
   
-  Hsync <= '1' when hcount > hsync_end else '0';
-  Vsync <= '1' when vcount > vsync_end else '0';
+  Hsync <= '1' when hcount > HSyncEnd else '0';
+  Vsync <= '1' when vcount > VSyncEnd else '0';
 
   DrawColorProc : process (PixelToDisplay, DrawRect, InView_i)
   begin
