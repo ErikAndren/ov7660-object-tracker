@@ -1,3 +1,6 @@
+-- Arbitrates between write and read requests in a round-robin fashion
+-- Copyright Erik Zachrisson erik@zachrisson.info 2014
+
 library ieee;
 use ieee.std_logic_1164.all;
 use ieee.std_logic_arith.all;
