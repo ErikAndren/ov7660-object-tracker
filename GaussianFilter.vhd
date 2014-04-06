@@ -36,17 +36,22 @@ architecture rtl of GaussianFilter is
   signal PixelOut_N, PixelOut_D       : word(DataW-1 downto 0);
   signal PixelOutVal_N, PixelOutVal_D : bit1;
 begin
-  SyncProc : process (Clk, RstN)
+  SyncRstProc : process (Clk, RstN)
   begin
     if RstN = '0' then
-      PixelOut_D    <= (others => '0');
       PixelOutVal_D <= '0';
     elsif rising_edge(Clk) then
-      PixelOut_D    <= PixelOut_N;
       PixelOutVal_D <= PixelOutVal_N;
     end if;
   end process;
 
+  SyncNoRstProc : process (Clk)
+  begin
+    if rising_edge(Clk) then
+      PixelOut_D    <= PixelOut_N;
+    end if;
+  end process;
+  
   AsyncProc : process (PixelIn, PixelInVal)
     variable Sum : word(DataW+3 downto 0);
   begin
