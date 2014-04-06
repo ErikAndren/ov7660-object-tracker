@@ -33,23 +33,22 @@ end entity;
 architecture rtl of VideoPacker is
   type PackedPixels is array (NoBuffers-1 downto 0) of word(PackedPixelW-1 downto 0);
   type PackCntPixels is array (NoBuffers-1 downto 0) of word(NoPixelsW-1 downto 0);
-
+  --
   signal PackCnt_N, PackCnt_D         : PackCntPixels;
   signal WriteBufPtr_N, WriteBufPtr_D : word(NoBuffersW-1 downto 0);
   signal ReadBufPtr_N, ReadBufPtr_D   : word(NoBuffersW-1 downto 0);
-
-  signal PackedData_N, PackedData_D : PackedPixels;
-
-  signal FrameCnt_N, FrameCnt_D : word(NoBuffersW-1 downto 0);
-  signal WordCnt_N, WordCnt_D   : word(MemWordsPerLineW-1 downto 0);
-  signal LineCnt_N, LineCnt_D   : word(FrameHW-1 downto 0);
+  --
+  signal PackedData_N, PackedData_D   : PackedPixels;
+  --
+  signal FrameCnt_N, FrameCnt_D       : word(NoBuffersW-1 downto 0);
+  signal WordCnt_N, WordCnt_D         : word(MemWordsPerLineW-1 downto 0);
+  signal LineCnt_N, LineCnt_D         : word(FrameHW-1 downto 0);
   
 begin
-  SyncProc : process (Clk, RstN)
+  SyncRstProc : process (Clk, RstN)
   begin
     if RstN = '0' then
       PackCnt_D     <= (others => (others => '0'));
-      PackedData_D  <= (others => (others => '0'));
       WriteBufPtr_D <= (others => '0');
       ReadBufPtr_D  <= (others => '0');
       WordCnt_D     <= (others => '0');
@@ -57,12 +56,18 @@ begin
       FrameCnt_D    <= (others => '0');
     elsif rising_edge(Clk) then
       PackCnt_D     <= PackCnt_N;
-      PackedData_D  <= PackedData_N;
       WriteBufPtr_D <= WriteBufPtr_N;
       ReadBufPtr_D  <= ReadBufPtr_N;
       WordCnt_D     <= WordCnt_N;
       LineCnt_D     <= LineCnt_N;
       FrameCnt_D    <= FrameCnt_N;
+    end if;
+  end process;
+
+ SyncNoRstProc : process (Clk)
+  begin
+    if rising_edge(Clk) then
+      PackedData_D  <= PackedData_N;
     end if;
   end process;
   
