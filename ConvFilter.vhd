@@ -45,21 +45,26 @@ architecture rtl of ConvFilter is
 
   signal CurThres_N, CurThres_D : word(3-1 downto 0);
 begin
-  SyncProc : process (Clk, RstN)
+  SyncRstProc : process (Clk, RstN)
   begin
     if RstN = '0' then
-      PixelOut_D    <= (others => '0');
       PixelOutVal_D <= '0';
       LineFilter_D  <= (others => '0');
       CurThres_D    <= conv_word(3, CurThres_D'length);
     elsif rising_edge(Clk) then
-      PixelOut_D    <= PixelOut_N;
       PixelOutVal_D <= PixelOutVal_N;
       LineFilter_D  <= LineFilter_N;
       CurThres_D    <= CurThres_N;
     end if;
   end process;
 
+  SyncNoRstProc : process (Clk)
+  begin
+    if rising_edge(Clk) then
+      PixelOut_D    <= PixelOut_N;
+    end if;
+  end process;
+  
   -- Filter out noise in left column
   FirstColumn <= '1' when RdAddr < RowsToFilter else '0';
 
