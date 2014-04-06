@@ -1,3 +1,5 @@
+-- Implement a servo driver for the Tower Pro SG90
+-- It uses a PWM signal as control mechanism.
 library ieee;
 use ieee.std_logic_1164.all;
 use ieee.std_logic_arith.all;
@@ -36,6 +38,8 @@ begin
   counter : process (RstN, Clk)
   begin
     if (RstN = '0') then
+      -- FIXME: Is reset necessary? Probably not as it will correct itself very
+      -- early after initialization
       Cnt_D <= (others => '0');
     elsif rising_edge(Clk) then
       if Cnt_D = MaxCnt then
