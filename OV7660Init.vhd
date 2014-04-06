@@ -1,3 +1,9 @@
+-- Table that defines what register and data pairs to write to the OV7660 via
+-- SCCB after startup. A delay is needed before writing the actual data
+-- Also perform a register reset first of all in order to ensure that we know
+-- what state we are writing. A simple FPGA flash might not reset the OV7660 firmware.
+-- Copyright Erik Zachrisson - erik@zachrisson.info
+
 library ieee;
 use ieee.std_logic_1164.all;
 use ieee.std_logic_arith.all;
@@ -38,6 +44,8 @@ architecture fpga of OV7660Init is
   constant NbrOfInst : positive := 1;
 
   signal InstPtr_N, InstPtr_D : word(InstPtrW-1 downto 0);
+  -- FIXME: Potentially listen for a number of vsync pulses instead. This would
+  -- same a number of flops
   signal Delay_N, Delay_D     : word(16-1 downto 0);
 begin
   SyncProc : process (Clk, Rst_N)
