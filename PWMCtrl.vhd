@@ -1,6 +1,6 @@
 -- This function implements a simple P controller, trying to send pulses to
 -- always keep the object tracked focused in the middle
--- Copyright erik@zachrisson.info
+-- Copyright 2014 erik@zachrisson.info
 
 library ieee;
 use ieee.std_logic_1164.all;
