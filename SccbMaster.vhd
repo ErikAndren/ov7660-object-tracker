@@ -49,7 +49,6 @@ architecture fpga of SccbMaster is
   signal AddrData             : word(16-1 downto 0);
   signal StartTrans           : bit1;
   
-  
 begin
   AckErr <= ack_err;
 
