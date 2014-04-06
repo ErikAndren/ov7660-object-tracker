@@ -31,35 +31,27 @@ end entity;
 
 architecture rtl of PixelAligner is
   signal Cnt_N, Cnt_D                 : word(1-1 downto 0);
-  signal PixelOut_N, PixelOut_D       : word(DataOutW-1 downto 0);
-  signal PixelOutVal_N, PixelOutVal_D : bit1;
 begin
   SyncProc : process (RstN, Clk)
   begin
     if RstN = '0' then
       Cnt_D         <= (others => '0');
-      PixelOutVal_D <= '0';
-      PixelOut_D    <= (others => '0');
     elsif rising_edge(Clk) then
       Cnt_D         <= Cnt_N;
-      PixelOutVal_D <= PixelOutVal_N;
-      PixelOut_D    <= PIxelOut_N;
     end if;
   end process;
 
-  AsyncProc : process (Cnt_D, Vsync, PixelOut_D, PixelOutVal_D, PixelInVal, PixelIn)
+  AsyncProc : process (Cnt_D, Vsync, PixelInVal)
   begin
     Cnt_N         <= Cnt_D;
-    PixelOutVal_N <= '0';
-    PixelOut_N    <= PixelOut_D;
+    PixelOutVal   <= '0';
 
     if PixelInVal = '1' then
       Cnt_N <= Cnt_D + 1;
 
       -- YUV sample black and white on second cycle
       if (Cnt_D = 0) then
-        PixelOutVal_N <= '1';
-        PixelOut_N    <= PixelIn;
+        PixelOutVal <= '1';
       end if;
     end if;
 
@@ -68,6 +60,5 @@ begin
     end if;
   end process;
 
-  PixelOutVal <= PixelOutVal_D;
-  PixelOut    <= PixelOut_D;
+  PixelOutFeed : PixelOut    <= PixelIn;
 end architecture rtl;
