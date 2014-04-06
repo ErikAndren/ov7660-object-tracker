@@ -1,3 +1,10 @@
+-- Top file for the OV76X0 project
+-- Purpose is to grab video from a VGA camera, perform edge detection and track
+-- an object and generate a control signal to two servos controlloing the
+-- movement of a camera.
+-- Implemented on an altera Cyclone II FPGA
+-- Copyright erik@zachrisson.info 2014
+
 library ieee;
 use ieee.std_logic_1164.all;
 use ieee.std_logic_arith.all;
