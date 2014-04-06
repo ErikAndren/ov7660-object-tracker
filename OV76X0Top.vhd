@@ -361,14 +361,14 @@ begin
       PitchPos    => PitchPos
       );
 
-  Clk64kHzGen: entity work.ClkDiv
+  Clk64kHzGen : entity work.ClkDiv
     generic map (
       SourceFreq => Freq,
-      SinkFreq => 32000
+      SinkFreq   => 32000
     )
     port map (
-      Clk => Clk,
-      Reset => RstN,
+      Clk     => Clk,
+      RstN    => RstN,
       Clk_out => Clk64Khz
       );
 
