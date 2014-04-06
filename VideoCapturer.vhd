@@ -44,6 +44,8 @@ architecture rtl of VideoCapturer is
   signal PixelOut_D : word(DataW-1 downto 0);
   signal PixelVal_D : bit1;
 
+  -- FIXME: Is this initial delay really needed. Can we resolve this some other
+  -- way?
   signal Delay_N, Delay_D : word(20-1 downto 0);
   signal VSync_D          : word(4-1 downto 0);
 
@@ -123,26 +125,27 @@ begin
     end if;
   end process;
 
-  ClkSync : process (RstN, Clk)
+  ClkRstSync : process (RstN, Clk)
   begin
     if RstN = '0' then
-      FifoRdVal_D <= '0';
-      PixelOut_D  <= (others => '0');
-      PixelVal_D  <= '0';
-      VSync_META  <= '0';
-      VSync_D_Clk <= '0';
-
+      PixelVal_D <= '0';
     elsif rising_edge(Clk) then
-      FifoRdVal_D <= FifoRdVal_N;
-      PixelOut_D  <= RdData;
-      PixelVal_D  <= FifoRdVal_D;
-      VSync_META  <= RedAnd(VSync);
-
-      VSync_D_Clk <= VSync_META;
+      PixelVal_D <= FifoRdVal_D;
     end if;
   end process;
 
-  PixelOut  <= PixelOut_D;
-  PixelVal  <= PixelVal_D;
-  Vsync_Clk <= Vsync_D_Clk;
+  ClkNoRstSync : process (Clk)
+  begin
+    if rising_edge(Clk) then
+      FifoRdVal_D <= FifoRdVal_N;
+      PixelOut_D  <= RdData;
+      --
+      VSync_META  <= RedAnd(VSync);
+      VSync_D_Clk <= VSync_META;
+    end if;
+  end process;
+  
+  PixelFeed    : PixelOut  <= PixelOut_D;
+  PixelValFeed : PixelVal  <= PixelVal_D;
+  VsyncFeed    : Vsync_Clk <= Vsync_D_Clk;
 end architecture;
