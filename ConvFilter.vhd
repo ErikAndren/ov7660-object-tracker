@@ -104,12 +104,10 @@ begin
 
       Sum := SumX + SumY;
 
-      if FilterSel = SOBEL_MODE then
-        if Sum > ((conv_integer(CurThres_D)+1) * ThresholdStep)-1 then
-          PixelOut_N <= (others => '1');
-        else
-          PixelOut_N <= Sum(PixelOut_N'length-1 downto 0);
-        end if;
+      if Sum > ((conv_integer(CurThres_D)+1) * ThresholdStep)-1 then
+        PixelOut_N <= (others => '1');
+      else
+        PixelOut_N <= Sum(PixelOut_N'length-1 downto 0);
       end if;
 
       if FirstColumn = '1' then
