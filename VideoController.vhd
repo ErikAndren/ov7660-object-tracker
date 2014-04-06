@@ -48,20 +48,19 @@ architecture rtl of VideoController is
   signal SramReqPopped_N, SramReqPopped_D : bit1;
   
 begin
-  SyncProc : process (Clk, RstN)
+  SyncRstProc : process (Clk, RstN)
   begin
     if RstN = '0' then
-      Buf_D           <= (others => (others => '0'));
       ValPixelCnt_D   <= (others => (others => '0'));
       WriteBufPtr_D   <= (others => '0');
       ReadBufPtr_D    <= (others => '0');
+      --
       WordCnt_D       <= (others => '0');
       LineCnt_D       <= (others => '0');
       FrameCnt_D      <= (others => '0');
       WaitCnt_D       <= (others => '1');
       SramReqPopped_D <= '0';
     elsif rising_edge(Clk) then
-      Buf_D           <= Buf_N;
       ValPixelCnt_D   <= ValPixelCnt_N;
       ReadBufPtr_D    <= ReadBufPtr_N;
       WriteBufPtr_D   <= WriteBufPtr_N;
@@ -73,6 +72,13 @@ begin
     end if;
   end process;
 
+  SyncNoRstProc : process (Clk)
+  begin
+    if rising_edge(Clk) then
+      Buf_D           <= Buf_N;
+    end if;
+  end process;
+  
   AsyncProc : process (Buf_D, ValPixelCnt_D, WriteBufPtr_D, ReadBufPtr_D, WordCnt_D, LineCnt_D, InView, SramReqPopped, SramData, FrameCnt_D, WaitCnt_D, SramReqPopped_D)
     variable ReadPtr, WritePtr : integer;
   begin
