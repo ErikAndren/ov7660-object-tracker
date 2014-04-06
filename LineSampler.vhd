@@ -42,25 +42,30 @@ architecture rtl of LineSampler is
     return ((conv_integer(CurLine) + Offs + 1) mod Buffers);
   end function;
 begin
-  SyncProc : process (Clk, RstN)
+  SyncRstProc : process (Clk, RstN)
   begin
     if RstN = '0' then
       LineCnt_D <= (others => '0');
       Addr_D    <= (others => '0');
-      PixArr_D  <= (others => (others => (others => '0')));
     elsif rising_edge(Clk) then
       LineCnt_D <= LineCnt_N;
       Addr_D    <= Addr_N;
-      PixArr_D  <= PixArr_N;
 
       if Vsync = '1' then
         LineCnt_D <= (others => '0');
         Addr_D    <= (others => '0');
-        PixArr_D  <= (others => (others => (others => '0')));
       end if;
     end if;
   end process;
 
+  SyncNoRstProc : process (Clk)
+  begin
+    if rising_edge(Clk) then
+      PixArr_D  <= PixArr_N;
+    end if;
+  end process;
+
+  
   AsyncProc : process (LineCnt_D, Addr_D, PixArr_D, PixelInVal, RamOut)
   begin
     LineCnt_N <= LineCnt_D;
@@ -111,7 +116,7 @@ begin
         );
   end generate;
 
-  RdAddr      <= Addr_D;
-  PixelOutVal <= PixelInVal;
-  PixelOut    <= PixArr_D;
+  AddrFeed        : RdAddr      <= Addr_D;
+  PixelOutValFeed : PixelOutVal <= PixelInVal;
+  PixelOutFeed    : PixelOut    <= PixArr_D;
 end architecture rtl;
