@@ -26,9 +26,9 @@ entity SramArbiter is
 end entity;
 
 architecture rtl of SramArbiter is
-  constant SramWaitPenalty : natural := 1;
-
-  signal WaitCnt_N, WaitCnt_D   : word(1-1 downto 0);
+  constant SramWaitPenalty      : natural := 1;
+  --
+  signal WaitCnt_N, WaitCnt_D   : word(bits(SramWaitPenalty)-1 downto 0);
   signal PopRead_N, PopRead_D   : bit1;
   signal PopWrite_N, PopWrite_D : bit1;
 begin
