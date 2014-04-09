@@ -1,5 +1,19 @@
 -- Implement a servo driver for the Tower Pro SG90
 -- It uses a PWM signal as control mechanism.
+-- Copyright Erik Zachrisson erik@zachrisson.info
+-- Assumes 64kHz frequency i.e a period of 15.63 us
+
+-- A max count of 1280 * 15.63 = 20 ms = 50 Hz
+-- Spec states: 600-2400 µs pulse width
+-- Base width is 32 * 15.63 = 0.5 ms
+-- Each tick represents an increase of 15.53 us
+-- 7 bits of resolution = 128 ticks
+-- Max val is : 127 + 32 = 159
+-- In time: 159 * 15.63 = 2485.17 us
+--
+-- According to forum:
+-- Full range on the SG90 is: 2.4 mS (~90o) to 0.6mS (~270o) clockwise. 
+
 library ieee;
 use ieee.std_logic_1164.all;
 use ieee.std_logic_arith.all;
