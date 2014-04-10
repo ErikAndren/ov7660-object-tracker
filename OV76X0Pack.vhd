@@ -81,13 +81,13 @@ package OV76X0Pack is
   constant ServoRes        : positive := 2**ServoResW;
   constant MiddleServoPos  : positive := ServoRes / 2;
   --
-  constant ServoPitchMin   : natural  := 0;
+  constant ServoPitchMin   : natural  := 20;
   constant ServoPitchMax   : positive := 120;
   constant ServoPitchStart : positive := 100;
   constant ServoPitchRange : positive := ServoPitchMax - ServoPitchMin;
   --
-  constant ServoYawMin     : natural  := 0;
-  constant ServoYawMax     : positive := 160;
+  constant ServoYawMin     : natural  := 30;
+  constant ServoYawMax     : positive := 120;
   constant ServoYawStart   : positive := 62;
   constant ServoYawRange   : positive := ServoYawMax - ServoYawMin;
   --
