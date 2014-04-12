@@ -197,7 +197,6 @@ begin
         end if;
 
         if ((LineCnt_D = TopLeft_D.Y+i) and ((PixelCnt_D >= TopLeft_D.X) and (PixelCnt_D <= BottomRight_D.X))) then
-          -- TopLeft_N.Y <= LineCnt_D;
           if PixelIn < Threshold then
             DecY0_N(i-1) <= '1';
           end if;
@@ -205,14 +204,12 @@ begin
 
         -- Try to grow lower boundary, y1
         if ((LineCnt_D = BottomRight_D.Y+i) and ((PixelCnt_D >= TopLeft_D.X) and (PixelCnt_D <= BottomRight_D.X))) then
-          -- BottomRight_N.Y <= LineCnt_D;
           if PixelIn >= Threshold then
             IncY1_N(i-1) <= '1';
           end if;
         end if;
 
         if ((LineCnt_D = BottomRight_D.Y-i) and ((PixelCnt_D >= TopLeft_D.X) and (PixelCnt_D <= BottomRight_D.X))) then
-          -- BottomRight_N.Y <= LineCnt_D;
           if PixelIn < Threshold then
             DecY1_N(i-1) <= '1';
           end if;
@@ -220,14 +217,12 @@ begin
 
         -- Try to grow left boundary, x0
         if ((PixelCnt_D = TopLeft_D.X-i) and ((LineCnt_D >= TopLeft_D.Y) and (LineCnt_D <= BottomRight_D.Y)))  then
-          -- TopLeft_N.X <= PixelCnt_D;
           if PixelIn >= Threshold then
             IncX0_N(i-1) <= '1';
           end if;
         end if;
 
         if ((PixelCnt_D = TopLeft_D.X+i) and ((LineCnt_D >= TopLeft_D.Y) and (LineCnt_D <= BottomRight_D.Y)))  then
-          -- TopLeft_N.X <= PixelCnt_D;
           if PixelIn < Threshold then
             DecX0_N(i-1) <= '1';
           end if;
@@ -235,14 +230,12 @@ begin
         
         -- Try to grow right boundary, x1
         if ((PixelCnt_D = BottomRight_D.X+i) and ((LineCnt_D >= TopLeft_D.Y) and (LineCnt_D <= BottomRight_D.Y)))  then
-          -- BottomRight_N.X <= PixelCnt_D;
           if PixelIn >= Threshold then
             IncX1_N(i-1) <= '1';
           end if;
         end if;
 
         if ((PixelCnt_D = BottomRight_D.X-i) and ((LineCnt_D >= TopLeft_D.Y) and (LineCnt_D <= BottomRight_D.Y)))  then
-          -- BottomRight_N.X <= PixelCnt_D;
           if PixelIn < Threshold then
             DecX1_N(i-1) <= '1';
           end if;
