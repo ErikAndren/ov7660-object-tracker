@@ -47,25 +47,16 @@ architecture rtl of LineSampler is
     return ((conv_integer(CurLine) + Offs + 1) mod Buffers);
   end function;
 begin
-  SyncRstProc : process (Clk, RstN)
+  SyncNoRstProc : process (Clk)
   begin
-    if RstN = '0' then
-      LineCnt_D <= (others => '0');
-      Addr_D    <= (others => '0');
-    elsif rising_edge(Clk) then
+    if rising_edge(Clk) then
       LineCnt_D <= LineCnt_N;
       Addr_D    <= Addr_N;
-
       if Vsync = '1' then
         LineCnt_D <= (others => '0');
         Addr_D    <= (others => '0');
       end if;
-    end if;
-  end process;
-
-  SyncNoRstProc : process (Clk)
-  begin
-    if rising_edge(Clk) then
+      
       PixArr_D  <= PixArr_N;
     end if;
   end process;
