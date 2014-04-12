@@ -14,6 +14,7 @@ entity PWMCtrl is
   port (
     RstN        : in  bit1;
     Clk         : in  bit1;
+    Clk64KHz    : in  bit1;
     --
     TopLeft     : in  Cord;
     BottomRight : in  Cord;
@@ -33,6 +34,8 @@ architecture rtl of PWMCtrl is
   signal CurYawPos_N, CurYawPos_D     : word(ServoResW-1 downto 0);
   signal CurPitchPos_N, CurPitchPos_D : word(ServoResW-1 downto 0);
   signal BoxDelta                     : Cord;
+
+  signal Cnt_N, Cnt_D : word(bits(64000)-1 downto 0);
   
 begin
   -- Calculate middle by adding half the delta 
@@ -45,7 +48,7 @@ begin
   BoxMiddle.X <= TopLeft.X + Quotient(BoxDelta.X, 2);
   BoxMiddle.Y <= TopLeft.Y + Quotient(BoxDelta.Y, 2);
 
-  CalcDelta : process (BoxMiddle, CurYawPos_D, CurPitchPos_D)
+  CalcDelta : process (BoxMiddle, CurYawPos_D, CurPitchPos_D, Cnt_D)
     variable DeltaToMiddle : Cord;
   begin
     -- Box is on right side of screen, must move camera to the left
@@ -53,16 +56,19 @@ begin
       DeltaToMiddle.X := BoxMiddle.X - MiddleXOfScreen;
       -- Delta must be adjusted to available pwm resolution
       -- Add adjusted delta to yaw pos
-      CurYawPos_N     <= CurYawPos_D + Quotient(DeltaToMiddle.X, TileXRes);
+      -- CurYawPos_N     <= CurYawPos_D + Quotient(DeltaToMiddle.X, TileXRes);
+      CurYawPos_N <= CurYawPos_D + 1;
       -- Protect against overflow
-      if CurYawPos_D + Quotient(DeltaToMiddle.X, TileXRes) > ServoYawMax then
+      if CurYawPos_D + 1 > ServoYawMax then
         CurYawPos_N <= conv_word(ServoYawMax, CurYawPos_N'length);
       end if;
+      
     else
       DeltaToMiddle.X := MiddleXOfScreen - BoxMiddle.X;
-      CurYawPos_N     <= CurYawPos_D - Quotient(DeltaToMiddle.X, TileXRes);
+      --CurYawPos_N     <= CurYawPos_D - Quotient(DeltaToMiddle.X, TileXRes);
+      CurYawPos_N <= CurYawPos_D - 1;
       -- Protect against underflow
-      if (CurYawPos_D - Quotient(DeltaToMiddle.X, TileXRes) < ServoYawMin) then
+      if (CurYawPos_D - 1 < ServoYawMin) then
         CurYawPos_N <= conv_word(ServoYawMin, CurYawPos_N'length);
       end if;
     end if;
@@ -86,15 +92,24 @@ begin
 --    CalcMiddle <= DeltaToMiddle;
     -- FIXME: Keep idle for now
     CurPitchPos_N <= CurPitchPos_D;
-    
+
+    Cnt_N <= Cnt_D + 1;
+    if (Cnt_D = 6400) then
+      Cnt_N <= (others => '0');
+    else
+      CurPitchPos_N <= CurPitchPos_D;
+      CurYawPos_N   <= CurYawPos_D;
+    end if;
   end process;
 
-  SyncProc : process (Clk, RstN)
+  SyncProc : process (Clk64Khz, RstN)
   begin
     if RstN = '0' then
       CurYawPos_D   <= conv_word(ServoYawStart, CurYawPos_D'length);
       CurPitchPos_D <= conv_word(ServoPitchStart, CurPitchPos_D'length);
-    elsif rising_edge(Clk) then
+      Cnt_D <= (others => '0');
+    elsif rising_edge(Clk64Khz) then
+      Cnt_D <= Cnt_N;
       CurYawPos_D   <= CurYawPos_N;
       CurPitchPos_D <= CurPitchPos_N;
     end if;

@@ -350,6 +350,7 @@ begin
     port map (
       RstN        => RstN,
       Clk         => Clk,
+      Clk64KHz    => Clk64kHz,
       --
       Btn1        => Btn2Pulse,
       Btn2        => Btn1Pulse,
@@ -369,7 +370,7 @@ begin
     port map (
       Clk     => Clk,
       RstN    => RstN,
-      Clk_out => Clk64Khz
+      Clk_out => Clk64khz
       );
 
   YawServoDriver : entity work.Servo_pwm
