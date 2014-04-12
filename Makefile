@@ -6,7 +6,6 @@ FILES=OV76X0Pack.vhd \
 	DitherFloydSteinberg.vhd \
 	ObjectFinder.vhd \
 	OV7660Init.vhd \
-	OV76X0Filter.vhd \
 	OV76X0Pack.vhd \
 	Pll.vhd \
 	PixelAligner.vhd \
