@@ -1,3 +1,8 @@
+-- Samples the line and stores it in 3 rams
+-- This is then sent in a 3x3 array to a filter
+-- Copyright Erik Zachrisson erik@zachrisson.info
+
+
 library ieee;
 use ieee.std_logic_1164.all;
 use ieee.std_logic_arith.all;
@@ -64,7 +69,6 @@ begin
       PixArr_D  <= PixArr_N;
     end if;
   end process;
-
   
   AsyncProc : process (LineCnt_D, Addr_D, PixArr_D, PixelInVal, RamOut)
   begin
