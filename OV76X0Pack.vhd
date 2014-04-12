@@ -59,7 +59,6 @@ package OV76X0Pack is
   constant MODES                  : natural := GAUSSIAN_MODE + 1;
   constant MODESW                 : natural := bits(MODES);
 
-
   type Cord is
   record
     X : word(FrameWW-1 downto 0);
