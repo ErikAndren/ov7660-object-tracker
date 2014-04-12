@@ -30,14 +30,12 @@ entity PixelAligner is
 end entity;
 
 architecture rtl of PixelAligner is
-  signal Cnt_N, Cnt_D                 : word(1-1 downto 0);
+  signal Cnt_N, Cnt_D : word(1-1 downto 0);
 begin
-  SyncProc : process (RstN, Clk)
+  SyncNoRstProc : process (Clk)
   begin
-    if RstN = '0' then
-      Cnt_D         <= (others => '0');
-    elsif rising_edge(Clk) then
-      Cnt_D         <= Cnt_N;
+    if rising_edge(Clk) then
+      Cnt_D <= Cnt_N;
     end if;
   end process;
 
