@@ -45,7 +45,7 @@ FLAGS=-work /tmp/work -93 -modelsimini $(MODELSIMINI_PATH)
 all: work altera_mf altera lib sramcontroller vhdlfiles
 
 clean:
-	rm -rf *~ rtl_work *.wlf transcript
+	rm -rf *~ rtl_work *.wlf transcript *.vhd.bak
 
 lib:
 	@$(MAKE) -C ../Lib -f ../Lib/Makefile
