@@ -42,22 +42,34 @@ architecture rtl of LineSampler is
   type BuffArr is array (natural range <>) of word(PixelW-1 downto 0);
   signal RamOut               : BuffArr(Buffers-1 downto 0);
 
+  signal PixelVal_D : bit1;
+  
   function CalcLine(CurLine : word; Offs : natural) return natural is
   begin
     return ((conv_integer(CurLine) + Offs + 1) mod Buffers);
   end function;
 begin
+  SyncRstProc : process (RstN, Clk)
+  begin
+    if RstN = '0' then
+      PixelVal_D <= '0';
+    elsif rising_edge(Clk) then
+      PixelVal_D <= PixelInVal;
+    end if;
+  end process;
+  
   SyncNoRstProc : process (Clk)
   begin
     if rising_edge(Clk) then
       LineCnt_D <= LineCnt_N;
       Addr_D    <= Addr_N;
+      PixArr_D  <= PixArr_N;
+
       if Vsync = '1' then
         LineCnt_D <= (others => '0');
         Addr_D    <= (others => '0');
+        PixArr_D  <= (others => (others => (others => '0')));
       end if;
-      
-      PixArr_D  <= PixArr_N;
     end if;
   end process;
   
@@ -69,6 +81,7 @@ begin
 
     if PixelInVal = '1' then
       Addr_N <= Addr_D + 1;
+ 
       if Addr_D + 1 = FrameW then
         Addr_N <= (others => '0');
         LineCnt_N <= LineCnt_D + 1;
@@ -76,13 +89,15 @@ begin
           LineCnt_N <= (others => '0');
         end if;
       end if;
-        
+
+      -- Shift all entries one step to the left
       for i in 0 to OutRes-1 loop
         PixArr_N(i)(0) <= PixArr_D(i)(1);        
         PixArr_N(i)(1) <= PixArr_D(i)(2);
         PixArr_N(i)(2) <= RamOut(CalcLine(LineCnt_D, i));
 
         -- Clear buffer on the end of the line
+        -- FIXME: is this necessary?
         if (Addr_D = FrameW-1) then
           PixArr_N <= (others => (others => (others => '0')));
         end if;
@@ -112,6 +127,6 @@ begin
   end generate;
 
   AddrFeed        : RdAddr      <= Addr_D;
-  PixelOutValFeed : PixelOutVal <= PixelInVal;
+  PixelOutValFeed : PixelOutVal <= PixelVal_D;
   PixelOutFeed    : PixelOut    <= PixArr_D;
 end architecture rtl;
