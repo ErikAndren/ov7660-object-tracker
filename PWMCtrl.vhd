@@ -94,7 +94,7 @@ begin
     CurPitchPos_N <= CurPitchPos_D;
 
     Cnt_N <= Cnt_D + 1;
-    if (Cnt_D = 6400) then
+    if (Cnt_D = 3200) then
       Cnt_N <= (others => '0');
     else
       CurPitchPos_N <= CurPitchPos_D;
