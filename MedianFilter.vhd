@@ -1,4 +1,3 @@
---
 -- Implements median filter
 -- Sorts all entries and selects the median value
 -- Optimized comparator tree picked from
@@ -97,7 +96,7 @@ begin
     end if;
   end process;
   
-  AsyncProc : process (PixelIn, PixelInVal)
+  AsyncProc : process (PixelIn, PixelInVal, Median)
   begin
     PixelOutVal_N <= PixelInVal;
     PixelOut_N    <= (others => '0');
