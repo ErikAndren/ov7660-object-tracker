@@ -98,9 +98,6 @@ begin
 
         -- Clear buffer on the end of the line
         -- FIXME: is this necessary?
-        if (Addr_D = FrameW-1) then
-          PixArr_N <= (others => (others => (others => '0')));
-        end if;
       end loop;
     end if;
   end process;
