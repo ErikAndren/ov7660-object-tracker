@@ -235,7 +235,6 @@ set_global_assignment -name VHDL_FILE ../Lib/ButtonPulse.vhd
 set_global_assignment -name VHDL_FILE ../Lib/ResetSync.vhd
 set_global_assignment -name VHDL_FILE "../SramTest-IS61LV25616AL/SramController.vhd"
 set_global_assignment -name VHDL_FILE ObjectFinder.vhd
-set_global_assignment -name VHDL_FILE GaussianFilter.vhd
 set_global_assignment -name VHDL_FILE FilterChain.vhd
 set_global_assignment -name VHDL_FILE ConvFilter.vhd
 set_global_assignment -name VHDL_FILE LineSampler.vhd
