@@ -44,9 +44,6 @@ architecture rtl of VideoCapturer is
   signal PixelOut_D : word(DataW-1 downto 0);
   signal PixelVal_D : bit1;
 
-  -- FIXME: Is this initial delay really needed. Can we resolve this some other
-  -- way?
-  signal Delay_N, Delay_D : word(20-1 downto 0);
   signal VSync_D          : word(4-1 downto 0);
 
   signal VSync_META, VSync_D_Clk : bit1;
@@ -57,10 +54,6 @@ begin
       PixelData_D <= (others => '0');
       SeenVsync_D <= (others => '0');
       Vsync_D     <= (others => '0');
-      Delay_D     <= (others => '0');
-      if Simulation then
-        Delay_D <= (others => '1');
-      end if;
     elsif rising_edge(PCLK) then
       PixelData_D <= PixelData_N;
       SeenVsync_D <= SeenVsync_N;
@@ -69,26 +62,20 @@ begin
         Vsync_D(i) <= Vsync_D(i-1);
       end loop;
 
-      Delay_D <= Delay_N;
     end if;
   end process;
 
-  PClkAsync : process (PixelData, Href, Vsync_D, SeenVsync_D, Delay_D)
+  PClkAsync : process (PixelData, Href, Vsync_D, SeenVsync_D)
   begin
     PixelData_N <= PixelData;
     ValData_N   <= '0';
     SeenVsync_N <= SeenVsync_D;
-    Delay_N     <= Delay_D + 1;
-
-    if (RedAnd(Delay_D) = '1') then
-      Delay_N <= Delay_D;
-    end if;
 
     -- Initial gating to ensure that we start to capture at the start of a frame
     if (RedAnd(SeenVsync_D) = '1') then
       -- VSync observed
       null;
-    elsif (RedAnd(Vsync_D) = '1' and RedAnd(Delay_D) = '1') then
+    elsif (RedAnd(Vsync_D) = '1') then
       SeenVsync_N <= SeenVsync_D + 1;
     else
       -- Vsync tracking lost, go to start state
