@@ -63,7 +63,7 @@ begin
       PixelOutVal => PixelArrayVal
     );
 
-  GF : entity work.GaussianFilter
+  MF : entity work.MedianFilter
     generic map (
       DataW => DataW,
       Res   => Res
@@ -78,7 +78,7 @@ begin
       PixelOut    => PixelFromGaussian,
       PixelOutVal => PixelFromGaussianVal
       );
-
+  
   LS_Conv : entity work.LineSampler
     generic map (
       DataW   => DataW,
