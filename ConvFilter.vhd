@@ -50,7 +50,7 @@ begin
     if RstN = '0' then
       PixelOutVal_D <= '0';
       LineFilter_D  <= (others => '0');
-      CurThres_D    <= conv_word(3, CurThres_D'length);
+      CurThres_D    <= conv_word(1, CurThres_D'length);
     elsif rising_edge(Clk) then
       PixelOutVal_D <= PixelOutVal_N;
       LineFilter_D  <= LineFilter_N;
