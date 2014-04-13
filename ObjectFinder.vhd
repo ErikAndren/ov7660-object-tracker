@@ -147,7 +147,7 @@ begin
               TopLeft_N.Y <= TopLeft_D.Y + DecY0_D;
             end if;
           end if;
-
+          
           if IncY1_D > 0 then
             if BottomRight_D.Y + IncY1_D < FrameH then
               BottomRight_N.Y <= BottomRight_D.Y + IncY1_D;
@@ -178,7 +178,7 @@ begin
             end if;
           end if;
 
-          -- No rect was drawn this frame, we've lost track, reset to default
+          -- No rect was drawn this frame. We've lost track, reset to default
           if TrackLost_D = '1' then
             TopLeft_N     <= MiddleOfScreen;
             BottomRight_N <= MiddleOfScreen;
