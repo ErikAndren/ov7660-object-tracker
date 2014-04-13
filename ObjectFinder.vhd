@@ -138,6 +138,9 @@ begin
           DecX0_N <= (others => '0');
           DecX1_N <= (others => '0');
 
+          
+          
+
           if IncY0_D > 0 then
             if TopLeft_D.Y - IncY0_D > 0 then
               TopLeft_N.Y <= TopLeft_D.Y - IncY0_D;
@@ -145,6 +148,13 @@ begin
           elsif DecY0_D > 0 then
             if (TopLeft_D.Y + DecY0_D < FrameH) and (TopLeft_D.Y + DecY0_D < BottomRight_D.Y) then
               TopLeft_N.Y <= TopLeft_D.Y + DecY0_D;
+            end if;
+          else
+            -- If inactive, try to crawl back to middle
+            if TopLeft_D.Y > MiddleYOfScreen then
+              TopLeft_N.Y <= TopLeft_D.Y - 1;
+            else
+              TopLeft_N.Y <= TopLeft_D.Y + 1;
             end if;
           end if;
           
@@ -156,6 +166,12 @@ begin
             if (BottomRight_D.Y - DecY1_D > 0) and (BottomRight_D.Y - DecY1_D > TopLeft_D.Y) then
               BottomRight_N.Y <= BottomRight_D.Y - DecY1_D;
             end if;
+          else
+            if BottomRight_D.Y > MiddleYOfScreen then
+              BottomRight_N.Y <= BottomRight_D.Y - 1;
+            else
+              BottomRight_N.Y <= BottomRight_D.Y + 1;
+            end if;
           end if;
 
           if IncX0_D > 0 then
@@ -165,6 +181,12 @@ begin
           elsif DecX0_D > 0 then
             if (TopLeft_D.X + DecX0_D < FrameW) and (TopLeft_D.X + DecX0_D < BottomRight_D.X) then
               TopLeft_N.X <= TopLeft_D.X + DecX0_D;
+            end if;
+          else
+            if TopLeft_D.X > MiddleXOfScreen then
+              TopLeft_N.X <= TopLeft_D.X - 1;
+            else
+              TopLeft_N.X <= TopLeft_D.X + 1;
             end if;
           end if;
 
@@ -176,6 +198,12 @@ begin
             if (BottomRight_D.X - DecX1_D > 0) and (BottomRight_D.X - DecX1_D > TopLeft_D.X) then
               BottomRight_N.X <= BottomRight_D.X - DecX1_D;
             end if;
+          else
+            if BottomRight_D.X > MiddleXOfScreen then
+              BottomRight_N.X <= BottomRight_D.X - 1;
+            else
+              BottomRight_N.X <= BottomRight_D.X + 1;
+            end if;            
           end if;
 
           -- No rect was drawn this frame. We've lost track, reset to default
@@ -235,7 +263,7 @@ begin
           end if;
         end if;
 
-        if ((PixelCnt_D = BottomRight_D.X-i) and ((LineCnt_D >= TopLeft_D.Y) and (LineCnt_D <= BottomRight_D.Y)))  then
+        if ((PixelCnt_D = BottomRight_D.X-i) and ((LineCnt_D >= TopLeft_D.Y) and (LineCnt_D <= BottomRight_D.Y))) then
           if PixelIn < Threshold then
             DecX1_N(i-1) <= '1';
           end if;
