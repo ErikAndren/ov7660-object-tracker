@@ -36,7 +36,7 @@ architecture rtl of ConvFilter is
   signal PixelOut_N, PixelOut_D       : word(DataW-1 downto 0);
   signal PixelOutVal_N, PixelOutVal_D : bit1;
 
-  constant RowsToFilter             : natural := 5;
+  constant ColumnsToFilter          : natural := 5;
   constant LinesToFilter            : natural := 9;
   signal LineFilter_N, LineFilter_D : word(bits(LinesToFilter)-1 downto 0);
   signal FirstColumn                : bit1;
@@ -66,7 +66,7 @@ begin
   end process;
   
   -- Filter out noise in left column
-  FirstColumn <= '1' when RdAddr < RowsToFilter else '0';
+  FirstColumn <= '1' when RdAddr < ColumnsToFilter else '0';
 
   AsyncProc : process (PixelIn, PixelInVal, PixelOut_D, Vsync, LineFilter_D, FirstColumn, RdAddr, FilterSel, IncThreshold, DecThreshold, CurThres_D)
     variable SumX, SumY, Sum : word(DataW+1 downto 0);
