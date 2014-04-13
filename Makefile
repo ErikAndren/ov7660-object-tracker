@@ -12,6 +12,7 @@ FILES=OV76X0Pack.vhd \
 	LineSampler1PRAM.vhd \
 	LineSampler.vhd \
 	ConvFilter.vhd \
+	MedianFilter.vhd \
 	FilterChain.vhd \
 	SccbCtrl.vhd \
 	SccbMaster.vhd \
