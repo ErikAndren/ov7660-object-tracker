@@ -36,7 +36,7 @@ architecture rtl of ConvFilter is
   signal PixelOut_N, PixelOut_D       : word(DataW-1 downto 0);
   signal PixelOutVal_N, PixelOutVal_D : bit1;
 
-  constant ColumnsToFilter          : natural := 5;
+  constant ColumnsToFilter          : natural := 0;
   constant LinesToFilter            : natural := 9;
   signal LineFilter_N, LineFilter_D : word(bits(LinesToFilter)-1 downto 0);
   signal FirstColumn                : bit1;
