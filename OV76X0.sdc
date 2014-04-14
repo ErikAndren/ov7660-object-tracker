@@ -24,7 +24,6 @@ set_false_path -from [get_ports {Button1}] -to *
 set_false_path -from [get_ports {Button2}] -to *
 set_false_path -from [get_ports {Button3}] -to *
 
-
 # Clock constraints
 
 create_clock -name "Clk" -period 20.000ns [get_ports {Clk}]
@@ -37,6 +36,8 @@ create_generated_clock -name Clk64kHz -source Clk [get_registers {ClkDiv:Clk64kH
 
 # Automatically constrain PLL and other generated clocks
 derive_pll_clocks -create_base_clocks
+
+set_input_delay -clock { Pll|altpll_component|pll|clk[0] } -max 15 -min 8 [get_ports {D[0] D[1] D[2] D[3] D[4] D[5] D[6] D[7] HREF VSYNC}]
 
 # Automatically calculate clock uncertainty to jitter and other effects.
 #derive_clock_uncertainty
