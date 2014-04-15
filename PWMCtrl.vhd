@@ -36,63 +36,75 @@ architecture rtl of PWMCtrl is
   signal BoxDelta                     : Cord;
 
   signal Cnt_N, Cnt_D : word(bits(64000)-1 downto 0);
+
+  constant X_Thres        : natural := 0;
+  constant BoxHeightThres : natural := 20;
+  constant BoxWidthThres  : natural := 20;
   
 begin
   -- Calculate middle by adding half the delta 
-  -- BoxMiddle.X <= TopLeft.X + (SHR((BottomRight.X - TopLeft.X), "1"));
-  -- BoxMiddle.Y <= TopLeft.Y + (SHR((BottomRight.Y - TopLeft.Y), "1"));
 
   BoxDelta.X  <= BottomRight.X - TopLeft.X;
   BoxDelta.Y  <= BottomRight.Y - TopLeft.Y;
   --
   BoxMiddle.X <= TopLeft.X + Quotient(BoxDelta.X, 2);
   BoxMiddle.Y <= TopLeft.Y + Quotient(BoxDelta.Y, 2);
+  --
 
-  CalcDelta : process (BoxMiddle, CurYawPos_D, CurPitchPos_D, Cnt_D)
-    variable DeltaToMiddle : Cord;
+  CalcDelta : process (BoxMiddle, CurYawPos_D, CurPitchPos_D, Cnt_D, BoxDelta)
   begin
-    -- Box is on right side of screen, must move camera to the left
-    if BoxMiddle.X > MiddleXOfScreen then
-      DeltaToMiddle.X := BoxMiddle.X - MiddleXOfScreen;
-      -- Delta must be adjusted to available pwm resolution
-      -- Add adjusted delta to yaw pos
-      -- CurYawPos_N     <= CurYawPos_D + Quotient(DeltaToMiddle.X, TileXRes);
-      CurYawPos_N <= CurYawPos_D + 1;
-      -- Protect against overflow
-      if CurYawPos_D + 1 > ServoYawMax then
-        CurYawPos_N <= conv_word(ServoYawMax, CurYawPos_N'length);
-      end if;
-      
-    else
-      DeltaToMiddle.X := MiddleXOfScreen - BoxMiddle.X;
-      --CurYawPos_N     <= CurYawPos_D - Quotient(DeltaToMiddle.X, TileXRes);
-      CurYawPos_N <= CurYawPos_D - 1;
-      -- Protect against underflow
-      if (CurYawPos_D - 1 < ServoYawMin) then
-        CurYawPos_N <= conv_word(ServoYawMin, CurYawPos_N'length);
+    CurYawPos_N   <= CurYawPos_D;
+    CurPitchPos_N <= CurPitchPos_D;
+
+    if BoxDelta.X > BoxWidthThres then
+      -- Box is on right side of screen, must move camera to the left
+      if BoxMiddle.X(FrameWW-1 downto X_Thres) > MiddleOfScreen.X(FrameWW-1 downto X_Thres) then
+        -- DeltaToMiddle.X := BoxMiddle.X - MiddleXOfScreen;
+        -- Delta must be adjusted to available pwm resolution
+        -- Add adjusted delta to yaw pos
+        -- CurYawPos_N     <= CurYawPos_D + Quotient(DeltaToMiddle.X, TileXRes);
+        CurYawPos_N <= CurYawPos_D + 1;
+        -- Protect against overflow
+        if CurYawPos_D + 1 > ServoYawMax then
+          CurYawPos_N <= conv_word(ServoYawMax, CurYawPos_N'length);
+        end if;
+        
+      elsif BoxMiddle.X(FrameWW-1 downto X_Thres) < MiddleOfScreen.X(FrameWW-1 downto X_Thres) then
+        -- DeltaToMiddle.X := MiddleXOfScreen - BoxMiddle.X;
+        --CurYawPos_N     <= CurYawPos_D - Quotient(DeltaToMiddle.X, TileXRes);
+        CurYawPos_N <= CurYawPos_D - 1;
+        -- Protect against underflow
+        if (CurYawPos_D - 1 < ServoYawMin) then
+          CurYawPos_N <= conv_word(ServoYawMin, CurYawPos_N'length);
+        end if;
       end if;
     end if;
 
-    -- Lower half of screen, must decrement to lower
-    if BoxMiddle.Y > MiddleYOfScreen then
-      DeltaToMiddle.Y := BoxMiddle.Y - MiddleYOfScreen;
-      CurPitchPos_N   <= CurPitchPos_D - Quotient(DeltaToMiddle.Y, TileYRes);
-      -- Protect against underflow
-      if CurPitchPos_D - Quotient(DeltaToMiddle.Y, TileYRes) < ServoPitchMin then
-        CurPitchPos_N <= conv_word(ServoYawMin, CurPitchPos_N'length);
-      end if;
-    else
-      DeltaToMiddle.Y := MiddleYOfScreen - BoxMiddle.Y;
-      CurPitchPos_N   <= CurPitchPos_D + Quotient(DeltaToMiddle.Y, TileYRes);
-      if CurPitchPos_D + Quotient(DeltaToMiddle.Y, TileYRes) > ServoPitchMax then
-        CurPitchPos_N <= conv_word(ServoPitchMax, CurPitchPos_D'length);
+    if BoxDelta.Y > BoxHeightThres then
+      -- Lower half of screen, must decrement to lower
+      if BoxMiddle.Y > MiddleYOfScreen then
+        --DeltaToMiddle.Y := BoxMiddle.Y - MiddleYOfScreen;
+        --CurPitchPos_N   <= CurPitchPos_D - Quotient(DeltaToMiddle.Y, TileYRes);
+        CurPitchPos_N   <= CurPitchPos_D - 1;
+        -- Protect against underflow
+        if CurPitchPos_D - 1 < ServoPitchMin then
+          CurPitchPos_N <= conv_word(ServoPitchMin, CurPitchPos_N'length);
+        end if;
+      else
+        -- DeltaToMiddle.Y := MiddleYOfScreen - BoxMiddle.Y;
+        --CurPitchPos_N   <= CurPitchPos_D + Quotient(DeltaToMiddle.Y, TileYRes);
+        CurPitchPos_N   <= CurPitchPos_D + 1;
+        if CurPitchPos_D + 1 > ServoPitchMax then
+          CurPitchPos_N <= conv_word(ServoPitchMax, CurPitchPos_D'length);
+        end if;
       end if;
     end if;
 
 --    CalcMiddle <= DeltaToMiddle;
     -- FIXME: Keep idle for now
-    CurPitchPos_N <= CurPitchPos_D;
+--    CurPitchPos_N <= CurPitchPos_D;
 
+    -- Limit the servo update rate to 20 Hz for now, otherwise the servos go bonkers
     Cnt_N <= Cnt_D + 1;
     if (Cnt_D = 3200) then
       Cnt_N <= (others => '0');
