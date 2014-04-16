@@ -55,6 +55,18 @@ architecture rtl of ObjectFinder is
   signal DecX1_N, DecX1_D             : word(Levels-1 downto 0);
 
   signal TrackLost_N, TrackLost_D : bit1;
+
+  function calcDelta(D : word) return word is
+    variable delta : word(bits(D'length)-1 downto 0);
+  begin
+    delta := (others => '0');
+    for i in 0 to D'length-1 loop
+      if D(i) = '1' then
+        delta := delta + 1;
+      end if;
+    end loop;
+    return delta;  
+  end function;
              
 begin
   SyncProc : process (Clk, RstN)
@@ -97,6 +109,7 @@ begin
   
   AsyncProc : process (TopLeft_D, BottomRight_D, PixelIn, PixelInVal, PixelCnt_D, LineCnt_D, IncY0_D, IncY1_D, IncX0_D, IncX1_D, DecY0_D, DecY1_D, DecX0_D, DecX1_D, TrackLost_D)
     variable TmpRectAct : bit1;
+    variable delta : word(bits(Levels)-1 downto 0);
   begin
     TopLeft_N     <= TopLeft_D;
     BottomRight_N <= BottomRight_D;
@@ -138,16 +151,13 @@ begin
           DecX0_N <= (others => '0');
           DecX1_N <= (others => '0');
 
-          
-          
-
           if IncY0_D > 0 then
             if TopLeft_D.Y - IncY0_D > 0 then
-              TopLeft_N.Y <= TopLeft_D.Y - IncY0_D;
+              TopLeft_N.Y <= TopLeft_D.Y - calcDelta(IncY0_D);
             end if;
           elsif DecY0_D > 0 then
             if (TopLeft_D.Y + DecY0_D < FrameH) and (TopLeft_D.Y + DecY0_D < BottomRight_D.Y) then
-              TopLeft_N.Y <= TopLeft_D.Y + DecY0_D;
+              TopLeft_N.Y <= TopLeft_D.Y + calcDelta(DecY0_D);
             end if;
           else
             -- If inactive, try to crawl back to middle
@@ -160,11 +170,11 @@ begin
           
           if IncY1_D > 0 then
             if BottomRight_D.Y + IncY1_D < FrameH then
-              BottomRight_N.Y <= BottomRight_D.Y + IncY1_D;
+              BottomRight_N.Y <= BottomRight_D.Y + calcDelta(IncY1_D);
             end if;
           elsif DecY1_D > 0 then
             if (BottomRight_D.Y - DecY1_D > 0) and (BottomRight_D.Y - DecY1_D > TopLeft_D.Y) then
-              BottomRight_N.Y <= BottomRight_D.Y - DecY1_D;
+              BottomRight_N.Y <= BottomRight_D.Y - calcDelta(DecY1_D);
             end if;
           else
             if BottomRight_D.Y > MiddleYOfScreen then
@@ -176,11 +186,11 @@ begin
 
           if IncX0_D > 0 then
             if TopLeft_D.X - IncX0_D > 0 then
-              TopLeft_N.X <= TopLeft_D.X - IncX0_D;
+              TopLeft_N.X <= TopLeft_D.X - calcDelta(IncX0_D);
             end if;
           elsif DecX0_D > 0 then
             if (TopLeft_D.X + DecX0_D < FrameW) and (TopLeft_D.X + DecX0_D < BottomRight_D.X) then
-              TopLeft_N.X <= TopLeft_D.X + DecX0_D;
+              TopLeft_N.X <= TopLeft_D.X + calcDelta(DecX0_D);
             end if;
           else
             if TopLeft_D.X > MiddleXOfScreen then
@@ -192,18 +202,18 @@ begin
 
           if IncX1_D > 0 then
             if BottomRight_D.X + IncX1_D < FrameW then
-              BottomRight_N.X <= BottomRight_D.X + IncX1_D;
+              BottomRight_N.X <= BottomRight_D.X + calcDelta(IncX1_D);
             end if;
           elsif DecX1_D > 0 then
             if (BottomRight_D.X - DecX1_D > 0) and (BottomRight_D.X - DecX1_D > TopLeft_D.X) then
-              BottomRight_N.X <= BottomRight_D.X - DecX1_D;
+              BottomRight_N.X <= BottomRight_D.X - calcDelta(DecX1_D);
             end if;
           else
             if BottomRight_D.X > MiddleXOfScreen then
               BottomRight_N.X <= BottomRight_D.X - 1;
             else
               BottomRight_N.X <= BottomRight_D.X + 1;
-            end if;            
+            end if;
           end if;
 
           -- No rect was drawn this frame. We've lost track, reset to default
