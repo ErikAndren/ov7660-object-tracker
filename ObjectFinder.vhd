@@ -44,10 +44,10 @@ architecture rtl of ObjectFinder is
   constant Threshold                  : natural  := 2;
   --
   constant Levels                     : positive := 3;
-  signal IncY0_N, IncY0_D             : word(Levels-1 downto 0);
-  signal IncY1_N, IncY1_D             : word(Levels-1 downto 0);
-  signal IncX0_N, IncX0_D             : word(Levels-1 downto 0);
-  signal IncX1_N, IncX1_D             : word(Levels-1 downto 0);
+  signal IncY0_N, IncY0_D             : word(Levels downto 0);
+  signal IncY1_N, IncY1_D             : word(Levels downto 0);
+  signal IncX0_N, IncX0_D             : word(Levels downto 0);
+  signal IncX1_N, IncX1_D             : word(Levels downto 0);
   --
   signal DecY0_N, DecY0_D             : word(Levels-1 downto 0);
   signal DecY1_N, DecY1_D             : word(Levels-1 downto 0);
@@ -58,10 +58,12 @@ architecture rtl of ObjectFinder is
 
   function calcDelta(D : word) return word is
     variable delta : word(bits(D'length)-1 downto 0);
+    variable NormD : word(D'length-1 downto 0);
   begin
+    NormD := D;
     delta := (others => '0');
     for i in 0 to D'length-1 loop
-      if D(i) = '1' then
+      if NormD(i) = '1' then
         delta := delta + 1;
       end if;
     end loop;
@@ -152,8 +154,8 @@ begin
           DecX1_N <= (others => '0');
 
           if IncY0_D > 0 then
-            if TopLeft_D.Y - IncY0_D > 0 then
-              TopLeft_N.Y <= TopLeft_D.Y - calcDelta(IncY0_D);
+            if TopLeft_D.Y - IncY0_D(Levels downto 1) > 0 then
+              TopLeft_N.Y <= TopLeft_D.Y - calcDelta(IncY0_D(Levels downto 1));
             end if;
           elsif DecY0_D > 0 then
             if (TopLeft_D.Y + DecY0_D < FrameH) and (TopLeft_D.Y + DecY0_D < BottomRight_D.Y) then
@@ -169,8 +171,8 @@ begin
           end if;
           
           if IncY1_D > 0 then
-            if BottomRight_D.Y + IncY1_D < FrameH then
-              BottomRight_N.Y <= BottomRight_D.Y + calcDelta(IncY1_D);
+            if BottomRight_D.Y + IncY1_D(Levels downto 1) < FrameH then
+              BottomRight_N.Y <= BottomRight_D.Y + calcDelta(IncY1_D(Levels downto 1));
             end if;
           elsif DecY1_D > 0 then
             if (BottomRight_D.Y - DecY1_D > 0) and (BottomRight_D.Y - DecY1_D > TopLeft_D.Y) then
@@ -185,8 +187,8 @@ begin
           end if;
 
           if IncX0_D > 0 then
-            if TopLeft_D.X - IncX0_D > 0 then
-              TopLeft_N.X <= TopLeft_D.X - calcDelta(IncX0_D);
+            if TopLeft_D.X - IncX0_D(Levels downto 1) > 0 then
+              TopLeft_N.X <= TopLeft_D.X - calcDelta(IncX0_D(Levels downto 1));
             end if;
           elsif DecX0_D > 0 then
             if (TopLeft_D.X + DecX0_D < FrameW) and (TopLeft_D.X + DecX0_D < BottomRight_D.X) then
@@ -201,8 +203,8 @@ begin
           end if;
 
           if IncX1_D > 0 then
-            if BottomRight_D.X + IncX1_D < FrameW then
-              BottomRight_N.X <= BottomRight_D.X + calcDelta(IncX1_D);
+            if BottomRight_D.X + IncX1_D(Levels downto 1) < FrameW then
+              BottomRight_N.X <= BottomRight_D.X + calcDelta(IncX1_D(Levels downto 1));
             end if;
           elsif DecX1_D > 0 then
             if (BottomRight_D.X - DecX1_D > 0) and (BottomRight_D.X - DecX1_D > TopLeft_D.X) then
@@ -227,23 +229,39 @@ begin
       end if;
 
       -- Try to grow upper boundary, y0
-      for i in Levels downto 1 loop
+      for i in Levels downto 0 loop
         if ((LineCnt_D = TopLeft_D.Y-i) and ((PixelCnt_D >= TopLeft_D.X) and (PixelCnt_D <= BottomRight_D.X))) then
           if PixelIn >= Threshold then
-            IncY0_N(i-1) <= '1';
-          end if;
-        end if;
-
-        if ((LineCnt_D = TopLeft_D.Y+i) and ((PixelCnt_D >= TopLeft_D.X) and (PixelCnt_D <= BottomRight_D.X))) then
-          if PixelIn < Threshold then
-            DecY0_N(i-1) <= '1';
+            IncY0_N(i) <= '1';
           end if;
         end if;
 
         -- Try to grow lower boundary, y1
         if ((LineCnt_D = BottomRight_D.Y+i) and ((PixelCnt_D >= TopLeft_D.X) and (PixelCnt_D <= BottomRight_D.X))) then
           if PixelIn >= Threshold then
-            IncY1_N(i-1) <= '1';
+            IncY1_N(i) <= '1';
+          end if;
+        end if;
+
+        -- Try to grow left boundary, x0
+        if ((PixelCnt_D = TopLeft_D.X-i) and ((LineCnt_D >= TopLeft_D.Y) and (LineCnt_D <= BottomRight_D.Y)))  then
+          if PixelIn >= Threshold then
+            IncX0_N(i) <= '1';
+          end if;
+        end if;
+
+        -- Try to grow right boundary, x1
+        if ((PixelCnt_D = BottomRight_D.X+i) and ((LineCnt_D >= TopLeft_D.Y) and (LineCnt_D <= BottomRight_D.Y)))  then
+          if PixelIn >= Threshold then
+            IncX1_N(i) <= '1';
+          end if;
+        end if;        
+      end loop;
+
+      for i in Levels downto 1 loop
+        if ((LineCnt_D = TopLeft_D.Y+i) and ((PixelCnt_D >= TopLeft_D.X) and (PixelCnt_D <= BottomRight_D.X))) then
+          if PixelIn < Threshold then
+            DecY0_N(i-1) <= '1';
           end if;
         end if;
 
@@ -253,26 +271,12 @@ begin
           end if;
         end if;
 
-        -- Try to grow left boundary, x0
-        if ((PixelCnt_D = TopLeft_D.X-i) and ((LineCnt_D >= TopLeft_D.Y) and (LineCnt_D <= BottomRight_D.Y)))  then
-          if PixelIn >= Threshold then
-            IncX0_N(i-1) <= '1';
-          end if;
-        end if;
-
         if ((PixelCnt_D = TopLeft_D.X+i) and ((LineCnt_D >= TopLeft_D.Y) and (LineCnt_D <= BottomRight_D.Y)))  then
           if PixelIn < Threshold then
             DecX0_N(i-1) <= '1';
           end if;
         end if;
         
-        -- Try to grow right boundary, x1
-        if ((PixelCnt_D = BottomRight_D.X+i) and ((LineCnt_D >= TopLeft_D.Y) and (LineCnt_D <= BottomRight_D.Y)))  then
-          if PixelIn >= Threshold then
-            IncX1_N(i-1) <= '1';
-          end if;
-        end if;
-
         if ((PixelCnt_D = BottomRight_D.X-i) and ((LineCnt_D >= TopLeft_D.Y) and (LineCnt_D <= BottomRight_D.Y))) then
           if PixelIn < Threshold then
             DecX1_N(i-1) <= '1';
