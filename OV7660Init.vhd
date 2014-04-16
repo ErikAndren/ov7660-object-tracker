@@ -71,8 +71,9 @@ begin
   begin
     InstPtr_T := InstPtr_D;
     AddrData  <= (others => '0');
-    We        <= '0';
-    Start     <= '0';
+    We        <= '1';
+    Start     <= '1';
+    --
     Delay_N   <= Delay_D + 1;
     if (RedAnd(Delay_D) = '1') then
       Delay_N <= Delay_D;
@@ -84,18 +85,15 @@ begin
       case InstPtr_D is
         when "0000" =>
           AddrData <= COM7 & x"80";     -- SCCB Register reset
-          We       <= '1';
-          Start    <= '1';
           
         when "0001" =>
           AddrData <= COM2 & x"00";     -- Enable 4x drive
-          We       <= '1';
-          Start    <= '1';
-
+ 
         when "0010" =>
           AddrData <= MVFP & x"10";      -- Flip image to it mount
-          We       <= '1';
-          Start    <= '1';
+ 
+        when "0011" =>
+          AddrData <= COM10 & x"40";      -- Enable hsync
 
 --                              when "0001" =>
 --                                      AddrData <= COM7 & x"00"; -- SCCB Register reset release
@@ -138,6 +136,9 @@ begin
           --                            Start    <= '1';
 
         when others =>
+          We        <= '0';
+          Start     <= '0';
+          --
           InstPtr_T := (others => '1');
           Start     <= '0';
           
