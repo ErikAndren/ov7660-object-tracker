@@ -1,4 +1,4 @@
--- Generates the vga signal for a 640x480 signal
+-- Generates the vga signal for a 640x480@60Hz signal
 -- Copyright 2014 Erik Zachrisson - erik@zachrisson.info
 library ieee;
 use ieee.std_logic_1164.all;
