@@ -67,7 +67,6 @@ set_global_assignment -name OPTIMIZE_HOLD_TIMING "ALL PATHS"
 set_global_assignment -name OPTIMIZE_MULTI_CORNER_TIMING ON
 set_global_assignment -name OPTIMIZE_POWER_DURING_FITTING OFF
 set_global_assignment -name FITTER_EFFORT "AUTO FIT"
-set_location_assignment PIN_163 -to VSYNC
 set_location_assignment PIN_151 -to XCLK
 
 set_location_assignment PIN_110 -to VgaHsync
@@ -84,6 +83,7 @@ set_location_assignment PIN_115 -to VgaBlue[1]
 set_location_assignment PIN_113 -to VgaBlue[2]
 
 set_location_assignment PIN_161 -to HREF
+set_location_assignment PIN_163 -to VSYNC
 set_location_assignment PIN_28 -to PCLK
 set_location_assignment PIN_142 -to D[7]
 set_location_assignment PIN_143 -to D[6]
