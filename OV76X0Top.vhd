@@ -159,16 +159,6 @@ begin
       SIO_D        => SIO_D
       );
 
---      FakeVgaCam : entity work.FakeVgaCam
---      port map (
---              RstN  => RstN,
---              Clk   => XCLK_i,
---              --
---              VSync => FakeVSync,
---              HRef  => FakeHRef,
---              D     => FakeD
---      );
-
   CaptPixel : entity work.VideoCapturer
     generic map (
       DataW => D'length
