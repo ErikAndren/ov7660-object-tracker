@@ -106,9 +106,9 @@ begin
   Pll : entity work.Pll
     port map (
       inclk0 => Clk,
-      c0     => XCLK_i
+      c0     => XCLK_i,
+      c1     => XCLK
       );
-  CameraClkAssign : XCLK <= XCLK_i;
 
   RstSync : entity work.ResetSync
     port map (
