@@ -92,9 +92,6 @@ begin
         when "0010" =>
           AddrData <= MVFP & x"10";      -- Flip image to it mount
  
-        when "0011" =>
-          AddrData <= COM10 & x"40";      -- Enable hsync
-
 --                              when "0001" =>
 --                                      AddrData <= COM7 & x"00"; -- SCCB Register reset release
 --                                      We       <= '1';
