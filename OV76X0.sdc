@@ -40,7 +40,9 @@ derive_pll_clocks -create_base_clocks
 # set_input_delay -clock { Pll|altpll_component|pll|clk[0] } -max 15 -min 8 [get_ports {D[0] D[1] D[2] D[3] D[4] D[5] D[6] D[7] HREF VSYNC}]
 
 # Automatically calculate clock uncertainty to jitter and other effects.
-#derive_clock_uncertainty
+
+derive_clock_uncertainty
+
 # Not supported for family Cyclone II
 # tsu/th constraints
 
