@@ -48,7 +48,7 @@ begin
       Cnt_N <= Cnt_D + 1;
 
       -- YUV sample black and white on second cycle
-      if (Cnt_D = 0) then
+      if (Cnt_D = 1) then
         PixelOutVal <= '1';
       end if;
     end if;
