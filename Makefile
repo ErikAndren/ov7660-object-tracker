@@ -4,13 +4,13 @@ FILES=OV76X0Pack.vhd \
 	GaussianFilter.vhd \
 	FloydSteinberg2PRAM.vhd \
 	DitherFloydSteinberg.vhd \
+	LineSampler1PRAM.vhd \
+	LineSampler.vhd \
 	ObjectFinder.vhd \
 	OV7660Init.vhd \
 	OV76X0Pack.vhd \
 	Pll.vhd \
 	PixelAligner.vhd \
-	LineSampler1PRAM.vhd \
-	LineSampler.vhd \
 	ConvFilter.vhd \
 	MedianFilter.vhd \
 	FilterChain.vhd \
