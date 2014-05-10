@@ -55,7 +55,7 @@ entity OV76X0Top is
 end entity;
 
 architecture rtl of OV76X0Top is
-  Signal Btn1Pulse, Btn2Pulse, Btn3Pulse : bit1;
+  signal Btn1Pulse, Btn2Pulse, Btn3Pulse : bit1;
   signal DispData                        : word(SccbDataW-1 downto 0);
   signal SccbRe                          : bit1;
   signal SccbWe                          : bit1;
