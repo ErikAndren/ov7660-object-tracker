@@ -20,10 +20,6 @@ entity OV76X0Top is
     AsyncRstN  : in    bit1;
     Clk        : in    bit1;
     --
-    Button1    : in    bit1;
-    Button2    : in    bit1;
-    Button3    : in    bit1;
-    --
     VSYNC      : in    bit1;
     HREF       : in    bit1;
     --
@@ -55,7 +51,6 @@ entity OV76X0Top is
 end entity;
 
 architecture rtl of OV76X0Top is
-  signal Btn1Pulse, Btn2Pulse, Btn3Pulse : bit1;
   signal DispData                        : word(SccbDataW-1 downto 0);
   signal SccbRe                          : bit1;
   signal SccbWe                          : bit1;
@@ -118,33 +113,6 @@ begin
       Rst_N    => RstN
       );
 
-  DebBtn1 : entity work.ButtonPulse
-    port map (
-      Clk         => Clk,
-      RstN        => RstN,
-      --
-      Button      => Button1,
-      ButtonPulse => Btn1Pulse
-      );
-
-  DebBtn2 : entity work.ButtonPulse
-    port map (
-      Clk         => Clk,
-      RstN        => RstN,
-      --
-      Button      => Button2,
-      ButtonPulse => Btn2Pulse
-      );
-
-  DebBtn3 : entity work.ButtonPulse
-    port map (
-      Clk         => Clk,
-      RstN        => RstN,
-      --
-      Button      => Button3,
-      ButtonPulse => Btn3Pulse
-      );
-
   SccbM : entity work.SccbMaster
     generic map (
       ClkFreq => Freq
@@ -204,9 +172,9 @@ begin
       RstN         => RstN,
       --
       Vsync        => Vsync_Clk,
-      ToggleMode   => Btn3Pulse,
-      IncThreshold => Btn2Pulse,
-      DecThreshold => Btn1Pulse,
+      ToggleMode   => '0',
+      IncThreshold => '0',
+      DecThreshold => '0',
       --
       PixelIn      => AlignedPixel,
       PixelInVal   => AlignedPixelVal,
@@ -341,8 +309,8 @@ begin
       Clk         => Clk,
       Clk64KHz    => Clk64kHz,
       --
-      Btn1        => Btn2Pulse,
-      Btn2        => Btn1Pulse,
+      Btn1        => '0',
+      Btn2        => '0',
       --
       TopLeft     => TopLeft,
       BottomRight => BottomRight,

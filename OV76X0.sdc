@@ -20,9 +20,6 @@
 # applicable agreement for further details.
 
 set_false_path -from [get_ports {AsyncRstN}] -to *
-set_false_path -from [get_ports {Button1}] -to *
-set_false_path -from [get_ports {Button2}] -to *
-set_false_path -from [get_ports {Button3}] -to *
 
 # Clock constraints
 
