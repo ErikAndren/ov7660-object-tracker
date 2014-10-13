@@ -18,7 +18,7 @@ entity OV76X0Top is
     );
   port (
     AsyncRstN  : in    bit1;
-    Clk        : in    bit1;
+    RawClk        : in    bit1;
     --
     VSYNC      : in    bit1;
     HREF       : in    bit1;
@@ -51,39 +51,40 @@ entity OV76X0Top is
 end entity;
 
 architecture rtl of OV76X0Top is
-  signal DispData                        : word(SccbDataW-1 downto 0);
-  signal SccbRe                          : bit1;
-  signal SccbWe                          : bit1;
-  signal SccbAddr                        : word(SccbAddrW-1 downto 0);
-  signal XCLK_i                          : bit1;
-  signal Clk64KHz                        : bit1;
-  signal RstN                            : bit1;
-  signal RstNPClk                        : bit1;
+  signal Clk50MHz                    : bit1;
+  signal DispData                    : word(SccbDataW-1 downto 0);
+  signal SccbRe                      : bit1;
+  signal SccbWe                      : bit1;
+  signal SccbAddr                    : word(SccbAddrW-1 downto 0);
+  signal XCLK_i                      : bit1;
+  signal Clk64KHz                    : bit1;
+  signal RstN                        : bit1;
+  signal RstNPClk                    : bit1;
   --
-  signal PixelData                       : word(8-1 downto 0);
-  signal PixelVal                        : bit1;
+  signal PixelData                   : word(8-1 downto 0);
+  signal PixelVal                    : bit1;
   --
-  signal VgaContAddr                     : word(18-1 downto 0);
-  signal PixelInData                     : word(16-1 downto 0);
-  signal PixelOutData                    : word(16-1 downto 0);
-  signal VgaContWe                       : bit1;
-  signal VgaContRe                       : bit1;
-  signal VgaInView                       : bit1;
-  signal PixelDispData                   : word(3-1 downto 0);
-  signal PixelDisp                       : bit1;
-  signal DrawRect                        : bit1;
-  signal PixelToObjFind                  : word(PixelResW-1 downto 0);
-  signal PixelToObjFindVal               : bit1;
-  signal PixelToVga                      : word(PixelResW-1 downto 0);
-  signal PixelCompData                   : word(3-1 downto 0);
-  signal PixelCompVal                    : bit1;
+  signal VgaContAddr                 : word(18-1 downto 0);
+  signal PixelInData                 : word(16-1 downto 0);
+  signal PixelOutData                : word(16-1 downto 0);
+  signal VgaContWe                   : bit1;
+  signal VgaContRe                   : bit1;
+  signal VgaInView                   : bit1;
+  signal PixelDispData               : word(3-1 downto 0);
+  signal PixelDisp                   : bit1;
+  signal DrawRect                    : bit1;
+  signal PixelToObjFind              : word(PixelResW-1 downto 0);
+  signal PixelToObjFindVal           : bit1;
+  signal PixelToVga                  : word(PixelResW-1 downto 0);
+  signal PixelCompData               : word(3-1 downto 0);
+  signal PixelCompVal                : bit1;
   --
-  signal PixelPopWrite                   : bit1;
-  signal PixelRead                       : bit1;
-  signal PixelReadPop                    : bit1;
+  signal PixelPopWrite               : bit1;
+  signal PixelRead                   : bit1;
+  signal PixelReadPop                : bit1;
   --
-  signal SramWriteReq                    : bit1;
-  signal SramWriteAddr, SramReadAddr     : word(SramAddrW-1 downto 0);
+  signal SramWriteReq                : bit1;
+  signal SramWriteAddr, SramReadAddr : word(SramAddrW-1 downto 0);
 
   signal FakeHref, FakeVSync : bit1;
   signal FakeD               : word(8-1 downto 0);
@@ -100,15 +101,16 @@ architecture rtl of OV76X0Top is
 begin
   Pll : entity work.Pll
     port map (
-      inclk0 => Clk,
-      c0     => XCLK_i
+      inclk0 => RawClk,
+      c0     => XCLK_i,
+      c1     => Clk50MHz
       );
   XCLK <= XCLK_i;
 
   RstSync : entity work.ResetSync
     port map (
       AsyncRst => AsyncRstN,
-      Clk      => Clk,
+      Clk      => Clk50MHz,
       --
       Rst_N    => RstN
       );
@@ -133,7 +135,7 @@ begin
       )
     port map (
       RstN      => RstN,
-      Clk       => Clk,
+      Clk       => Clk50MHz,
       --
       PixelOut  => PixelData,
       PixelVal  => PixelVal,
@@ -150,7 +152,7 @@ begin
 
   PixelAlign : entity work.PixelAligner
     port map (
-      Clk         => Clk,
+      Clk         => Clk50MHz,
       RstN        => RstN,
       --
       Vsync       => Vsync_Clk,
@@ -168,7 +170,7 @@ begin
       CompDataW => 3
       )
     port map (
-      Clk          => Clk,
+      Clk          => Clk50MHz,
       RstN         => RstN,
       --
       Vsync        => Vsync_Clk,
@@ -185,7 +187,7 @@ begin
 
   VideoPack : entity work.VideoPacker
     port map (
-      Clk            => Clk,
+      Clk            => Clk50MHz,
       RstN           => RstN,
       --
       PixelComp      => PixelCompData,
@@ -205,7 +207,7 @@ begin
   SramArb : entity work.SramArbiter
     port map (
       RstN      => RstN,
-      Clk       => Clk,
+      Clk       => Clk50MHz,
       --
       WriteAddr => SramWriteAddr,
       WriteReq  => SramWriteReq,
@@ -229,7 +231,7 @@ begin
   -- If 2 frames are needed, each image may consume 6 bits per pixel
   SramCon : entity work.SramController
     port map (
-      Clk     => Clk,
+      Clk     => Clk50MHz,
       RstN    => RstN,
       AddrIn  => VgaContAddr,
       WrData  => PixelInData,
@@ -248,7 +250,7 @@ begin
 
   VideoCont : entity work.VideoController
     port map (
-      Clk           => Clk,
+      Clk           => Clk50MHz,
       RstN          => RstN,
       --
       ReadSram      => PixelRead,
@@ -267,7 +269,7 @@ begin
       )
     port map (
       RstN        => RstN,
-      Clk         => Clk,
+      Clk         => Clk50MHz,
       --
       Vsync       => Vsync_Clk,
       --
@@ -289,7 +291,7 @@ begin
       Offset    => 1
       )
     port map (
-      Clk            => Clk,
+      Clk            => Clk50MHz,
       RstN           => RstN,
       --
       PixelToDisplay => PixelToVga,
@@ -306,7 +308,7 @@ begin
   PWMCtrler : entity work.PWMCtrl
     port map (
       RstN        => RstN,
-      Clk         => Clk,
+      Clk         => Clk50MHz,
       Clk64KHz    => Clk64kHz,
       --
       Btn1        => '0',
@@ -325,7 +327,7 @@ begin
       SinkFreq   => 32000
     )
     port map (
-      Clk     => Clk,
+      Clk     => Clk50MHz,
       RstN    => RstN,
       Clk_out => Clk64khz
       );
