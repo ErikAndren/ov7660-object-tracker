@@ -59,8 +59,6 @@ set_global_assignment -name USE_CONFIGURATION_DEVICE ON
 set_global_assignment -name RESERVE_ALL_UNUSED_PINS "AS INPUT TRI-STATED"
 set_location_assignment PIN_169 -to SIO_C
 set_location_assignment PIN_165 -to SIO_D
-set_location_assignment PIN_144 -to Button1
-set_location_assignment PIN_145 -to Button2
 set_global_assignment -name TIMEQUEST_MULTICORNER_ANALYSIS OFF
 set_global_assignment -name SYNTH_TIMING_DRIVEN_SYNTHESIS OFF
 set_global_assignment -name OPTIMIZE_HOLD_TIMING "ALL PATHS"
@@ -140,9 +138,6 @@ set_global_assignment -name USE_SIGNALTAP_FILE output_files/PixelOut.stp
 set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to HREF
 set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to D[0]
 set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to AsyncRstN
-set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to Button1
-set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to Button2
-set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to Clk
 set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to D[7]
 set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to D[6]
 set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to D[5]
@@ -209,7 +204,6 @@ set_global_assignment -name OUTPUT_PIN_LOAD 10 -section_id "3.3-V LVCMOS"
 set_global_assignment -name OUTPUT_PIN_LOAD 10 -section_id "3.3-V PCI"
 set_global_assignment -name OUTPUT_PIN_LOAD 10 -section_id "3.3-V PCI-X"
 set_global_assignment -name RESERVE_ALL_UNUSED_PINS_NO_OUTPUT_GND "AS INPUT TRI-STATED"
-set_location_assignment PIN_146 -to Button3
 set_location_assignment PIN_128 -to PitchServo
 set_location_assignment PIN_43 -to YawServo
 set_global_assignment -name SMART_RECOMPILE ON
@@ -225,8 +219,8 @@ set_global_assignment -name ALLOW_SHIFT_REGISTER_MERGING_ACROSS_HIERARCHIES ALWA
 set_global_assignment -name PHYSICAL_SYNTHESIS_COMBO_LOGIC_FOR_AREA ON
 set_global_assignment -name PHYSICAL_SYNTHESIS_MAP_LOGIC_TO_MEMORY_FOR_AREA ON
 set_global_assignment -name FITTER_AGGRESSIVE_ROUTABILITY_OPTIMIZATION ALWAYS
+set_global_assignment -name VHDL_FILE ../Lib/ClkDiv.vhd
 set_global_assignment -name VHDL_FILE MedianFilter.vhd
-set_global_assignment -name VHDL_FILE ClkDiv.vhd
 set_global_assignment -name VHDL_FILE Servo_pwm.vhd
 set_global_assignment -name VHDL_FILE PWMCtrl.vhd
 set_global_assignment -name VHDL_FILE ../Lib/Types.vhd
