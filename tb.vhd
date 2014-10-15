@@ -126,11 +126,8 @@ begin
   DUT : entity work.OV76X0Top
     port map (
       AsyncRstN => RstN,
-      Clk       => Clk50,
+      RawClk    => Clk50,
       --
-      Button1   => '1',
-      Button2   => '1',
-      Button3   => '1',
       --
       VSYNC     => VSYNC,
       HREF      => HREF,
@@ -154,7 +151,10 @@ begin
       SramOeN   => open,
       SramWeN   => open,
       SramUbN   => open,
-      SramLbN   => open
+      SramLbN   => open,
+      --
+      SerialIn  => '0',
+      SerialOut => open
       );
 
   SramD <= (others => 'Z');

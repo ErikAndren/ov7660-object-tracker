@@ -111,9 +111,9 @@ begin
       Blue <= PixelToDisplay;
 
       -- Draw green rectangle overlay
-      if DrawRect = '1' then
-        Green <= (others => '1');
-      end if;
+      --if DrawRect = '1' then
+      --  Green <= (others => '1');
+      --end if;
     end if;
   end process;
   

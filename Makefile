@@ -21,7 +21,6 @@ FILES=OV76X0Pack.vhd \
 	VideoCapturer.vhd \
 	VideoController.vhd \
 	VideoPacker.vhd \
-	ClkDiv.vhd \
 	PWMCtrl.vhd \
 	Servo_pwm.vhd \
 	OV76X0Top.vhd \

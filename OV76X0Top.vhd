@@ -10,6 +10,7 @@ use ieee.std_logic_1164.all;
 use ieee.std_logic_arith.all;
 use work.Types.all;
 use work.OV76X0Pack.all;
+use work.SerialPack.all;
 
 entity OV76X0Top is
   generic (
@@ -44,6 +45,9 @@ entity OV76X0Top is
     SramUbN    : out   bit1;
     SramLbN    : out   bit1;
     --
+    SerialIn   : in    bit1;
+    SerialOut  : out   bit1;    
+    --
     -- Servo interface
     PitchServo : out   bit1;
     YawServo   : out   bit1
@@ -51,6 +55,8 @@ entity OV76X0Top is
 end entity;
 
 architecture rtl of OV76X0Top is
+  constant Clk50Mhz_int              : positive := 50000000;
+  --
   signal Clk50MHz                    : bit1;
   signal DispData                    : word(SccbDataW-1 downto 0);
   signal SccbRe                      : bit1;
@@ -85,6 +91,8 @@ architecture rtl of OV76X0Top is
   --
   signal SramWriteReq                : bit1;
   signal SramWriteAddr, SramReadAddr : word(SramAddrW-1 downto 0);
+
+  signal RegAccess : RegAccessRec;
 
   signal FakeHref, FakeVSync : bit1;
   signal FakeD               : word(8-1 downto 0);
@@ -286,12 +294,12 @@ begin
 
   VgaGen : entity work.VgaGenerator
     generic map (
-      DivideClk => true,
+      DivideClk => false,
       DataW     => PixelResW,
       Offset    => 1
       )
     port map (
-      Clk            => Clk50MHz,
+      Clk            => XCLK_i,
       RstN           => RstN,
       --
       PixelToDisplay => PixelToVga,
@@ -357,5 +365,95 @@ begin
       --
       Servo => PitchServo
       );
+
+  Serial : block
+    constant FifoSize : positive := 128;
+    constant FifoSizeW : positive := bits(FifoSize);
+    --
+    signal Baud                                                 : word(3-1 downto 0);
+    signal SerDataFromFifo                                      : word(8-1 downto 0);
+    signal SerDataToFifo                                        : word(8-1 downto 0);
+    signal SerDataRd, SerDataFifoEmpty, SerDataWr, SerWriteBusy : bit1;
+    signal Busy                                                 : bit1;
+    --
+    signal IncSerChar                                           : word(8-1 downto 0);
+    signal IncSerCharVal                                        : bit1;
+    signal Level                                                : word(FifoSizeW-1 downto 0);
+    signal MaxFillLevel_N, MaxFillLevel_D                       : word(FifoSizeW-1 downto 0);
+    --
+    
+  begin
+    Baud <= "010";
+    
+    SerRead : entity work.SerialReader
+      generic map (
+        DataW   => 8,
+        ClkFreq => Clk50MHz_int
+        )
+      port map (
+        Clk   => Clk50MHz,
+        RstN  => RstN,
+        --
+        Rx    => SerialIn,
+        --
+        Baud  => Baud,
+        --
+        Dout  => IncSerChar,
+        RxRdy => IncSerCharVal
+        );
+    
+     SerCmdParser : entity work.SerialCmdParser
+       port map (
+         RstN           => RstN,
+         Clk            => Clk50MHz,
+         --
+         IncSerChar     => IncSerChar,
+         IncSerCharVal  => IncSerCharVal,
+         --
+         RegAccessOut   => RegAccess,
+         RegAccessIn    => RegAccess,
+         --
+         OutSerCharBusy => Busy,
+         OutSerChar     => SerDataToFifo,
+         OutSerCharVal  => SerDataWr
+         );
+
+    --RegAccess.Val  <= RegAccessFromPS2.Val;
+    --RegAccess.Data <= RegAccessFromPS2.Data;
+    --RegAccess.Addr <= RegAccessFromPS2.Addr;
+    --RegAccess.Cmd  <= RegAccessFromPS2.Cmd;
+    
+    SerOutFifo : entity work.SerialOutFifo
+      port map (
+        clock => Clk50MHz,
+        data  => SerDataToFifo,
+        wrreq => SerDataWr,
+        full  => Busy,
+        --
+        usedw => Level,
+        --
+        rdreq => SerDataRd,
+        q     => SerDataFromFifo,
+        empty => SerDataFifoEmpty
+        );
+    SerDataRd <= '1' when SerDataFifoEmpty = '0' and SerWriteBusy = '0' else '0';
+
+    SerWrite : entity work.SerialWriter
+      generic map (
+        ClkFreq => Clk50MHz_int
+        )
+      port map (
+        Clk       => Clk50MHz,
+        Rst_N     => RstN,
+        --
+        Baud      => Baud,
+        --
+        We        => SerDataRd,
+        WData     => SerDataFromFifo,
+        Busy      => SerWriteBusy,
+        --
+        SerialOut => SerialOut
+        );
+  end block;
   
 end architecture rtl;

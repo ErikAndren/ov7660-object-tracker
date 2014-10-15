@@ -17,24 +17,26 @@
 # without limitation, that your use is for the sole purpose of 
 # programming logic devices manufactured by Altera and sold by 
 # Altera or its authorized distributors.  Please refer to the 
-# applicable agreement for further details.
+# applicable agreement for further details.s
 
 set_false_path -from [get_ports {AsyncRstN}] -to *
 
 # Clock constraints
-
-create_clock -name "Clk" -period 20.000ns [get_ports {Clk}]
-
-create_generated_clock -name PixelClk -source Clk -divide_by 2 [get_registers {VGAGenerator:VgaGen|PixelClk}]
-
-# create_clock -name "PCLK" -period 40.000ns [get_ports {PCLK}]
-
-create_generated_clock -name Clk64kHz -source Clk [get_registers {ClkDiv:Clk64kHzGen|divisor}] -divide_by 32000 
-
-# Automatically constrain PLL and other generated clocks
 derive_pll_clocks -create_base_clocks
 
+# create_clock -name "RawClk" -period 20.000ns [get_ports {RawClk}]
+
+create_generated_clock -add -name XCLK -source [get_pins {Pll|altpll_component|pll|inclk[0]}] -divide_by 2 [get_pins {Pll|altpll_component|pll|clk[0]}]
+create_generated_clock -add -name Clk50MHz -source [get_pins {Pll|altpll_component|pll|inclk[0]}] [get_pins {Pll|altpll_component|pll|clk[1]}]
+
+#create_clock -name "PCLK" -period 40.000ns [get_ports {PCLK}]
+create_generated_clock -master_clock Clk50MHz -name Clk64kHz -source [get_pins {Pll|altpll_component|pll|clk[1]}] -divide_by 32000 [get_pins {Clk64kHzGen|divisor|regout}]
+
+# Automatically constrain PLL and other generated clocks
+
 # set_input_delay -clock { Pll|altpll_component|pll|clk[0] } -max 15 -min 8 [get_ports {D[0] D[1] D[2] D[3] D[4] D[5] D[6] D[7] HREF VSYNC}]
+
+
 
 # Automatically calculate clock uncertainty to jitter and other effects.
 
