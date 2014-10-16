@@ -12,7 +12,8 @@ use work.OV76X0Pack.all;
 entity VideoPacker is
   generic (
     CompPixelW   : positive := 3;
-    PackedPixelW : positive := 15
+    PackedPixelW : positive := 15;
+    AddrW        : positive := SramAddrW
     );
   port (
     Clk            : in  bit1;
@@ -24,7 +25,7 @@ entity VideoPacker is
     --
     PixelPacked    : out word(PackedPixelW-1 downto 0);
     PixelPackedVal : out bit1;
-    SramWriteAddr  : out word(SramAddrW-1 downto 0);
+    SramWriteAddr  : out word(AddrW-1 downto 0);
     --
     PopPixelPack   : in  bit1
     );
