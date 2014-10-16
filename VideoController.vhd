@@ -10,12 +10,15 @@ use work.Types.all;
 use work.OV76X0Pack.all;
 
 entity VideoController is
+  generic (
+    AddrW : positive := SramAddrW
+    );
   port (
     Clk           : in  bit1;
     RstN          : in  bit1;
     -- SramController i/f
     ReadSram      : out bit1;
-    SramAddr      : out word(SramAddrW-1 downto 0);
+    SramAddr      : out word(AddrW-1 downto 0);
     SramReqPopped : in  bit1;
     --
     SramData      : in  word(SramDataW-1 downto 0);
