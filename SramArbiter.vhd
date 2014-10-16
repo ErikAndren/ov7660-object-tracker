@@ -10,19 +10,22 @@ use work.Types.all;
 use work.OV76X0Pack.all;
 
 entity SramArbiter is
+  generic (
+    AddrW : positive := SramAddrW
+    );
   port (
     RstN      : in  bit1;
     Clk       : in  bit1;
     --
     WriteReq  : in  bit1;
-    WriteAddr : in  word(SramAddrW-1 downto 0);
+    WriteAddr : in  word(AddrW-1 downto 0);
     PopWrite  : out bit1;
     --
     ReadReq   : in  bit1;
-    ReadAddr  : in  word(SramAddrW-1 downto 0);
+    ReadAddr  : in  word(AddrW-1 downto 0);
     PopRead   : out bit1;
     --
-    SramAddr  : out word(SramAddrW-1 downto 0);
+    SramAddr  : out word(AddrW-1 downto 0);
     SramWe    : out bit1;
     SramRe    : out bit1
     );
