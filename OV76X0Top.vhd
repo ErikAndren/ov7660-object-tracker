@@ -92,7 +92,7 @@ architecture rtl of OV76X0Top is
   signal SramWriteReq                : bit1;
   signal SramWriteAddr, SramReadAddr : word(SramAddrW-1 downto 0);
 
-  signal RegAccess, RegAccessFromFilterChain : RegAccessRec;
+  signal RegAccess, RegAccessFromFilterChain, RegAccessFromSccb, RegAccessOut : RegAccessRec;
 
   signal FakeHref, FakeVSync : bit1;
   signal FakeD               : word(8-1 downto 0);
@@ -134,7 +134,10 @@ begin
       DataFromSccb => open,
       --
       SIO_C        => SIO_C,
-      SIO_D        => SIO_D
+      SIO_D        => SIO_D,
+      --
+      RegAccessIn  => RegAccess,
+      RegAccessOut => RegAccessFromSccb
       );
 
   CaptPixel : entity work.VideoCapturer
@@ -402,6 +405,11 @@ begin
         RxRdy => IncSerCharVal
         );
     
+     RegAccessOut.Val  <= RegAccessFromFilterChain.Val or RegAccessFromSccb.Val;
+     RegAccessOut.Addr <= RegAccessFromFilterChain.Addr or RegAccessFromSccb.Addr;
+     RegAccessOut.Cmd  <= RegAccessFromFilterChain.Cmd or RegAccessFromSccb.Cmd;
+     RegAccessOut.Data <= RegAccessFromFilterChain.Data or RegAccessFromSccb.Data;
+    
      SerCmdParser : entity work.SerialCmdParser
        port map (
          RstN           => RstN,
@@ -411,17 +419,12 @@ begin
          IncSerCharVal  => IncSerCharVal,
          --
          RegAccessOut   => RegAccess,
-         RegAccessIn    => RegAccessFromFilterChain,
+         RegAccessIn    => RegAccessOut,
          --
          OutSerCharBusy => Busy,
          OutSerChar     => SerDataToFifo,
          OutSerCharVal  => SerDataWr
          );
-
-    --RegAccess.Val  <= RegAccessFromPS2.Val;
-    --RegAccess.Data <= RegAccessFromPS2.Data;
-    --RegAccess.Addr <= RegAccessFromPS2.Addr;
-    --RegAccess.Cmd  <= RegAccessFromPS2.Cmd;
     
     SerOutFifo : entity work.SerialOutFifo
       port map (

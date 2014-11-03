@@ -5,6 +5,7 @@ use ieee.std_logic_unsigned.all;
 
 use work.Types.all;
 use work.OV76X0Pack.all;
+use work.SerialPack.all;
 
 entity SccbMaster is
   generic (
@@ -23,7 +24,8 @@ entity SccbMaster is
     SIO_C        : out   bit1;
     SIO_D        : inout bit1;
     --
-    InstPtr      : out   word(InstPtrW-1 downto 0)
+    RegAccessIn  : in    RegAccessRec;
+    RegAccessOut : out   RegAccessRec
     );
 end entity;
 
@@ -72,16 +74,17 @@ begin
 
   OV7660I : entity work.OV7660Init
     port map (
-      Clk      => Clk,
-      Rst_N    => Rst_N,
+      Clk          => Clk,
+      Rst_N        => Rst_N,
       --
-      NextInst => TransDone,
+      NextInst     => TransDone,
       --
-      We       => ReWe,
-      Start    => StartTrans,
-      AddrData => AddrData,
+      We           => ReWe,
+      Start        => StartTrans,
+      AddrData     => AddrData,
       --
-      InstPtr  => InstPtr
+      RegAccessIn  => RegAccessIn,
+      RegAccessOut => RegAccessOut
       );
 
   FSMSync : process (Clk, Rst_N)

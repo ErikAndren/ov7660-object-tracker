@@ -99,7 +99,7 @@ package OV76X0Pack is
 
   constant ModeToggleAddr  : natural := 16#00000010#;
   constant ConvFilterThres : natural := 16#00000020#;
-  
+  constant SccbOffset      : natural := 16#010000#;
   
 end package;
 
