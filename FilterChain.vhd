@@ -143,7 +143,7 @@ begin
   FilterSync : process (Clk, RstN)
   begin
     if RstN = '0' then
-      FilterSel_D <= conv_word(SOBEL_MODE, FilterSel_D'length);
+      FilterSel_D <= conv_word(NONE_MODE, FilterSel_D'length);
     elsif rising_edge(Clk) then
       FilterSel_D <= FilterSel_N;
     end if;
