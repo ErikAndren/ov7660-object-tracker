@@ -74,8 +74,8 @@ set_location_assignment PIN_118 -to VgaRed[0]
 set_location_assignment PIN_116 -to VgaRed[1]
 set_location_assignment PIN_114 -to VgaRed[2]
 set_location_assignment PIN_112 -to VgaGreen[0]
-set_location_assignment PIN_4 -to VgaGreen[1]
-set_location_assignment PIN_106 -to VgaGreen[2]
+set_location_assignment PIN_106 -to VgaGreen[1]
+set_location_assignment PIN_4 -to VgaGreen[2]
 set_location_assignment PIN_117 -to VgaBlue[0]
 set_location_assignment PIN_115 -to VgaBlue[1]
 set_location_assignment PIN_113 -to VgaBlue[2]
@@ -259,4 +259,6 @@ set_global_assignment -name QIP_FILE FloydSteinberg2PRAM.qip
 set_global_assignment -name QIP_FILE Pll.qip
 set_global_assignment -name QIP_FILE LineSampler1PRAM.qip
 set_global_assignment -name QIP_FILE SerialOutFifo.qip
+
+
 set_instance_assignment -name PARTITION_HIERARCHY root_partition -to | -section_id Top

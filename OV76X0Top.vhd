@@ -19,7 +19,7 @@ entity OV76X0Top is
     );
   port (
     AsyncRstN  : in    bit1;
-    RawClk        : in    bit1;
+    RawClk     : in    bit1;
     --
     VSYNC      : in    bit1;
     HREF       : in    bit1;
@@ -46,7 +46,7 @@ entity OV76X0Top is
     SramLbN    : out   bit1;
     --
     SerialIn   : in    bit1;
-    SerialOut  : out   bit1;    
+    SerialOut  : out   bit1;
     --
     -- Servo interface
     PitchServo : out   bit1;
@@ -92,7 +92,7 @@ architecture rtl of OV76X0Top is
   signal SramWriteReq                : bit1;
   signal SramWriteAddr, SramReadAddr : word(SramAddrW-1 downto 0);
 
-  signal RegAccess : RegAccessRec;
+  signal RegAccess, RegAccessFromFilterChain : RegAccessRec;
 
   signal FakeHref, FakeVSync : bit1;
   signal FakeD               : word(8-1 downto 0);
@@ -182,9 +182,9 @@ begin
       RstN         => RstN,
       --
       Vsync        => Vsync_Clk,
-      ToggleMode   => '0',
-      IncThreshold => '0',
-      DecThreshold => '0',
+      --
+      RegAccessIn  => RegAccess,
+      RegAccessOut => RegAccessFromFilterChain,
       --
       PixelIn      => AlignedPixel,
       PixelInVal   => AlignedPixelVal,
@@ -411,7 +411,7 @@ begin
          IncSerCharVal  => IncSerCharVal,
          --
          RegAccessOut   => RegAccess,
-         RegAccessIn    => RegAccess,
+         RegAccessIn    => RegAccessFromFilterChain,
          --
          OutSerCharBusy => Busy,
          OutSerChar     => SerDataToFifo,

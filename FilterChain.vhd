@@ -5,6 +5,7 @@ use ieee.std_logic_unsigned.all;
 
 use work.Types.all;
 use work.OV76X0Pack.all;
+use work.SerialPack.all;
 
 entity FilterChain is
   generic (
@@ -12,20 +13,19 @@ entity FilterChain is
     CompDataW : positive
     );
   port (
-    Clk         : in  bit1;
-    RstN        : in  bit1;
+    Clk          : in  bit1;
+    RstN         : in  bit1;
     --
-    Vsync       : in  bit1;
+    Vsync        : in  bit1;
     --
-    ToggleMode  : in  bit1;
-    IncThreshold : in bit1;
-    DecThreshold : in bit1;
+    RegAccessIn  : in  RegAccessRec;
+    RegAccessOut : out RegAccessRec;
     --
-    PixelIn     : in  word(DataW-1 downto 0);
-    PixelInVal  : in  bit1;
+    PixelIn      : in  word(DataW-1 downto 0);
+    PixelInVal   : in  bit1;
     --
-    PixelOut    : out word(CompDataW-1 downto 0);
-    PixelOutVal : out bit1
+    PixelOut     : out word(CompDataW-1 downto 0);
+    PixelOutVal  : out bit1
     );
 end entity;
 
@@ -110,8 +110,8 @@ begin
       RstN         => RstN,
       --
       Vsync        => Vsync,
-      IncThreshold => IncThreshold,
-      DecThreshold => DecThreshold,
+      IncThreshold => '0',
+      DecThreshold => '0',
       --
       RdAddr       => RdAddr,
       FilterSel    => FilterSel_D,
@@ -146,13 +146,18 @@ begin
     end if;
   end process;
 
-  FilterAsync : process (FilterSel_D, ToggleMode)
+  FilterAsync : process (FilterSel_D, RegAccessIn)
   begin
     FilterSel_N <= FilterSel_D;
-    if ToggleMode = '1' then
-      FilterSel_N <= FilterSel_D + 1;
-      if FilterSel_D + 1 = MODES then
-        FilterSel_N <= conv_word(NONE_MODE, FilterSel_N'length);
+    RegAccessOut <= RegAccessIn;
+
+    if RegAccessIn.Val = "1" then
+      if RegAccessIn.Addr = ModeToggleAddr then
+        if RegAccessIn.Cmd = REG_WRITE then
+          FilterSel_N <= RegAccessIn.Data(FilterSel_N'length-1 downto 0);
+        else
+          RegAccessOut.Data(FilterSel_N'length-1 downto 0) <= FilterSel_D;
+        end if;
       end if;
     end if;
   end process;
