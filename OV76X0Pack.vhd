@@ -97,8 +97,8 @@ package OV76X0Pack is
   constant TileYRes        : positive := FrameH / ServoPitchRange;
   constant TileYResW       : positive := bits(TileYRes);
 
-  constant ModeToggleAddr : natural := 16#00000010#;
-
+  constant ModeToggleAddr  : natural := 16#00000010#;
+  constant ConvFilterThres : natural := 16#00000020#;
   
   
 end package;

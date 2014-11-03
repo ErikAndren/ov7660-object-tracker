@@ -41,6 +41,8 @@ architecture rtl of FilterChain is
   signal PixelFromGaussianVal                     : bit1;
   signal RdAddr                                   : word(bits(FrameW)-1 downto 0);
 
+  signal RegAccessFromConvFilter : RegAccessRec;
+
   signal FilterSel_N, FilterSel_D : word(MODESW-1 downto 0);
 begin
   LS : entity work.LineSampler
@@ -110,8 +112,9 @@ begin
       RstN         => RstN,
       --
       Vsync        => Vsync,
-      IncThreshold => '0',
-      DecThreshold => '0',
+      --
+      RegAccessIn  => RegAccessIn,
+      RegAccessOut => RegAccessFromConvFilter,
       --
       RdAddr       => RdAddr,
       FilterSel    => FilterSel_D,
@@ -146,10 +149,14 @@ begin
     end if;
   end process;
 
-  FilterAsync : process (FilterSel_D, RegAccessIn)
+  FilterAsync : process (FilterSel_D, RegAccessIn, RegAccessFromConvFilter)
   begin
-    FilterSel_N <= FilterSel_D;
-    RegAccessOut <= RegAccessIn;
+    FilterSel_N       <= FilterSel_D;
+    --
+    RegAccessOut.Val  <= RegAccessIn.Val or RegAccessFromConvFilter.Val;
+    RegAccessOut.Addr <= RegAccessIn.Addr or RegAccessFromConvFilter.Addr;
+    RegAccessOut.Cmd  <= RegAccessIn.Cmd or RegAccessFromConvFilter.Cmd;
+    RegAccessOut.Data <= RegAccessIn.Data or RegAccessFromConvFilter.Data;
 
     if RegAccessIn.Val = "1" then
       if RegAccessIn.Addr = ModeToggleAddr then
