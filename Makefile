@@ -1,4 +1,5 @@
 FILES=OV76X0Pack.vhd \
+	SerialOutFifo.vhd \
 	AsyncFifo.vhd \
 	FakeVgaCam.vhd \
 	GaussianFilter.vhd \
