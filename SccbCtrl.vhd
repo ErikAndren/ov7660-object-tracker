@@ -94,7 +94,7 @@ begin
             when conv_word(3, stm'length) =>
               sccb_stm_clk <= '0';
 
-                                        -- Write device`s ID address.
+            -- Write device`s ID address.
             when conv_word(4, stm'length) =>
               bit_out <= addr_i(7);
             when conv_word(5, stm'length) =>
@@ -118,7 +118,7 @@ begin
             when conv_word(14, stm'length) =>
               bit_out <= '0';
 
-                                        -- Write register address.
+            -- Write register address.
             when conv_word(15, stm'length) =>
               bit_out <= data_i(15);
             when conv_word(16, stm'length) =>
@@ -142,7 +142,7 @@ begin
             when conv_word(25, stm'length) =>
               bit_out <= '0';
 
-                                        -- Write data. This concludes 3-phase write transaction.
+            -- Write data. This concludes 3-phase write transaction.
             when conv_word(26, stm'length) =>
               bit_out <= data_i(7);
             when conv_word(27, stm'length) =>
@@ -166,7 +166,7 @@ begin
             when conv_word(36, stm'length) =>
               bit_out <= '0';
 
-                                        -- Stop transaction.
+            -- Stop transaction.
             when conv_word(37, stm'length) =>
               sccb_stm_clk <= '0';
             when conv_word(38, stm'length) =>
@@ -174,7 +174,7 @@ begin
             when conv_word(39, stm'length) =>
               bit_out <= '1';
 
-                                        -- Start read transaction. At this point register address has been set in prev write transaction.  
+            -- Start read transaction. At this point register address has been set in prev write transaction.  
             when conv_word(40, stm'length) =>
               sccb_stm_clk <= '1';
             when conv_word(41, stm'length) =>
@@ -182,7 +182,7 @@ begin
             when conv_word(42, stm'length) =>
               sccb_stm_clk <= '0';
 
-                                        -- Write device`s ID address.
+            -- Write device`s ID address.
             when conv_word(43, stm'length) =>
               bit_out <= addr_i(7);
             when conv_word(44, stm'length) =>
@@ -206,7 +206,7 @@ begin
             when conv_word(53, stm'length) =>
               bit_out <= '0';
 
-                                        -- Read register value. This concludes 2-phase read transaction.
+            -- Read register value. This concludes 2-phase read transaction.
             when conv_word(54, stm'length) =>
               bit_out <= '0';
             when conv_word(55, stm'length) =>
