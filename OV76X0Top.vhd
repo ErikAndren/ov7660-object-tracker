@@ -55,8 +55,6 @@ entity OV76X0Top is
 end entity;
 
 architecture rtl of OV76X0Top is
-  constant Clk50Mhz_int              : positive := 50000000;
-  --
   signal Clk50MHz                    : bit1;
   signal RstN50MHz                   : bit1;
   --
@@ -390,8 +388,8 @@ begin
       );
 
   Serial : block
-    constant FifoSize : positive := 128;
-    constant FifoSizeW : positive := bits(FifoSize);
+    constant FifoSize                                           : positive := 128;
+    constant FifoSizeW                                          : positive := bits(FifoSize);
     --
     signal Baud                                                 : word(3-1 downto 0);
     signal SerDataFromFifo                                      : word(8-1 downto 0);
@@ -403,7 +401,6 @@ begin
     signal IncSerCharVal                                        : bit1;
     signal Level                                                : word(FifoSizeW-1 downto 0);
     signal MaxFillLevel_N, MaxFillLevel_D                       : word(FifoSizeW-1 downto 0);
-    --
     
   begin
     Baud <= "010";
@@ -411,7 +408,7 @@ begin
     SerRead : entity work.SerialReader
       generic map (
         DataW   => 8,
-        ClkFreq => Clk50MHz_int
+        ClkFreq => Freq
         )
       port map (
         Clk   => Clk50MHz,
@@ -463,7 +460,7 @@ begin
 
     SerWrite : entity work.SerialWriter
       generic map (
-        ClkFreq => Clk50MHz_int
+        ClkFreq => Freq
         )
       port map (
         Clk       => Clk50MHz,
@@ -477,6 +474,5 @@ begin
         --
         SerialOut => SerialOut
         );
-  end block;
-  
+  end block;  
 end architecture rtl;
