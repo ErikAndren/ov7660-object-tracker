@@ -14,7 +14,7 @@ use work.SerialPack.all;
 
 entity OV76X0Top is
   generic (
-    Freq     : positive := 25000000;
+    Freq     : positive := 50000000;
     Displays : positive := 8
     );
   port (
@@ -58,13 +58,19 @@ architecture rtl of OV76X0Top is
   constant Clk50Mhz_int              : positive := 50000000;
   --
   signal Clk50MHz                    : bit1;
+  signal RstN50MHz                   : bit1;
+  --
   signal DispData                    : word(SccbDataW-1 downto 0);
   signal SccbRe                      : bit1;
   signal SccbWe                      : bit1;
   signal SccbAddr                    : word(SccbAddrW-1 downto 0);
+  --
   signal XCLK_i                      : bit1;
+  signal RstN25MHz                   : bit1;
+  --
   signal Clk64KHz                    : bit1;
-  signal RstN                        : bit1;
+  signal RstN64KHz                   : bit1;
+  --
   signal RstNPClk                    : bit1;
   --
   signal PixelData                   : word(8-1 downto 0);
@@ -115,23 +121,48 @@ begin
       );
   XCLK <= XCLK_i;
 
-  RstSync : entity work.ResetSync
+  Clk64kHzGen : entity work.ClkDiv
+    generic map (
+      SourceFreq => Freq,
+      SinkFreq   => 32000
+    )
+    port map (
+      Clk     => Clk50MHz,
+      RstN    => RstN50MHz,
+      Clk_out => Clk64kHz
+      );
+
+  RstSync50MHz : entity work.ResetSync
     port map (
       AsyncRst => AsyncRstN,
       Clk      => Clk50MHz,
       --
-      Rst_N    => RstN
+      Rst_N    => RstN50MHz
       );
 
+  RstSync25MHz : entity work.ResetSync
+    port map (
+      AsyncRst => AsyncRstN,
+      Clk      => XCLK_i,
+      --
+      Rst_N    => RstN25MHz
+      );
+  
+  RstSync64KHz : entity work.ResetSync
+    port map (
+      AsyncRst => AsyncRstN,
+      Clk      => Clk64KHz,
+      --
+      Rst_N    => RstN64KHz
+      );
+  
   SccbM : entity work.SccbMaster
     generic map (
       ClkFreq => Freq
       )
     port map (
-      Clk          => XCLK_i,
-      Rst_N        => RstN,
-      --
-      DataFromSccb => open,
+      Clk          => Clk50MHz,
+      Rst_N        => RstN50MHz,
       --
       SIO_C        => SIO_C,
       SIO_D        => SIO_D,
@@ -145,7 +176,7 @@ begin
       DataW => D'length
       )
     port map (
-      RstN      => RstN,
+      RstN      => RstN50MHz,
       Clk       => Clk50MHz,
       --
       PixelOut  => PixelData,
@@ -163,7 +194,7 @@ begin
   PixelAlign : entity work.PixelAligner
     port map (
       Clk         => Clk50MHz,
-      RstN        => RstN,
+      RstN        => RstN50MHz,
       --
       Vsync       => Vsync_Clk,
       --
@@ -181,7 +212,7 @@ begin
       )
     port map (
       Clk          => Clk50MHz,
-      RstN         => RstN,
+      RstN         => RstN50MHz,
       --
       Vsync        => Vsync_Clk,
       --
@@ -198,7 +229,7 @@ begin
   VideoPack : entity work.VideoPacker
     port map (
       Clk            => Clk50MHz,
-      RstN           => RstN,
+      RstN           => RstN50MHz,
       --
       PixelComp      => PixelCompData,
       PixelCompVal   => PixelCompVal,
@@ -216,8 +247,8 @@ begin
 
   SramArb : entity work.SramArbiter
     port map (
-      RstN      => RstN,
       Clk       => Clk50MHz,
+      RstN      => RstN50MHz,
       --
       WriteAddr => SramWriteAddr,
       WriteReq  => SramWriteReq,
@@ -242,7 +273,7 @@ begin
   SramCon : entity work.SramController
     port map (
       Clk     => Clk50MHz,
-      RstN    => RstN,
+      RstN    => RstN50MHz,
       AddrIn  => VgaContAddr,
       WrData  => PixelInData,
       RdData  => PixelOutData,
@@ -261,7 +292,7 @@ begin
   VideoCont : entity work.VideoController
     port map (
       Clk           => Clk50MHz,
-      RstN          => RstN,
+      RstN          => RstN50MHz,
       --
       ReadSram      => PixelRead,
       SramAddr      => SramReadAddr,
@@ -278,8 +309,8 @@ begin
       DataW => PixelResW
       )
     port map (
-      RstN        => RstN,
       Clk         => Clk50MHz,
+      RstN        => RstN50MHz,
       --
       Vsync       => Vsync_Clk,
       --
@@ -302,7 +333,7 @@ begin
       )
     port map (
       Clk            => XCLK_i,
-      RstN           => RstN,
+      RstN           => RstN25MHz,
       --
       PixelToDisplay => PixelToVga,
       DrawRect       => DrawRect,
@@ -317,9 +348,10 @@ begin
 
   PWMCtrler : entity work.PWMCtrl
     port map (
-      RstN        => RstN,
       Clk         => Clk50MHz,
+      --
       Clk64KHz    => Clk64kHz,
+      RstN        => RstN64KHz,
       --
       Btn1        => '0',
       Btn2        => '0',
@@ -331,24 +363,13 @@ begin
       PitchPos    => PitchPos
       );
 
-  Clk64kHzGen : entity work.ClkDiv
-    generic map (
-      SourceFreq => Freq,
-      SinkFreq   => 32000
-    )
-    port map (
-      Clk     => Clk50MHz,
-      RstN    => RstN,
-      Clk_out => Clk64khz
-      );
-
   YawServoDriver : entity work.Servo_pwm
     generic map (
       ResW => ServoResW
       )
     port map (
       Clk   => Clk64Khz,
-      RstN  => RstN,
+      RstN  => RstN64KHz,
       --
       Pos   => YawPos,
       --
@@ -361,7 +382,7 @@ begin
       )
     port map (
       Clk   => Clk64Khz,
-      RstN  => RstN,
+      RstN  => RstN50MHz,
       --
       Pos   => PitchPos,
       --
@@ -394,7 +415,7 @@ begin
         )
       port map (
         Clk   => Clk50MHz,
-        RstN  => RstN,
+        RstN  => RstN50MHz,
         --
         Rx    => SerialIn,
         --
@@ -411,7 +432,7 @@ begin
     
      SerCmdParser : entity work.SerialCmdParser
        port map (
-         RstN           => RstN,
+         RstN           => RstN50MHz,
          Clk            => Clk50MHz,
          --
          IncSerChar     => IncSerChar,
@@ -446,7 +467,7 @@ begin
         )
       port map (
         Clk       => Clk50MHz,
-        Rst_N     => RstN,
+        Rst_N     => RstN50MHz,
         --
         Baud      => Baud,
         --
