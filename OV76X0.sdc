@@ -29,7 +29,7 @@ derive_pll_clocks -create_base_clocks
 create_generated_clock -add -name XCLK -source [get_pins {Pll|altpll_component|pll|inclk[0]}] -divide_by 2 [get_pins {Pll|altpll_component|pll|clk[0]}]
 create_generated_clock -add -name Clk50MHz -source [get_pins {Pll|altpll_component|pll|inclk[0]}] [get_pins {Pll|altpll_component|pll|clk[1]}]
 
-#create_clock -name "PCLK" -period 40.000ns [get_ports {PCLK}]
+create_clock -name "PCLK" -period 40.000ns [get_ports {PCLK}]
 create_generated_clock -master_clock Clk50MHz -name Clk64kHz -source [get_pins {Pll|altpll_component|pll|clk[1]}] -divide_by 32000 [get_pins {Clk64kHzGen|divisor|regout}]
 
 # Automatically constrain PLL and other generated clocks

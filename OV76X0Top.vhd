@@ -152,8 +152,7 @@ begin
       PixelVal  => PixelVal,
       --
       PRstN     => AsyncRstN,
-      PClk      => XCLK_i, -- HACK: We use the internal raw 25 MHz clock for
-                           -- now due to the bad quality of the incoming one.
+      PClk      => PClk,
       Vsync     => VSYNC,
       HREF      => HREF,
       PixelData => D,
